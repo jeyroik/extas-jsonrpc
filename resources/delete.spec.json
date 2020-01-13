@@ -1,0 +1,33 @@
+{
+  "request": {
+    "properties": {
+      "data": {
+        "type": "object",
+        "name": {
+          "type": "string"
+        }
+      }
+    },
+    "required": ["data"],
+    "type": "object"
+  },
+  "response": {
+    "type": "array",
+    "properties": {
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

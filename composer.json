@@ -1,0 +1,16 @@
+{
+  "name": "jeyroik/extas-jsonrpc",
+  "description": "Extas jsonrpc package",
+  "require": {
+    "slim/slim": "^3.0",
+    "jeyroik/extas-installer": "*",
+    "jeyroik/extas-expands": "*",
+    "jeyroik/extas-protocols": "*",
+    "jeyroik/extas-servers": "*"
+  },
+  "autoload": {
+    "psr-4": {
+      "extas\\": "src/"
+    }
+  }
+}

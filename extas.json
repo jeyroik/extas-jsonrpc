@@ -1,0 +1,9 @@
+{
+  "name": "extas/jsonrpc",
+  "plugins": [
+    {
+      "class": "extas\\components\\plugins\\PluginInstallJsonRpcOperations",
+      "stage": "extas.install"
+    }
+  ]
+}

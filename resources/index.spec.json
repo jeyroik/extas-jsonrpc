@@ -1,0 +1,30 @@
+{
+  "request": {
+    "type": "object",
+    "limit": {
+      "type": "number"
+    }
+  },
+  "response": {
+    "type": "array",
+    "properties": {
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          }
+        }
+      },
+      "total": {
+        "type": "number"
+      }
+    }
+  }
+}
