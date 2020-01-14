@@ -10,6 +10,10 @@
     {
       "class": "extas\\components\\plugins\\PluginInstallJsonRpcOperations",
       "stage": "extas.install"
+    },
+    {
+      "class": "extas\\components\\plugins\\installers\\InstallerCommandPlugin.php",
+      "stage": "extas.installer.command"
     }
   ],
   "jsonrpc_operations": [
