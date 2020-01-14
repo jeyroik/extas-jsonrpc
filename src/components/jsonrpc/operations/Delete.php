@@ -24,7 +24,7 @@ class Delete extends OperationDispatcher implements IOperationDelete
      *
      * @param $data
      */
-    public function __invoke(IServerRequest $request, IResponse &$response, $data)
+    public function __invoke(IServerRequest $request, IResponse &$response, array $data)
     {
         /**
          * @var $repo IRepository

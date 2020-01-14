@@ -28,7 +28,7 @@ class Index extends OperationDispatcher implements IOperationIndex
      *
      * @param $data
      */
-    public function __invoke(IServerRequest $request, IResponse &$response, $data)
+    public function __invoke(IServerRequest $request, IResponse &$response, array $data)
     {
         /**
          * @var $repo IRepository
