@@ -1,9 +1,79 @@
 {
   "name": "extas/jsonrpc",
+  "package_classes": [
+    {
+      "interface": "extas\\interfaces\\jsonrpc\\operations\\IOperationRepository",
+      "class": "extas\\components\\jsonrpc\\operations\\OperationRepository"
+    }
+  ],
   "plugins": [
     {
       "class": "extas\\components\\plugins\\PluginInstallJsonRpcOperations",
       "stage": "extas.install"
+    }
+  ],
+  "jsonrpc_operations": [
+    {
+      "name": "operation.index",
+      "title": "Operation list",
+      "description": "Operation list",
+      "method": "index",
+      "item_name": "test",
+      "item_class": "extas\\components\\jsonrpc\\operations\\Operation",
+      "item_repo": "extas\\components\\jsonrpc\\operations\\OperationRepository",
+      "class": "extas\\components\\jsonrpc\\operations\\Index",
+      "filter": "extas\\components\\jsonrpc\\operations\\filters\\FilterDefault",
+      "spec": {
+        "request": {
+          "type": "object",
+          "limit": {
+            "type": "number"
+          }
+        },
+        "response": {
+          "type": "array",
+          "properties": {
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "title": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                },
+                "method": {
+                  "type": "string"
+                },
+                "item_name": {
+                  "type": "string"
+                },
+                "item_class": {
+                  "type": "string"
+                },
+                "item_repo": {
+                  "type": "string"
+                },
+                "class": {
+                  "type": "string"
+                },
+                "filter": {
+                  "type": "string"
+                },
+                "spec": {
+                  "type": "array"
+                }
+              }
+            },
+            "total": {
+              "type": "number"
+            }
+          }
+        }
+      }
     }
   ]
 }
