@@ -4,13 +4,22 @@ Extas JsonRPC package
 
 # install operations
 
+## copy default classes container
+
+```
+# cp vendor/jeyroik/extas-foundation/resources/container.dist.php src/confgis/container.php
+# cp vendor/jeyroik/extas-foundation/resources/container.dist.json src/confgis/container.json
+```
+
+## install jsonrpc plugin and default operation
+
 `# vendor/bin/extas i`
 
 # usage out of the box
 
 ## start server
 
-'# php -S 0.0.0.0:8080 -t src/public'
+`# php -S 0.0.0.0:8080 -t src/public`
 
 ## make request
 
