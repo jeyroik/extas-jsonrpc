@@ -20,7 +20,7 @@
       "method": "index",
       "item_name": "test",
       "item_class": "extas\\components\\jsonrpc\\operations\\Operation",
-      "item_repo": "extas\\components\\jsonrpc\\operations\\OperationRepository",
+      "item_repo": "extas\\interfaces\\jsonrpc\\operations\\IOperationRepository",
       "class": "extas\\components\\jsonrpc\\operations\\Index",
       "filter": "extas\\components\\jsonrpc\\operations\\filters\\FilterDefault",
       "spec": {
