@@ -2,6 +2,8 @@
 namespace extas\interfaces\jsonrpc\operations;
 
 use extas\interfaces\IItem;
+use extas\interfaces\jsonrpc\IResponse;
+use extas\interfaces\servers\requests\IServerRequest;
 
 /**
  * Interface IOperationDispatcher
@@ -14,6 +16,15 @@ interface IOperationDispatcher extends IItem
     const SUBJECT = 'extas.jsonrpc.operation.dispatcher';
 
     const FIELD__OPERATION = 'operation';
+
+    /**
+     * @param IServerRequest $jsonRpcRequest
+     * @param IResponse $jsonRpcResponse
+     * @param array $data
+     *
+     * @return void
+     */
+    public function __invoke(IServerRequest $jsonRpcRequest, IResponse &$jsonRpcResponse, array $data);
 
     /**
      * @return IOperation|null

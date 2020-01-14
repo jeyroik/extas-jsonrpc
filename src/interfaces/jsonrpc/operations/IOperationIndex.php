@@ -19,15 +19,6 @@ interface IOperationIndex extends IItem, IOperationDispatcher
     const FIELD__ITEM_REPO = 'item_repo';
 
     /**
-     * @param IServerRequest $jsonRpcRequest
-     * @param IResponse $jsonRpcResponse
-     * @param array $data
-     *
-     * @return void
-     */
-    public function __invoke(IServerRequest $jsonRpcRequest, IResponse &$jsonRpcResponse, array $data);
-
-    /**
      * @return int
      */
     public function getLimit(): int;

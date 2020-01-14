@@ -68,7 +68,7 @@ class Router extends Item implements IRouter
                     $dispatcher = $operation->buildClassWithParameters([
                         IOperationDispatcher::FIELD__OPERATION => $operation
                     ]);
-                    $dispatcher($operation, $jsonRpcRequest, $jsonRpcResponse, $jrpcRequest);
+                    $dispatcher($jsonRpcRequest, $jsonRpcResponse, $jrpcRequest);
 
                     foreach ($this->getPluginsByStage('after.run.jsonrpc.' . $routeName) as $plugin) {
                         $plugin($jsonRpcRequest, $jsonRpcResponse, $jrpcRequest);
