@@ -12,7 +12,7 @@
       "stage": "extas.install"
     },
     {
-      "class": "extas\\components\\plugins\\installers\\InstallerCommandPlugin.php",
+      "class": "extas\\components\\plugins\\installers\\InstallerCommandPlugin",
       "stage": "extas.installer.command"
     }
   ],
