@@ -31,7 +31,7 @@ class Generator extends Item implements IGenerator
         foreach ($plugins as $plugin) {
             $properties = $this->generateProperties($plugin);
             $dotted = str_replace(' ', '.', $plugin->getPluginName());
-            
+
             $result['jsonrpc__operations'][] = $this->constructCreate($plugin, $dotted, $properties);
             $result['jsonrpc__operations'][] = $this->constructIndex($plugin, $dotted, $properties);
             $result['jsonrpc__operations'][] = $this->constructUpdate($plugin, $dotted, $properties);
@@ -72,11 +72,12 @@ class Generator extends Item implements IGenerator
 
         foreach ($properties as $property => $spec) {
             $methodName = 'get' . ucwords(str_replace('_', ' ', $property));
-            $properties[$property] = [
-                'type' => isset($byNameMethods[$methodName])
-                    ? $byNameMethods[$methodName]->getReturnType()->getName()
-                    : 'string'
-            ];
+            $type = 'string';
+            if (isset($byNameMethods[$methodName])) {
+                $returnType = $byNameMethods[$methodName]->getReturnType();
+                $type = $returnType ? $returnType->getName() : 'string';
+            }
+            $properties[$property] = ['type' => $type];
         }
 
         return $properties;
