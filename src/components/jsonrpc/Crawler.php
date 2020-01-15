@@ -33,7 +33,7 @@ class Crawler extends Item implements ICrawler
              */
             try {
                 preg_match('/^namespace\s(.*?);$/m', $file->getContents(), $nsMatches);
-                preg_match('/^class\s(.*?)$/m', $file->getContents(), $classMatches);
+                preg_match('/^class\s(.*?)\s/m', $file->getContents(), $classMatches);
 
                 if (isset($nsMatches[1], $classMatches[1])) {
                     $className = $nsMatches[1] . '\\' . $classMatches[1];
