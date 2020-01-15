@@ -11,4 +11,5 @@ interface IRequest
 {
     const FIELD__ID = 'id';
     const FIELD__METHOD = 'method';
+    const FIELD__FILTER = 'filter';
 }

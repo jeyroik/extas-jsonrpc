@@ -5,6 +5,7 @@ use extas\components\expands\Expander;
 use extas\components\servers\responses\ServerResponse;
 use extas\components\SystemContainer;
 use extas\interfaces\IItem;
+use extas\interfaces\jsonrpc\IRequest;
 use extas\interfaces\jsonrpc\IResponse;
 use extas\interfaces\jsonrpc\operations\IOperation;
 use extas\interfaces\jsonrpc\operations\IOperationIndex;
@@ -108,7 +109,7 @@ class Index extends OperationDispatcher implements IOperationIndex
      */
     protected function filter($jRpcData, $items)
     {
-        $filter = $jRpcData[IOperation::FIELD__FILTER] ?? [];
+        $filter = $jRpcData[IRequest::FIELD__FILTER] ?? [];
 
         if (empty($filter)) {
             return $items;
