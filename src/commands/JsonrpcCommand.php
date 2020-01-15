@@ -17,16 +17,7 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class JsonrpcCommand extends Command
 {
-    const GENERATED_DATA__STORE = '.extas.install';
-    const DEFAULT__PACKAGE_NAME = 'extas.json';
-
     protected const VERSION = '0.1.0';
-    protected const OPTION__PACKAGE_NAME = 'package';
-    protected const OPTION__REWRITE_GENERATED_DATA = 'rewrite';
-    protected const OPTION__REWRITE_CONTAINER = 'rewrite-container';
-    protected const OPTION__FLUSH = 'flush';
-    protected const OPTION__REWRITE_ENTITY_ALLOW = 'rewrite-entity-allow';
-
     protected const OPTION__PREFIX = 'prefix';
     protected const DEFAULT__PREFIX = 'PluginInstall';
     protected const OPTION__SPECS_PATH = 'specs';
@@ -52,7 +43,7 @@ class JsonrpcCommand extends Command
                 'p',
                 InputOption::VALUE_OPTIONAL,
                 'Install plugins prefix',
-                static::DEFAULT__PACKAGE_NAME
+                static::DEFAULT__PREFIX
             )
             ->addOption(
                 static::OPTION__SPECS_PATH,
