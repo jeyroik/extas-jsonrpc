@@ -45,11 +45,19 @@ class Operation extends Item implements IOperation
     }
 
     /**
+     * @return string
+     */
+    public function getFilterClass(): string
+    {
+        return $this->config[static::FIELD__FILTER_CLASS] ?? '';
+    }
+
+    /**
      * @return IOperationFilter|null
      */
     public function getFilter(): ?IOperationFilter
     {
-        $filterClass = $this->config[static::FIELD__FILTER] ?? '';
+        $filterClass = $this->getFilterClass();
 
         return $filterClass ? new $filterClass() : null;
     }
@@ -99,15 +107,25 @@ class Operation extends Item implements IOperation
     }
 
     /**
+     * @param string $filterClass
+     *
+     * @return IOperation
+     */
+    public function setFilterClass(string $filterClass): IOperation
+    {
+        $this->config[static::FIELD__FILTER_CLASS] = $filterClass;
+
+        return $this;
+    }
+
+    /**
      * @param IOperationFilter $filter
      *
      * @return IOperation
      */
     public function setFilter(IOperationFilter $filter): IOperation
     {
-        $this->config[static::FIELD__FILTER] = get_class($filter);
-
-        return $this;
+        return $this->setFilterClass(get_class($filter));
     }
 
     /**

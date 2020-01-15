@@ -25,12 +25,19 @@ class Generator extends Item implements IGenerator
     public function generate(array $plugins, string $path): bool
     {
         $result = [
+            'name' => '[auto-generated] extas/jsonrpc/operations',
             'jsonrpc__operations' => []
         ];
 
         foreach ($plugins as $plugin) {
             $properties = $this->generateProperties($plugin);
             $dotted = str_replace(' ', '.', $plugin->getPluginName());
+
+            if ($filter = $this->getFilter()) {
+                if(strpos($dotted, $filter) === false) {
+                    continue;
+                }
+            }
 
             $result['jsonrpc__operations'][] = $this->constructCreate($plugin, $dotted, $properties);
             $result['jsonrpc__operations'][] = $this->constructIndex($plugin, $dotted, $properties);
@@ -41,6 +48,26 @@ class Generator extends Item implements IGenerator
         file_put_contents($path, json_encode($result));
 
         return true;
+    }
+
+    /**
+     * @return string
+     */
+    public function getFilter(): string
+    {
+        return $this->config[static::FIELD__FILTER] ?? '';
+    }
+
+    /**
+     * @param string $filter
+     *
+     * @return IGenerator
+     */
+    public function setFilter(string $filter): IGenerator
+    {
+        $this->config[static::FIELD__FILTER] = $filter;
+
+        return $this;
     }
 
     /**
@@ -100,7 +127,7 @@ class Generator extends Item implements IGenerator
             IOperation::FIELD__ITEM_NAME => $name,
             IOperation::FIELD__ITEM_CLASS => $plugin->getPluginItemClass(),
             IOperation::FIELD__ITEM_REPO => $plugin->getPluginRepositoryInterface(),
-            IOperation::FIELD__FILTER => FilterDefault::class,
+            IOperation::FIELD__FILTER_CLASS => FilterDefault::class,
             IOperation::FIELD__CLASS => Create::class,
             IOperation::FIELD__SPEC => [
                 "request" => [
@@ -137,7 +164,7 @@ class Generator extends Item implements IGenerator
             IOperation::FIELD__ITEM_NAME => $name,
             IOperation::FIELD__ITEM_CLASS => $plugin->getPluginItemClass(),
             IOperation::FIELD__ITEM_REPO => $plugin->getPluginRepositoryInterface(),
-            IOperation::FIELD__FILTER => FilterDefault::class,
+            IOperation::FIELD__FILTER_CLASS => FilterDefault::class,
             IOperation::FIELD__CLASS => Index::class,
             IOperation::FIELD__SPEC => [
                 "request" => [
@@ -181,7 +208,7 @@ class Generator extends Item implements IGenerator
             IOperation::FIELD__ITEM_NAME => $name,
             IOperation::FIELD__ITEM_CLASS => $plugin->getPluginItemClass(),
             IOperation::FIELD__ITEM_REPO => $plugin->getPluginRepositoryInterface(),
-            IOperation::FIELD__FILTER => FilterDefault::class,
+            IOperation::FIELD__FILTER_CLASS => FilterDefault::class,
             IOperation::FIELD__CLASS => Update::class,
             IOperation::FIELD__SPEC => [
                 "request" => [
@@ -218,7 +245,7 @@ class Generator extends Item implements IGenerator
             IOperation::FIELD__ITEM_NAME => $name,
             IOperation::FIELD__ITEM_CLASS => $plugin->getPluginItemClass(),
             IOperation::FIELD__ITEM_REPO => $plugin->getPluginRepositoryInterface(),
-            IOperation::FIELD__FILTER => FilterDefault::class,
+            IOperation::FIELD__FILTER_CLASS => FilterDefault::class,
             IOperation::FIELD__CLASS => Delete::class,
             IOperation::FIELD__SPEC => [
                 "request" => [

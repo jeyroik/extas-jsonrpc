@@ -19,8 +19,10 @@ class JsonrpcCommand extends Command
 {
     protected const VERSION = '0.1.0';
     protected const OPTION__PREFIX = 'prefix';
-    protected const DEFAULT__PREFIX = 'PluginInstall';
+    protected const OPTION__FILTER = 'filter';
     protected const OPTION__SPECS_PATH = 'specs';
+
+    protected const DEFAULT__PREFIX = 'PluginInstall';
 
     /**
      * Configure the current command.
@@ -52,6 +54,14 @@ class JsonrpcCommand extends Command
                 'Path to store result specs',
                 getcwd() . '/specs.extas.json'
             )
+            ->addOption(
+                static::OPTION__FILTER,
+                'f',
+                InputOption::VALUE_OPTIONAL,
+                'Filter operations by filter entry in the operation name.' .
+                'Ex.: "opera" for looking only names with "opera" in it',
+                ''
+            )
         ;
     }
 
@@ -77,7 +87,9 @@ class JsonrpcCommand extends Command
         $crawler = new Crawler();
         $plugins = $crawler->crawlPlugins(getcwd(), $prefix);
 
-        $serviceInstaller = new Generator();
+        $serviceInstaller = new Generator([
+
+        ]);
         $serviceInstaller->generate($plugins, $path);
 
         $end = microtime(true) - $start;
