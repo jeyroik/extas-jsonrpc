@@ -40,10 +40,10 @@ class Generator extends Item implements IGenerator
                 }
             }
 
-            $result['jsonrpc__operations'][] = $this->constructCreate($plugin, $dotted, $properties);
-            $result['jsonrpc__operations'][] = $this->constructIndex($plugin, $dotted, $properties);
-            $result['jsonrpc__operations'][] = $this->constructUpdate($plugin, $dotted, $properties);
-            $result['jsonrpc__operations'][] = $this->constructDelete($plugin, $dotted, $properties);
+            $result['jsonrpc_operations'][] = $this->constructCreate($plugin, $dotted, $properties);
+            $result['jsonrpc_operations'][] = $this->constructIndex($plugin, $dotted, $properties);
+            $result['jsonrpc_operations'][] = $this->constructUpdate($plugin, $dotted, $properties);
+            $result['jsonrpc_operations'][] = $this->constructDelete($plugin, $dotted, $properties);
         }
 
         file_put_contents($path, json_encode($result));
