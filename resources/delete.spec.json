@@ -3,8 +3,10 @@
     "properties": {
       "data": {
         "type": "object",
-        "name": {
-          "type": "string"
+        "properties": {
+          "name": {
+            "type": "string"
+          }
         }
       }
     },
