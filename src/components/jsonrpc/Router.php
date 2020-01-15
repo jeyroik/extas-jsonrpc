@@ -10,6 +10,8 @@ use extas\interfaces\jsonrpc\IRouter;
 use extas\interfaces\jsonrpc\operations\IOperation;
 use extas\interfaces\jsonrpc\operations\IOperationDispatcher;
 use extas\interfaces\jsonrpc\operations\IOperationRepository;
+use extas\interfaces\protocols\IProtocol;
+use extas\interfaces\protocols\IProtocolRepository;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
@@ -53,25 +55,22 @@ class Router extends Item implements IRouter
         $routeName = $jrpcRequest[IRequest::FIELD__METHOD] ?? static::ROUTE__DEFAULT;
         $repo = SystemContainer::getItem(IOperationRepository::class);
         $operation = $repo->one([IOperation::FIELD__NAME => $routeName]);
-        $jsonRpcRequest = new ServerRequest([
-            ServerRequest::FIELD__NAME => 'schema.index',
-            ServerRequest::FIELD__PARAMETERS => ServerRequest::makeParametersFrom($jrpcRequest)
-        ]);
+        $serverRequest = $this->getServerRequest($request, $jrpcRequest);
         $jsonRpcResponse = Response::fromPsr($response, $jrpcRequest);
 
         try {
             if ($operation) {
                 foreach ($this->getPluginsByStage('before.run.jsonrpc.' . $routeName) as $plugin) {
-                    $plugin($jsonRpcRequest, $jsonRpcResponse, $jrpcRequest);
+                    $plugin($serverRequest, $jsonRpcResponse, $jrpcRequest);
                 }
                 if (!isset($jrpcRequest[IResponse::RESPONSE__ERROR_MARKER])) {
                     $dispatcher = $operation->buildClassWithParameters([
                         IOperationDispatcher::FIELD__OPERATION => $operation
                     ]);
-                    $dispatcher($jsonRpcRequest, $jsonRpcResponse, $jrpcRequest);
+                    $dispatcher($serverRequest, $jsonRpcResponse, $jrpcRequest);
 
                     foreach ($this->getPluginsByStage('after.run.jsonrpc.' . $routeName) as $plugin) {
-                        $plugin($jsonRpcRequest, $jsonRpcResponse, $jrpcRequest);
+                        $plugin($serverRequest, $jsonRpcResponse, $jrpcRequest);
                     }
                 }
             } else {
@@ -114,6 +113,33 @@ class Router extends Item implements IRouter
         $jsonRpcResponse->success($specs);
 
         return $jsonRpcResponse->getPsrResponse();
+    }
+
+    /**
+     * @param RequestInterface $request
+     * @param array $data
+     *
+     * @return ServerRequest
+     */
+    protected function getServerRequest(RequestInterface $request, array $data)
+    {
+        /**
+         * @var $repo IProtocolRepository
+         * @var $protocols IProtocol[]
+         */
+        $repo = SystemContainer::getItem(IProtocolRepository::class);
+        $protocols = $repo->all([
+            IProtocol::FIELD__ACCEPT => [$request->getHeader('ACCEPT'), '*']
+        ]);
+
+        foreach ($protocols as $protocol) {
+            $protocol($data, $request);
+        }
+
+        return new ServerRequest([
+            ServerRequest::FIELD__NAME => 'jsonrpc',
+            ServerRequest::FIELD__PARAMETERS => ServerRequest::makeParametersFrom($data)
+        ]);
     }
 
     /**
