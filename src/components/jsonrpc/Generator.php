@@ -31,7 +31,8 @@ class Generator extends Item implements IGenerator
 
         foreach ($plugins as $plugin) {
             $properties = $this->generateProperties($plugin);
-            $dotted = str_replace(' ', '.', $plugin->getPluginName());
+            $parts = explode(' ', $plugin->getPluginName());
+            $dotted = $this->getOnlyEdge() ? array_pop($parts) : implode('.', $parts);
 
             if ($filter = $this->getFilter()) {
                 if(strpos($dotted, $filter) === false) {
@@ -51,6 +52,14 @@ class Generator extends Item implements IGenerator
     }
 
     /**
+     * @return bool
+     */
+    public function getOnlyEdge(): bool
+    {
+        return (bool) ($this->config[static::FIELD__ONLY_EDGE] ?? false);
+    }
+
+    /**
      * @return string
      */
     public function getFilter(): string
@@ -66,6 +75,18 @@ class Generator extends Item implements IGenerator
     public function setFilter(string $filter): IGenerator
     {
         $this->config[static::FIELD__FILTER] = $filter;
+
+        return $this;
+    }
+
+    /**
+     * @param bool $onlyEdge
+     *
+     * @return IGenerator
+     */
+    public function setOnlyEdge(bool $onlyEdge): IGenerator
+    {
+        $this->config[static::FIELD__ONLY_EDGE] = $onlyEdge;
 
         return $this;
     }

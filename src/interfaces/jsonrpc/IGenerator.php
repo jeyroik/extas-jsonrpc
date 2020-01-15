@@ -15,6 +15,7 @@ interface IGenerator
     const SUBJECT = 'extas.jsonrpc.generator';
 
     const FIELD__FILTER = 'filter';
+    const FIELD__ONLY_EDGE = 'only_edge';
 
     /**
      * @param IPluginInstallDefault[] $plugins
@@ -23,6 +24,11 @@ interface IGenerator
      * @return bool
      */
     public function generate(array $plugins, string $path): bool;
+
+    /**
+     * @return bool
+     */
+    public function getOnlyEdge(): bool;
 
     /**
      * @return string
@@ -35,4 +41,11 @@ interface IGenerator
      * @return IGenerator
      */
     public function setFilter(string $filter): IGenerator;
+
+    /**
+     * @param bool $onlyEdge
+     *
+     * @return IGenerator
+     */
+    public function setOnlyEdge(bool $onlyEdge): IGenerator;
 }

@@ -21,6 +21,7 @@ class JsonrpcCommand extends Command
     protected const OPTION__PREFIX = 'prefix';
     protected const OPTION__FILTER = 'filter';
     protected const OPTION__SPECS_PATH = 'specs';
+    protected const OPTION__ONLY_EDGE = 'only_edge';
 
     protected const DEFAULT__PREFIX = 'PluginInstall';
 
@@ -61,6 +62,12 @@ class JsonrpcCommand extends Command
                 'Filter operations by filter entry in the operation name.' .
                 'Ex.: "opera" for looking only names with "opera" in it',
                 ''
+            )->addOption(
+                static::OPTION__ONLY_EDGE,
+                'e',
+                InputOption::VALUE_OPTIONAL,
+                'Use as operation name only last word of section',
+                ''
             )
         ;
     }
@@ -88,7 +95,8 @@ class JsonrpcCommand extends Command
         $plugins = $crawler->crawlPlugins(getcwd(), $prefix);
 
         $serviceInstaller = new Generator([
-            Generator::FIELD__FILTER => $input->getOption(static::OPTION__FILTER)
+            Generator::FIELD__FILTER => $input->getOption(static::OPTION__FILTER),
+            Generator::FIELD__ONLY_EDGE => $input->getOption(static::OPTION__ONLY_EDGE)
         ]);
         $serviceInstaller->generate($plugins, $path);
 
