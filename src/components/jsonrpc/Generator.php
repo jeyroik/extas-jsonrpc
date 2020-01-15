@@ -26,7 +26,7 @@ class Generator extends Item implements IGenerator
     {
         $result = [
             'name' => '[auto-generated] extas/jsonrpc/operations',
-            'jsonrpc__operations' => []
+            'jsonrpc_operations' => []
         ];
 
         foreach ($plugins as $plugin) {
