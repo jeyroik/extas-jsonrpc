@@ -50,11 +50,11 @@ class Index extends OperationDispatcher implements IOperationIndex
         $items = $this->filter($data, $items);
         $itemName = $this->getOperation()->getItemName();
         $box = Expander::getExpandingBox($this->getOperation()->getMethod(), $itemName);
-        $box->setData([$itemName . 's' => $items]);
+        $box->setData([$itemName . '_list' => $items]);
         $box->expand($request, $this->getServerResponse($response));
         $box->pack();
         $expanded = $box->getValue();
-        $items = $expanded[$itemName . 's'] ?? $items;
+        $items = $expanded[$itemName . '_list'] ?? $items;
 
         $response->success([
             'items' => $items,
