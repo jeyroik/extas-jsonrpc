@@ -29,22 +29,13 @@ class Generator extends Item implements IGenerator
         ];
 
         foreach ($plugins as $plugin) {
-            $reflection = new \ReflectionClass($plugin->getPluginItemClass());
-            $constants = $reflection->getConstants();
-            $attributes = [];
-
-            foreach ($constants as $name => $value) {
-                if (strpos($name, 'FIELD') !== false) {
-                    $attributes[$value] = [
-                        "type" => "string"
-                    ];
-                }
-            }
-            $dotted = str_replace('_', '.', $plugin->getPluginSection());
-            $result['jsonrpc__operations'][] = $this->constructCreate($plugin, $dotted, $attributes);
-            $result['jsonrpc__operations'][] = $this->constructIndex($plugin, $dotted, $attributes);
-            $result['jsonrpc__operations'][] = $this->constructUpdate($plugin, $dotted, $attributes);
-            $result['jsonrpc__operations'][] = $this->constructDelete($plugin, $dotted, $attributes);
+            $properties = $this->generateProperties($plugin);
+            $dotted = str_replace(' ', '.', $plugin->getPluginName());
+            
+            $result['jsonrpc__operations'][] = $this->constructCreate($plugin, $dotted, $properties);
+            $result['jsonrpc__operations'][] = $this->constructIndex($plugin, $dotted, $properties);
+            $result['jsonrpc__operations'][] = $this->constructUpdate($plugin, $dotted, $properties);
+            $result['jsonrpc__operations'][] = $this->constructDelete($plugin, $dotted, $properties);
         }
 
         file_put_contents($path, json_encode($result));
@@ -54,12 +45,51 @@ class Generator extends Item implements IGenerator
 
     /**
      * @param IPluginInstallDefault $plugin
-     * @param string $name
-     * @param array $attributes
      *
      * @return array
      */
-    protected function constructCreate(IPluginInstallDefault $plugin, string $name, array $attributes)
+    protected function generateProperties(IPluginInstallDefault $plugin): array
+    {
+        $reflection = new \ReflectionClass($plugin->getPluginItemClass());
+        $constants = $reflection->getConstants();
+        $properties = [];
+
+        foreach ($constants as $name => $value) {
+            if (strpos($name, 'FIELD') !== false) {
+                $properties[$value] = [];
+            }
+        }
+
+        /**
+         * @var $byNameMethods \ReflectionMethod[]
+         */
+        $methods = $reflection->getMethods(\ReflectionMethod::IS_PUBLIC);
+        $byNameMethods = [];
+
+        foreach ($methods as $method) {
+            $byNameMethods[$method->getName()] = $method;
+        }
+
+        foreach ($properties as $property => $spec) {
+            $methodName = 'get' . ucwords(str_replace('_', ' ', $property));
+            $properties[$property] = [
+                'type' => isset($byNameMethods[$methodName])
+                    ? $byNameMethods[$methodName]->getReturnType()->getName()
+                    : 'string'
+            ];
+        }
+
+        return $properties;
+    }
+
+    /**
+     * @param IPluginInstallDefault $plugin
+     * @param string $name
+     * @param array $properties
+     *
+     * @return array
+     */
+    protected function constructCreate(IPluginInstallDefault $plugin, string $name, array $properties)
     {
         return [
             IOperation::FIELD__NAME => $name . '.create',
@@ -77,13 +107,13 @@ class Generator extends Item implements IGenerator
                     "properties" => [
                         "data" => [
                             "type" => "object",
-                            "properties" => $attributes
+                            "properties" => $properties
                         ]
                     ]
                 ],
                 "response" => [
                     "type" => "object",
-                    "properties" => $attributes
+                    "properties" => $properties
                 ]
             ]
         ];
@@ -92,11 +122,11 @@ class Generator extends Item implements IGenerator
     /**
      * @param IPluginInstallDefault $plugin
      * @param string $name
-     * @param array $attributes
+     * @param array $properties
      *
      * @return array
      */
-    protected function constructIndex(IPluginInstallDefault $plugin, string $name, array $attributes)
+    protected function constructIndex(IPluginInstallDefault $plugin, string $name, array $properties)
     {
         return [
             IOperation::FIELD__NAME => $name . '.index',
@@ -122,7 +152,7 @@ class Generator extends Item implements IGenerator
                     "properties" => [
                         "items" => [
                             "type" => "object",
-                            "properties" => $attributes
+                            "properties" => $properties
                         ],
                         "total" => [
                             "type" => "number"
@@ -136,11 +166,11 @@ class Generator extends Item implements IGenerator
     /**
      * @param IPluginInstallDefault $plugin
      * @param string $name
-     * @param array $attributes
+     * @param array $properties
      *
      * @return array
      */
-    protected function constructUpdate(IPluginInstallDefault $plugin, string $name, array $attributes)
+    protected function constructUpdate(IPluginInstallDefault $plugin, string $name, array $properties)
     {
         return [
             IOperation::FIELD__NAME => $name . '.update',
@@ -158,13 +188,13 @@ class Generator extends Item implements IGenerator
                     "properties" => [
                         "data" => [
                             "type" => "object",
-                            "properties" => $attributes
+                            "properties" => $properties
                         ]
                     ]
                 ],
                 "response" => [
                     "type" => "object",
-                    "properties" => $attributes
+                    "properties" => $properties
                 ]
             ]
         ];
@@ -173,11 +203,11 @@ class Generator extends Item implements IGenerator
     /**
      * @param IPluginInstallDefault $plugin
      * @param string $name
-     * @param array $attributes
+     * @param array $properties
      *
      * @return array
      */
-    protected function constructDelete(IPluginInstallDefault $plugin, string $name, array $attributes)
+    protected function constructDelete(IPluginInstallDefault $plugin, string $name, array $properties)
     {
         return [
             IOperation::FIELD__NAME => $name . '.delete',
@@ -205,7 +235,7 @@ class Generator extends Item implements IGenerator
                 ],
                 "response" => [
                     "type" => "object",
-                    "properties" => $attributes
+                    "properties" => $properties
                 ]
             ]
         ];
