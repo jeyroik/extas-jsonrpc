@@ -88,7 +88,7 @@ class JsonrpcCommand extends Command
         $plugins = $crawler->crawlPlugins(getcwd(), $prefix);
 
         $serviceInstaller = new Generator([
-
+            Generator::FIELD__FILTER => $input->getOption(static::OPTION__FILTER)
         ]);
         $serviceInstaller->generate($plugins, $path);
 
