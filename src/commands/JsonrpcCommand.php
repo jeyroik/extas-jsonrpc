@@ -21,7 +21,7 @@ class JsonrpcCommand extends Command
     protected const OPTION__PREFIX = 'prefix';
     protected const OPTION__FILTER = 'filter';
     protected const OPTION__SPECS_PATH = 'specs';
-    protected const OPTION__ONLY_EDGE = 'only_edge';
+    protected const OPTION__ONLY_EDGE = 'only-edge';
 
     protected const DEFAULT__PREFIX = 'PluginInstall';
 
