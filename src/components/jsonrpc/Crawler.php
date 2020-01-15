@@ -4,6 +4,7 @@ namespace extas\components\jsonrpc;
 use extas\components\Item;
 use extas\interfaces\jsonrpc\ICrawler;
 use extas\interfaces\plugins\IPlugin;
+use extas\interfaces\plugins\IPluginInstallDefault;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Finder\SplFileInfo;
 
@@ -37,7 +38,11 @@ class Crawler extends Item implements ICrawler
 
                 if (isset($nsMatches[1], $classMatches[1])) {
                     $className = $nsMatches[1] . '\\' . $classMatches[1];
-                    $plugins[] = new $className();
+                    $plugin = new $className();
+
+                    if ($plugin instanceof IPluginInstallDefault) {
+                        $plugins[] = new $className();
+                    }
                 }
             } catch (\Exception $e) {
                 continue;
