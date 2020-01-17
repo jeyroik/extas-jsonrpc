@@ -2,8 +2,11 @@
 namespace extas\components\jsonrpc;
 
 use extas\components\Item;
+use extas\components\jsonrpc\operations\Create;
+use extas\components\jsonrpc\operations\Delete;
 use extas\components\jsonrpc\operations\filters\FilterDefault;
 use extas\components\jsonrpc\operations\Index;
+use extas\components\jsonrpc\operations\Update;
 use extas\interfaces\jsonrpc\IGenerator;
 use extas\interfaces\jsonrpc\operations\IOperation;
 use extas\interfaces\plugins\IPluginInstallDefault;
@@ -95,6 +98,7 @@ class Generator extends Item implements IGenerator
      * @param IPluginInstallDefault $plugin
      *
      * @return array
+     * @throws 
      */
     protected function generateProperties(IPluginInstallDefault $plugin): array
     {
