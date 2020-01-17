@@ -14,18 +14,16 @@ use Psr\Http\Message\ResponseInterface;
  */
 class Response extends Item implements IResponse
 {
+    protected $hasError = false;
+
     /**
      * @param ResponseInterface $response
-     * @param array $data
      *
      * @return IResponse
      */
-    public static function fromPsr(ResponseInterface $response, array $data): IResponse
+    public static function fromPsr(ResponseInterface $response): IResponse
     {
-        return new static([
-            static::FIELD__RESPONSE => $response,
-            static::FIELD__DATA => $data
-        ]);
+        return new static([static::FIELD__RESPONSE => $response]);
     }
 
     /**
@@ -42,6 +40,14 @@ class Response extends Item implements IResponse
                 ->withHeader('Content-type', 'application/json')
                 ->withStatus(200)
         );
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasError(): bool
+    {
+        return $this->hasError;
     }
 
     /**
@@ -127,6 +133,8 @@ class Response extends Item implements IResponse
         ));
 
         $this->setPsrResponse($response);
+
+        $this->hasError = true;
 
         return $this;
     }

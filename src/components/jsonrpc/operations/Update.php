@@ -1,14 +1,13 @@
 <?php
-namespace extas\components\jsonrpc;
+namespace extas\components\jsonrpc\operations;
 
-use extas\components\jsonrpc\operations\OperationDispatcher;
 use extas\components\SystemContainer;
 use extas\interfaces\IHasName;
 use extas\interfaces\IItem;
+use extas\interfaces\jsonrpc\IRequest;
 use extas\interfaces\jsonrpc\IResponse;
 use extas\interfaces\jsonrpc\operations\IOperationUpdate;
 use extas\interfaces\repositories\IRepository;
-use extas\interfaces\servers\requests\IServerRequest;
 
 /**
  * Class JsonRpcUpdate
@@ -19,12 +18,10 @@ use extas\interfaces\servers\requests\IServerRequest;
 class Update extends OperationDispatcher implements IOperationUpdate
 {
     /**
-     * @param IServerRequest $request
+     * @param IRequest $request
      * @param IResponse $response
-     *
-     * @param $data
      */
-    public function __invoke(IServerRequest $request, IResponse &$response, array $data)
+    protected function dispatch(IRequest $request, IResponse &$response)
     {
         /**
          * @var $repo IRepository
@@ -32,8 +29,9 @@ class Update extends OperationDispatcher implements IOperationUpdate
          */
         $repo = SystemContainer::getItem($this->getOperation()->getItemRepo());
         $itemClass = $this->getOperation()->getItemClass();
-        $item = new $itemClass($data[static::FIELD__DATA]);
+        $item = new $itemClass($request->getData());
         $exist = $repo->one([IHasName::FIELD__NAME => $item->getName()]);
+
         if (!$exist) {
             $response->error('Unknown entity "' . $this->getOperation()->getItemName() . '"', 404);
         } else {

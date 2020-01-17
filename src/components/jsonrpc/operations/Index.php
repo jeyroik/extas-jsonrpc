@@ -2,18 +2,12 @@
 namespace extas\components\jsonrpc\operations;
 
 use extas\components\expands\Expander;
-use extas\components\servers\responses\ServerResponse;
 use extas\components\SystemContainer;
 use extas\interfaces\IItem;
 use extas\interfaces\jsonrpc\IRequest;
 use extas\interfaces\jsonrpc\IResponse;
-use extas\interfaces\jsonrpc\operations\IOperation;
 use extas\interfaces\jsonrpc\operations\IOperationIndex;
-use extas\interfaces\parameters\IParameter;
 use extas\interfaces\repositories\IRepository;
-use extas\interfaces\servers\requests\IServerRequest;
-use extas\interfaces\servers\responses\IServerResponse;
-use Psr\Http\Message\ResponseInterface;
 
 /**
  * Class Index
@@ -24,12 +18,10 @@ use Psr\Http\Message\ResponseInterface;
 class Index extends OperationDispatcher implements IOperationIndex
 {
     /**
-     * @param IServerRequest $request
+     * @param IRequest $request
      * @param IResponse $response
-     *
-     * @param $data
      */
-    public function __invoke(IServerRequest $request, IResponse &$response, array $data)
+    protected function dispatch(IRequest $request, IResponse &$response)
     {
         /**
          * @var $repo IRepository
@@ -47,11 +39,11 @@ class Index extends OperationDispatcher implements IOperationIndex
             }
         }
 
-        $items = $this->filter($data, $items);
+        $items = $this->filter($request->getFilter(), $items);
         $itemName = $this->getOperation()->getItemName();
         $box = Expander::getExpandingBox($this->getOperation()->getMethod(), $itemName);
         $box->setData([$itemName . '_list' => $items]);
-        $box->expand($request, $this->getServerResponse($response));
+        $box->expand($this->serverRequest, $this->serverResponse);
         $box->pack();
         $expanded = $box->getValue();
         $items = $expanded[$itemName . '_list'] ?? $items;
@@ -83,34 +75,13 @@ class Index extends OperationDispatcher implements IOperationIndex
     }
 
     /**
-     * @param IResponse $response
-     *
-     * @return IServerResponse
-     */
-    protected function getServerResponse(IResponse $response): IServerResponse
-    {
-        return new ServerResponse([
-            ServerResponse::FIELD__NAME => $this->getOperation()->getName(),
-            ServerResponse::FIELD__PARAMETERS => [
-                [
-                    IParameter::FIELD__NAME => ServerResponse::PARAMETER__HTTP_RESPONSE,
-                    IParameter::FIELD__VALUE => $response->getPsrResponse(),
-                    IParameter::FIELD__TEMPLATE => ResponseInterface::class
-                ]
-            ]
-        ]);
-    }
-
-    /**
-     * @param array $jRpcData
+     * @param array $filter
      * @param IItem[] $items
      *
      * @return array
      */
-    protected function filter($jRpcData, $items)
+    protected function filter($filter, $items)
     {
-        $filter = $jRpcData[IRequest::FIELD__FILTER] ?? [];
-
         if (empty($filter)) {
             return $items;
         }

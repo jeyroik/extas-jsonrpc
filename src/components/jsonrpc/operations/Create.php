@@ -1,14 +1,13 @@
 <?php
-namespace extas\components\jsonrpc;
+namespace extas\components\jsonrpc\operations;
 
-use extas\components\jsonrpc\operations\OperationDispatcher;
 use extas\components\SystemContainer;
 use extas\interfaces\IHasName;
 use extas\interfaces\IItem;
+use extas\interfaces\jsonrpc\IRequest;
 use extas\interfaces\jsonrpc\IResponse;
 use extas\interfaces\jsonrpc\operations\IOperationCreate;
 use extas\interfaces\repositories\IRepository;
-use extas\interfaces\servers\requests\IServerRequest;
 
 /**
  * Class Create
@@ -19,12 +18,10 @@ use extas\interfaces\servers\requests\IServerRequest;
 class Create extends OperationDispatcher implements IOperationCreate
 {
     /**
-     * @param IServerRequest $request
+     * @param IRequest $request
      * @param IResponse $response
-     *
-     * @param $data
      */
-    public function __invoke(IServerRequest $request, IResponse &$response, array $data)
+    protected function dispatch(IRequest $request, IResponse &$response)
     {
         /**
          * @var $repo IRepository
@@ -32,8 +29,9 @@ class Create extends OperationDispatcher implements IOperationCreate
          */
         $repo = SystemContainer::getItem($this->getOperation()->getItemRepo());
         $itemClass = $this->getOperation()->getItemClass();
-        $item = new $itemClass($data[static::FIELD__DATA] ?? []);
+        $item = new $itemClass($request->getData());
         $exist = $repo->one([IHasName::FIELD__NAME => $item->getName()]);
+
         if ($exist || !$item->getName()) {
             $response->error(ucfirst($this->getOperation()->getItemName()) . ' already exist', 400);
         } else {

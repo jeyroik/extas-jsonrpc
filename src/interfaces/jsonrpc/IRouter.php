@@ -26,12 +26,12 @@ interface IRouter extends IItem
     public function hasOperation(string $name): bool;
 
     /**
-     * @param RequestInterface $request
-     * @param ResponseInterface $response
+     * @param RequestInterface $httpRequest
+     * @param ResponseInterface $httpResponse
      *
      * @return ResponseInterface
      */
-    public function dispatch(RequestInterface $request, ResponseInterface $response): ResponseInterface;
+    public function dispatch(RequestInterface $httpRequest, ResponseInterface $httpResponse): ResponseInterface;
 
     /**
      * @param RequestInterface $request
