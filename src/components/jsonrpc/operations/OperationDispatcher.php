@@ -38,14 +38,16 @@ abstract class OperationDispatcher extends Item implements IOperationDispatcher
          * @var $jsonRpcResponse IResponse
          */
         $jsonRpcRequest = $serverRequest->getParameter(IRequest::SUBJECT)->getValue();
-        $jsonRpcResponse = $serverResponse->getParameter(IResponse::SUBJECT)->getValue();
+        $jsonRpcResponseParam = $serverResponse->getParameter(IResponse::SUBJECT);
+        $jsonRpcResponse = $jsonRpcResponseParam->getValue();
 
         $this->serverRequest = $serverRequest;
         $this->serverResponse = $serverResponse;
 
         $this->dispatch($jsonRpcRequest, $jsonRpcResponse);
 
-        $serverResponse->setParameter(IResponse::SUBJECT, $jsonRpcResponse);
+        $jsonRpcResponseParam->setValue($jsonRpcResponse);
+        $serverResponse->setParameter(IResponse::SUBJECT, $jsonRpcResponseParam);
     }
 
     /**
