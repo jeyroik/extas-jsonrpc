@@ -25,7 +25,62 @@ Extas JsonRPC package
 
 `# curl -X POST localhost:8080/api/jsonrpc -d '{"id": "request id", "method":"operation.index"}'`
 
-# spec examples
+# spec generation
+
+This package allow to generate specs upon to `PluginInstall-`plugins*, extended from `extas\components\plugins\PluginInstallDefault`.
+
+`*` - you can reset this prefix (see below).
+
+There is extas-command for spec generation.
+
+## install command
+
+- `# vendor/bin/extas i`
+- `# vendor/bin/extas list` - command `jsonrpc` should be listed.
+
+## generate specs
+
+`# vendor/bin/extas jsonrpc -s generated.extas.json`
+
+This will generate extas-compatible configuration in ready-to-install format. 
+
+So you can install specs by
+
+`# vendor/bin/extas i`
+
+## -s --specs
+
+Define path to store generated specs.
+- Default: `CWD/specs.extas.json`
+- You can pass relative and absolute path.
+
+`CWD` - Current Working Directory.
+
+## -p --prefix
+
+Allow to set prefix for plugins searching.
+
+- Default: `PluginInstall`
+
+## -f --filter
+
+Allow to filter plugins and install just some of them.
+
+- Default: `''`
+- Example: `# vendor/bin/extas jsonrpc -f workflow` will generate specs only for plugins with `workflow` in a name.
+
+## -e --only-edge
+
+Entity name is borrowed from a `PluginInstallDefault::getPluginName(): string`.
+
+Sometimes you want to make entity name shorter and use only last word of plugin name. You can do this with the option `-e`:
+
+For example, we have plugin name `workflow schema`.
+
+- Default: `0` - generate entity name `workflow.schema`.
+- Example: `# vendor/bin/extas jsonrpc -e 1` will produce entity name `schema`.
+
+# specs examples
 
 You can find them here:
  

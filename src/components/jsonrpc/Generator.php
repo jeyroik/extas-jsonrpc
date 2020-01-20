@@ -98,7 +98,7 @@ class Generator extends Item implements IGenerator
      * @param IPluginInstallDefault $plugin
      *
      * @return array
-     * @throws 
+     * @throws
      */
     protected function generateProperties(IPluginInstallDefault $plugin): array
     {
