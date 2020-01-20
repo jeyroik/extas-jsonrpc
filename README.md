@@ -74,6 +74,7 @@ Allow to filter plugins and install just some of them.
 Entity name is borrowed from a `PluginInstallDefault::getPluginName(): string`.
 
 Sometimes you want to make entity name shorter and use only last word of plugin name. 
+
 You can do this with the option `-e`:
 
 For example, we have plugin name `workflow schema`.
