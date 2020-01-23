@@ -90,3 +90,11 @@ You can find them here:
 - `resources/index.spec.json`
 - `resources/update.spec.json`
 - `resources/delete.spec.json`
+
+# injection into json-rpc process
+
+Current package provide next stages to allow you to inject into the json-rpc process:
+- `before.run.jsonrpc` - before every json-rpc processing.
+- `before.run.jsonrpc.<method.name>`
+- `after.run.jsonrpc.<method.name>`
+- `after.run.jsonrpc` - after every json-rpc processing. 
