@@ -64,6 +64,10 @@ class Router extends Item implements IRouter
 
         try {
             if ($operation) {
+                foreach ($this->getPluginsByStage('before.run.jsonrpc') as $plugin) {
+                    $plugin($serverRequest, $serverResponse);
+                }
+
                 foreach ($this->getPluginsByStage('before.run.jsonrpc.' . $routeName) as $plugin) {
                     $plugin($serverRequest, $serverResponse);
                 }
@@ -74,6 +78,10 @@ class Router extends Item implements IRouter
                 $dispatcher($serverRequest, $serverResponse);
 
                 foreach ($this->getPluginsByStage('after.run.jsonrpc.' . $routeName) as $plugin) {
+                    $plugin($serverRequest, $serverResponse);
+                }
+
+                foreach ($this->getPluginsByStage('after.run.jsonrpc') as $plugin) {
                     $plugin($serverRequest, $serverResponse);
                 }
             } else {
