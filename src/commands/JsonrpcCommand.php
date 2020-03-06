@@ -4,7 +4,6 @@ namespace extas\commands;
 use extas\components\jsonrpc\Generator;
 use extas\components\jsonrpc\Crawler;
 
-use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -15,7 +14,7 @@ use Symfony\Component\Console\Output\OutputInterface;
  * @package extas\commands
  * @author jeyroik@gmail.com
  */
-class JsonrpcCommand extends Command
+class JsonrpcCommand extends DefaultCommand
 {
     protected const VERSION = '0.1.0';
     protected const OPTION__PREFIX = 'prefix';
@@ -24,6 +23,9 @@ class JsonrpcCommand extends Command
     protected const OPTION__ONLY_EDGE = 'only-edge';
 
     protected const DEFAULT__PREFIX = 'PluginInstall';
+
+    protected string $commandVersion = '0.2.0';
+    protected string $commandTitle = 'Extas JSON-RPC spec generator';
 
     /**
      * Configure the current command.
@@ -75,21 +77,11 @@ class JsonrpcCommand extends Command
     /**
      * @param InputInterface $input
      * @param OutputInterface $output
-     *
-     * @return int|mixed
-     * @throws
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function dispatch(InputInterface $input, OutputInterface &$output): void
     {
-        $start = microtime(true);
-
         $prefix = $input->getOption(static::OPTION__PREFIX);
         $path = $input->getOption(static::OPTION__SPECS_PATH);
-
-        $output->writeln([
-            'Extas JSON-RPC spec generator v' . static::VERSION,
-            '=========================='
-        ]);
 
         $crawler = new Crawler();
         $plugins = $crawler->crawlPlugins(getcwd(), $prefix);
@@ -99,10 +91,5 @@ class JsonrpcCommand extends Command
             Generator::FIELD__ONLY_EDGE => $input->getOption(static::OPTION__ONLY_EDGE)
         ]);
         $serviceInstaller->generate($plugins, $path);
-
-        $end = microtime(true) - $start;
-        $output->writeln(['<info>Finished in ' . $end . ' s.</info>']);
-
-        return 0;
     }
 }

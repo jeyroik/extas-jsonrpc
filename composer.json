@@ -6,7 +6,8 @@
     "jeyroik/extas-installer": "*",
     "jeyroik/extas-expands": "*",
     "jeyroik/extas-protocols": "*",
-    "jeyroik/extas-servers": "*"
+    "jeyroik/extas-servers": "*",
+    "symfony/console": "*"
   },
   "autoload": {
     "psr-4": {

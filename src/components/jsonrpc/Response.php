@@ -14,7 +14,7 @@ use Psr\Http\Message\ResponseInterface;
  */
 class Response extends Item implements IResponse
 {
-    protected $hasError = false;
+    protected bool $hasError = false;
 
     /**
      * @param ResponseInterface $response

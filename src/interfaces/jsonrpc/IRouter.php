@@ -28,10 +28,15 @@ interface IRouter extends IItem
     /**
      * @param RequestInterface $httpRequest
      * @param ResponseInterface $httpResponse
+     * @param IRequest $jsonRpcRequest
      *
      * @return ResponseInterface
      */
-    public function dispatch(RequestInterface $httpRequest, ResponseInterface $httpResponse): ResponseInterface;
+    public function dispatch(
+        RequestInterface $httpRequest,
+        ResponseInterface $httpResponse,
+        IRequest $jsonRpcRequest = null
+    ): ResponseInterface;
 
     /**
      * @param RequestInterface $request

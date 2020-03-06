@@ -20,12 +20,12 @@ abstract class OperationDispatcher extends Item implements IOperationDispatcher
     /**
      * @var IServerRequest
      */
-    protected $serverRequest = null;
+    protected ?IServerRequest $serverRequest = null;
 
     /**
      * @var IServerResponse
      */
-    protected $serverResponse = null;
+    protected ?IServerResponse $serverResponse = null;
 
     /**
      * @param IServerRequest $serverRequest

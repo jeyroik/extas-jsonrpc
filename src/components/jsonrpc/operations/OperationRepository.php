@@ -12,9 +12,9 @@ use extas\interfaces\jsonrpc\operations\IOperationRepository;
  */
 class OperationRepository extends Repository implements IOperationRepository
 {
-    protected $idAs = '';
-    protected $scope = 'extas';
-    protected $pk = Operation::FIELD__NAME;
-    protected $name = 'jsonrpc_routes';
-    protected $itemClass = Operation::class;
+    protected string $idAs = '';
+    protected string $scope = 'extas';
+    protected string $pk = Operation::FIELD__NAME;
+    protected string $name = 'jsonrpc_routes';
+    protected string $itemClass = Operation::class;
 }

@@ -12,9 +12,9 @@ use extas\interfaces\jsonrpc\operations\IOperationRepository;
  */
 class PluginInstallJsonRpcOperations extends PluginInstallDefault
 {
-    protected $selfRepositoryClass = IOperationRepository::class;
-    protected $selfUID = Operation::FIELD__NAME;
-    protected $selfSection = 'jsonrpc_operations';
-    protected $selfName = 'jsonrpc operation';
-    protected $selfItemClass = Operation::class;
+    protected string $selfRepositoryClass = IOperationRepository::class;
+    protected string $selfUID = Operation::FIELD__NAME;
+    protected string $selfSection = 'jsonrpc_operations';
+    protected string $selfName = 'jsonrpc operation';
+    protected string $selfItemClass = Operation::class;
 }

@@ -45,16 +45,21 @@ class Router extends Item implements IRouter
     /**
      * @param RequestInterface $httpRequest
      * @param ResponseInterface $httpResponse
+     * @param IRequest $jsonRpcRequest
      *
      * @return ResponseInterface
      */
-    public function dispatch(RequestInterface $httpRequest, ResponseInterface $httpResponse): ResponseInterface
+    public function dispatch(
+        RequestInterface $httpRequest,
+        ResponseInterface $httpResponse,
+        IRequest $jsonRpcRequest = null
+    ): ResponseInterface
     {
         /**
          * @var $repo IOperationRepository
          * @var $operation IOperation
          */
-        $jsonRpcRequest = Request::fromHttp($httpRequest);
+        $jsonRpcRequest = $jsonRpcRequest ?: Request::fromHttp($httpRequest);
         $routeName = $jsonRpcRequest->getMethod(static::ROUTE__DEFAULT);
         $repo = SystemContainer::getItem(IOperationRepository::class);
         $operation = $repo->one([IOperation::FIELD__NAME => $routeName]);
