@@ -3,7 +3,7 @@
   "description": "Extas jsonrpc package",
   "require": {
     "slim/slim": "^3.0",
-    "jeyroik/extas-installer": "1.*",
+    "jeyroik/extas-installer": "2.*",
     "jeyroik/extas-expands": "1.*",
     "jeyroik/extas-protocols": "1.*",
     "jeyroik/extas-servers": "1.*",
