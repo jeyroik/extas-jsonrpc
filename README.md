@@ -7,8 +7,8 @@ Extas JsonRPC package
 ## copy default classes container
 
 ```
-# cp vendor/jeyroik/extas-foundation/resources/container.dist.php src/confgis/container.php
-# cp vendor/jeyroik/extas-foundation/resources/container.dist.json src/confgis/container.json
+# cp vendor/jeyroik/extas-foundation/resources/container.dist.php src/configs/container.php
+# cp vendor/jeyroik/extas-foundation/resources/container.dist.json src/configs/container.json
 ```
 
 ## install jsonrpc plugin and default operation
