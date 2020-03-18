@@ -35,10 +35,11 @@ class Generator extends Item implements IGenerator
         foreach ($plugins as $plugin) {
             $properties = $this->generateProperties($plugin);
             $parts = explode(' ', $plugin->getPluginName());
-            $dotted = $this->getOnlyEdge() ? array_pop($parts) : implode('.', $parts);
+            $fullName = implode('.', $parts);
+            $dotted = $this->getOnlyEdge() ? array_pop($parts) : $fullName;
 
             if ($filter = $this->getFilter()) {
-                if(strpos($dotted, $filter) === false) {
+                if(strpos($fullName, $filter) === false) {
                     continue;
                 }
             }
