@@ -7,7 +7,8 @@
     "jeyroik/extas-expands": "1.*",
     "jeyroik/extas-protocols": "1.*",
     "jeyroik/extas-servers": "1.*",
-    "symfony/console": "5.*"
+    "symfony/console": "5.*",
+    "vlucas/phpdotenv": "^3.4"
   },
   "autoload": {
     "psr-4": {
