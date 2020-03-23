@@ -67,10 +67,11 @@ interface IResponse extends IItem
     /**
      * @param string $message
      * @param int $code
+     * @param array $data
      *
      * @return IResponse
      */
-    public function error(string $message, int $code): IResponse;
+    public function error(string $message, int $code, array $data = []): IResponse;
 
     /**
      * @param mixed $data
