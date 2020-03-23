@@ -30,13 +30,21 @@ class Create extends OperationDispatcher implements IOperationCreate
         $repo = SystemContainer::getItem($this->getOperation()->getItemRepo());
         $itemClass = $this->getOperation()->getItemClass();
         $item = new $itemClass($request->getData());
-        $exist = $repo->one([IHasName::FIELD__NAME => $item->getName()]);
-
-        if ($exist || !$item->getName()) {
-            $response->error(ucfirst($this->getOperation()->getItemName()) . ' already exist', 400);
+        $pkMethod = 'get' . ucfirst($repo->getPk());
+        if (!method_exists($item, $pkMethod)) {
+            $response->error(
+                'Item has not method "' . $pkMethod . '"',
+                500
+            );
         } else {
-            $repo->create($item);
-            $response->success($item->__toArray());
+            $exist = $repo->one([$repo->getPk() => $item->$pkMethod()]);
+
+            if ($exist || !$item->$pkMethod()) {
+                $response->error(ucfirst($this->getOperation()->getItemName()) . ' already exist', 400);
+            } else {
+                $repo->create($item);
+                $response->success($item->__toArray());
+            }
         }
     }
 

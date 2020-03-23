@@ -30,18 +30,26 @@ class Update extends OperationDispatcher implements IOperationUpdate
         $repo = SystemContainer::getItem($this->getOperation()->getItemRepo());
         $itemClass = $this->getOperation()->getItemClass();
         $item = new $itemClass($request->getData());
-        $exist = $repo->one([IHasName::FIELD__NAME => $item->getName()]);
-
-        if (!$exist) {
-            $response->error('Unknown entity "' . $this->getOperation()->getItemName() . '"', 404);
+        $pkMethod = 'get' . ucfirst($repo->getPk());
+        if (!method_exists($item, $pkMethod)) {
+            $response->error(
+                'Item has not primary key getter method "' . $pkMethod . '"',
+                500
+            );
         } else {
-            foreach ($exist as $field => $value) {
-                if (!isset($item[$field])) {
-                    $item[$field] = $value;
+            $exist = $repo->one([IHasName::FIELD__NAME => $item->$pkMethod()]);
+
+            if (!$exist) {
+                $response->error('Unknown entity "' . $this->getOperation()->getItemName() . '"', 404);
+            } else {
+                foreach ($exist as $field => $value) {
+                    if (!isset($item[$field])) {
+                        $item[$field] = $value;
+                    }
                 }
+                $repo->update($item);
+                $response->success([$item->__toArray()]);
             }
-            $repo->update($item);
-            $response->success([$item->__toArray()]);
         }
     }
 
