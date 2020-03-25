@@ -39,10 +39,10 @@ class Create extends OperationDispatcher implements IOperationCreate
         } else {
             $exist = $repo->one([$repo->getPk() => $item->$pkMethod()]);
 
-            if ($exist || (($repo->getPk() != $repo->getIdAs()) && !$item->$pkMethod())) {
+            if ($exist || !$item->$pkMethod()) {
                 $response->error(ucfirst($this->getOperation()->getItemName()) . ' already exist', 400);
             } else {
-                $repo->create($item);
+                $item = $repo->create($item);
                 $response->success($item->__toArray());
             }
         }
