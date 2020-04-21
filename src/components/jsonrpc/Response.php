@@ -125,6 +125,7 @@ class Response extends Item implements IResponse
         $response->getBody()->write(json_encode(
             [
                 static::RESPONSE__ID => $this->getData()[IRequest::FIELD__ID] ?? '',
+                static::RESPONSE__VERSION => '2.0',
                 static::RESPONSE__ERROR => [
                     static::RESPONSE__ERROR_CODE => $code,
                     static::RESPONSE__ERROR_DATA => $data,
