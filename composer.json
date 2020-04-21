@@ -6,7 +6,7 @@
     "jeyroik/extas-installer": "2.*",
     "jeyroik/extas-expands": "1.*",
     "jeyroik/extas-protocols": "1.*",
-    "jeyroik/extas-servers": "1.*",
+    "jeyroik/extas-servers": "2.*",
     "symfony/console": "5.*",
     "vlucas/phpdotenv": "^3.4"
   },

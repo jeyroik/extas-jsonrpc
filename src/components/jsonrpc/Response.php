@@ -106,6 +106,7 @@ class Response extends Item implements IResponse
             ]
         ));
 
+        $this->setData($data);
         $this->setPsrResponse($response);
 
         return $this;
@@ -132,6 +133,7 @@ class Response extends Item implements IResponse
             ]
         ));
 
+        $this->setData($data);
         $this->setPsrResponse($response);
 
         $this->hasError = true;
