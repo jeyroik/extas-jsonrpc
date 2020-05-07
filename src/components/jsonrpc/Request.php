@@ -23,7 +23,7 @@ class Request extends Item implements IRequest
      */
     public static function fromHttp(RequestInterface $request)
     {
-        return new static(json_decode($request->getBody()->getContents(), true));
+        return new static(json_decode($request->getBody(), true));
     }
 
     /**

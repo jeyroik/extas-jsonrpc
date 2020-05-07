@@ -42,6 +42,8 @@ class AppTest extends TestCase
 
         $this->extRepo = new ExtensionRepository();
         $this->opRepo = new OperationRepository();
+
+        SystemContainer::addItem(IOperationRepository::class, OperationRepository::class);
         SystemContainer::addItem('jsonRpcOperationRepository', OperationRepository::class);
         SystemContainer::addItem('protocolRepository', ProtocolRepository::class);
     }
@@ -75,7 +77,8 @@ class AppTest extends TestCase
             Extension::FIELD__SUBJECT => '*',
             Extension::FIELD__METHODS => [
                 'jsonRpcOperationRepository',
-                'protocolRepository'
+                'protocolRepository',
+                IOperationRepository::class
             ]
         ]));
 
@@ -92,9 +95,12 @@ class AppTest extends TestCase
                     [
                         IResponse::RESPONSE__ID => '2f5d0719-5b82-4280-9b3b-10f23aff226b',
                         IResponse::RESPONSE__VERSION => IResponse::VERSION_CURRENT,
-                        IResponse::RESPONSE__RESULT => [$opData]
+                        IResponse::RESPONSE__RESULT => [
+                            'items' => [$opData],
+                            'total' => 1
+                        ]
                     ],
-                    json_decode($response->getBody()->getContents(), true)
+                    json_decode($response->getBody(), true)
                 );
             }
         }
