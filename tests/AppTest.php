@@ -85,7 +85,10 @@ class AppTest extends TestCase
                     [
                         IResponse::RESPONSE__ID => '2f5d0719-5b82-4280-9b3b-10f23aff226b',
                         IResponse::RESPONSE__VERSION => IResponse::VERSION_CURRENT,
-                        IResponse::RESPONSE__RESULT => []
+                        IResponse::RESPONSE__RESULT => [
+                            'items' => [$this->opData],
+                            'total' => 1
+                        ]
                     ],
                     json_decode($response->getBody(), true)
                 );
