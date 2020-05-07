@@ -46,7 +46,7 @@ class GeneratorTest extends TestCase
         $mustBe = include 'specs.php';
         $this->assertEquals(
             $mustBe,
-            $generator->generationResult
+            $generator->generationResult['jsonrpc_operations']
         );
     }
 }
