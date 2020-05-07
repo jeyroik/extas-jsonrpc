@@ -33,6 +33,15 @@ class AppTest extends TestCase
 {
     protected IRepository $extRepo;
     protected IRepository $opRepo;
+    protected array $opData = [
+        Operation::FIELD__NAME => 'jsonrpc.operation.index',
+        Operation::FIELD__CLASS => Index::class,
+        Operation::FIELD__METHOD => 'index',
+        Operation::FIELD__SPEC => [],
+        Operation::FIELD__ITEM_CLASS => Operation::class,
+        Operation::FIELD__ITEM_REPO => IOperationRepository::class,
+        Operation::FIELD__ITEM_NAME => 'jsonrpc operation'
+    ];
 
     protected function setUp(): void
     {
@@ -61,26 +70,7 @@ class AppTest extends TestCase
 
     public function testApiJsonRpc()
     {
-        $opData = [
-            Operation::FIELD__NAME => 'jsonrpc.operation.index',
-            Operation::FIELD__CLASS => Index::class,
-            Operation::FIELD__METHOD => 'index',
-            Operation::FIELD__SPEC => [],
-            Operation::FIELD__ITEM_CLASS => Operation::class,
-            Operation::FIELD__ITEM_REPO => IOperationRepository::class,
-            Operation::FIELD__ITEM_NAME => 'jsonrpc operation'
-        ];
-        $this->opRepo->create(new Operation($opData));
-        $this->extRepo->create(new Extension([
-            Extension::FIELD__CLASS => ExtensionRepositoryGet::class,
-            Extension::FIELD__INTERFACE => IExtensionRepositoryGet::class,
-            Extension::FIELD__SUBJECT => '*',
-            Extension::FIELD__METHODS => [
-                'jsonRpcOperationRepository',
-                'protocolRepository',
-                IOperationRepository::class
-            ]
-        ]));
+        $this->initOperationEnv();
 
         $app = App::create();
         $routes = $app->getRouteCollector()->getRoutes();
@@ -95,8 +85,33 @@ class AppTest extends TestCase
                     [
                         IResponse::RESPONSE__ID => '2f5d0719-5b82-4280-9b3b-10f23aff226b',
                         IResponse::RESPONSE__VERSION => IResponse::VERSION_CURRENT,
+                        IResponse::RESPONSE__RESULT => []
+                    ],
+                    json_decode($response->getBody(), true)
+                );
+            }
+        }
+    }
+
+    public function testSpecs()
+    {
+        $this->initOperationEnv();
+
+        $app = App::create();
+        $routes = $app->getRouteCollector()->getRoutes();
+        foreach ($routes as $route) {
+            if ($route->getPattern() == '/specs') {
+                $dispatcher = $route->getCallable();
+                /**
+                 * @var ResponseInterface $response
+                 */
+                $response = $dispatcher($this->getRequest(), $this->getResponse(), []);
+                $this->assertEquals(
+                    [
+                        IResponse::RESPONSE__ID => '2f5d0719-5b82-4280-9b3b-10f23aff226b',
+                        IResponse::RESPONSE__VERSION => IResponse::VERSION_CURRENT,
                         IResponse::RESPONSE__RESULT => [
-                            'items' => [$opData],
+                            'items' => [$this->opData],
                             'total' => 1
                         ]
                     ],
@@ -104,6 +119,25 @@ class AppTest extends TestCase
                 );
             }
         }
+    }
+
+    /**
+     * Create operation.
+     * Create extension.
+     */
+    protected function initOperationEnv(): void
+    {
+        $this->opRepo->create(new Operation($this->opData));
+        $this->extRepo->create(new Extension([
+            Extension::FIELD__CLASS => ExtensionRepositoryGet::class,
+            Extension::FIELD__INTERFACE => IExtensionRepositoryGet::class,
+            Extension::FIELD__SUBJECT => '*',
+            Extension::FIELD__METHODS => [
+                'jsonRpcOperationRepository',
+                'protocolRepository',
+                IOperationRepository::class
+            ]
+        ]));
     }
 
     /**
