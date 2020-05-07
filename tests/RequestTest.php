@@ -38,7 +38,7 @@ class RequestTest extends TestCase
         $this->assertEquals(['default'], $request->getFilter(['default']));
 
         $request->setParams(['id' => '']);
-        $this->assertEmpty($request->getParams(['default']));
+        $this->assertEquals(['id' => ''], $request->getParams(['default']));
 
         $request->setFilter(['name' => ['$eq' => 'test']]);
         $this->assertEquals(['name' => ['$eq' => 'test']], $request->getFilter());

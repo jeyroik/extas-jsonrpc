@@ -24,13 +24,33 @@ return [
                 "properties" => [
                     "data" => [
                         "type" => "object",
-                        "properties" => []
+                        "properties" => [
+                            "spec" => ["type" => "array"],
+                            "item_name" => ["type" => "string"],
+                            "item_class" => ["type" => "string"],
+                            "item_repo" => ["type" => "string"],
+                            "method" => ["type" => "string"],
+                            "name" => ["type" => "string"],
+                            "title" => ["type" => "string"],
+                            "description" => ["type" => "string"],
+                            "class" => ["type" => "string"]
+                        ]
                     ]
                 ]
             ],
             "response" => [
                 "type" => "object",
-                "properties" => []
+                "properties" => [
+                    "spec" => ["type" => "array"],
+                    "item_name" => ["type" => "string"],
+                    "item_class" => ["type" => "string"],
+                    "item_repo" => ["type" => "string"],
+                    "method" => ["type" => "string"],
+                    "name" => ["type" => "string"],
+                    "title" => ["type" => "string"],
+                    "description" => ["type" => "string"],
+                    "class" => ["type" => "string"]
+                ]
             ]
         ]
     ],
@@ -57,7 +77,17 @@ return [
                 "properties" => [
                     "items" => [
                         "type" => "object",
-                        "properties" => []
+                        "properties" => [
+                            "spec" => ["type" => "array"],
+                            "item_name" => ["type" => "string"],
+                            "item_class" => ["type" => "string"],
+                            "item_repo" => ["type" => "string"],
+                            "method" => ["type" => "string"],
+                            "name" => ["type" => "string"],
+                            "title" => ["type" => "string"],
+                            "description" => ["type" => "string"],
+                            "class" => ["type" => "string"]
+                        ]
                     ],
                     "total" => [
                         "type" => "number"
@@ -80,13 +110,33 @@ return [
                 "properties" => [
                     "data" => [
                         "type" => "object",
-                        "properties" => []
+                        "properties" => [
+                            "spec" => ["type" => "array"],
+                            "item_name" => ["type" => "string"],
+                            "item_class" => ["type" => "string"],
+                            "item_repo" => ["type" => "string"],
+                            "method" => ["type" => "string"],
+                            "name" => ["type" => "string"],
+                            "title" => ["type" => "string"],
+                            "description" => ["type" => "string"],
+                            "class" => ["type" => "string"]
+                        ]
                     ]
                 ]
             ],
             "response" => [
                 "type" => "object",
-                "properties" => []
+                "properties" => [
+                    "spec" => ["type" => "array"],
+                    "item_name" => ["type" => "string"],
+                    "item_class" => ["type" => "string"],
+                    "item_repo" => ["type" => "string"],
+                    "method" => ["type" => "string"],
+                    "name" => ["type" => "string"],
+                    "title" => ["type" => "string"],
+                    "description" => ["type" => "string"],
+                    "class" => ["type" => "string"]
+                ]
             ]
         ]
     ],[
@@ -104,13 +154,33 @@ return [
                 "properties" => [
                     "data" => [
                         "type" => "object",
-                        "properties" => []
+                        "properties" => [
+                            "spec" => ["type" => "array"],
+                            "item_name" => ["type" => "string"],
+                            "item_class" => ["type" => "string"],
+                            "item_repo" => ["type" => "string"],
+                            "method" => ["type" => "string"],
+                            "name" => ["type" => "string"],
+                            "title" => ["type" => "string"],
+                            "description" => ["type" => "string"],
+                            "class" => ["type" => "string"]
+                        ]
                     ]
                 ]
             ],
             "response" => [
                 "type" => "object",
-                "properties" => []
+                "properties" => [
+                    "spec" => ["type" => "array"],
+                    "item_name" => ["type" => "string"],
+                    "item_class" => ["type" => "string"],
+                    "item_repo" => ["type" => "string"],
+                    "method" => ["type" => "string"],
+                    "name" => ["type" => "string"],
+                    "title" => ["type" => "string"],
+                    "description" => ["type" => "string"],
+                    "class" => ["type" => "string"]
+                ]
             ]
         ]
     ],
