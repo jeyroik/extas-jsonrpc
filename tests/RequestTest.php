@@ -5,8 +5,9 @@ use Dotenv\Dotenv;
 use extas\components\jsonrpc\Request;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\RequestInterface;
-use Slim\Factory\ServerRequestCreatorFactory;
+use Slim\Psr7\Headers;
 use Slim\Psr7\Stream;
+use Slim\Psr7\Uri;
 
 /**
  * Class RequestTest
@@ -56,10 +57,15 @@ class RequestTest extends TestCase
      */
     protected function getPsrRequest(): RequestInterface
     {
-        $creator = ServerRequestCreatorFactory::create();
-        $request = $creator->createServerRequestFromGlobals();
-        $request->withBody(new Stream(fopen(getcwd() . '/tests/request.json', 'r')));
-
-        return $request;
+        return new \Slim\Psr7\Request(
+            'GET',
+            new Uri('http', 'localhost', 80, '/', 'test2=ok'),
+            new Headers([
+                'Content-type' => 'application/json'
+            ]),
+            [],
+            [],
+            new Stream(fopen(getcwd() . '/tests/request.json', 'r'))
+        );
     }
 }
