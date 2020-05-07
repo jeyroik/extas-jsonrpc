@@ -3,6 +3,7 @@ namespace extas\components\jsonrpc;
 
 use extas\components\Plugins;
 use extas\interfaces\jsonrpc\IRouter;
+use extas\interfaces\stages\IStageJsonRpcInit;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseFactoryInterface;
@@ -59,7 +60,10 @@ class App extends AppFactory
             return static::getRouter($request, $response, $args)->getSpecs();
         });
 
-        foreach (Plugins::byStage('extas.jsonrpc.init') as $plugin) {
+        foreach (Plugins::byStage(IStageJsonRpcInit::NAME) as $plugin) {
+            /**
+             * @var IStageJsonRpcInit $plugin
+             */
             $plugin($app);
         }
 

@@ -9,12 +9,15 @@ use extas\components\jsonrpc\App;
 use extas\components\jsonrpc\operations\Index;
 use extas\components\jsonrpc\operations\Operation;
 use extas\components\jsonrpc\operations\OperationRepository;
+use extas\components\plugins\Plugin;
+use extas\components\plugins\PluginRepository;
 use extas\components\protocols\ProtocolRepository;
 use extas\components\SystemContainer;
 use extas\interfaces\extensions\IExtensionRepositoryGet;
 use extas\interfaces\jsonrpc\IResponse;
 use extas\interfaces\jsonrpc\operations\IOperationRepository;
 use extas\interfaces\repositories\IRepository;
+use extas\interfaces\stages\IStageJsonRpcInit;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -33,6 +36,7 @@ class AppTest extends TestCase
 {
     protected IRepository $extRepo;
     protected IRepository $opRepo;
+    protected IRepository $pluginRepo;
     protected array $opData = [
         Operation::FIELD__NAME => 'jsonrpc.operation.index',
         Operation::FIELD__CLASS => Index::class,
@@ -50,6 +54,7 @@ class AppTest extends TestCase
         $env->load();
 
         $this->extRepo = new ExtensionRepository();
+        $this->pluginRepo = new PluginRepository();
         $this->opRepo = new OperationRepository();
 
         SystemContainer::addItem(IOperationRepository::class, OperationRepository::class);
@@ -59,6 +64,8 @@ class AppTest extends TestCase
 
     protected function tearDown(): void
     {
+        $this->extRepo->delete([Extension::FIELD__CLASS => ExtensionRepositoryGet::class]);
+        $this->pluginRepo->delete([Plugin::FIELD__CLASS => PluginEmpty::class]);
         $this->opRepo->delete([Operation::FIELD__NAME => 'jsonrpc.operation.index']);
     }
 
@@ -126,6 +133,7 @@ class AppTest extends TestCase
     /**
      * Create operation.
      * Create extension.
+     * Create plugin.
      */
     protected function initOperationEnv(): void
     {
@@ -139,6 +147,10 @@ class AppTest extends TestCase
                 'protocolRepository',
                 IOperationRepository::class
             ]
+        ]));
+        $this->pluginRepo->create(new Plugin([
+            Plugin::FIELD__CLASS => PluginEmpty::class,
+            Plugin::FIELD__STAGE => IStageJsonRpcInit::NAME
         ]));
     }
 
