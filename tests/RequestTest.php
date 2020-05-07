@@ -6,7 +6,7 @@ use extas\components\jsonrpc\Request;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\RequestInterface;
 use Slim\Factory\ServerRequestCreatorFactory;
-use Slim\Tests\Mocks\MockStream;
+use Slim\Psr7\Stream;
 
 /**
  * Class RequestTest
@@ -58,7 +58,7 @@ class RequestTest extends TestCase
     {
         $creator = ServerRequestCreatorFactory::create();
         $request = $creator->createServerRequestFromGlobals();
-        $request->withBody(new MockStream(fopen(getcwd() . '/tests/request.json', 'r')));
+        $request->withBody(new Stream(fopen(getcwd() . '/tests/request.json', 'r')));
 
         return $request;
     }
