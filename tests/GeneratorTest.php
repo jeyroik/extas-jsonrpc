@@ -52,5 +52,7 @@ class GeneratorTest extends TestCase
 
         $generator->generate($plugins, '');
         $this->assertEmpty($generator->generationResult['jsonrpc_operations']);
+
+        unlink(getcwd() . '/tests/generated.specs.json');
     }
 }

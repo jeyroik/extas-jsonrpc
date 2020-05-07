@@ -28,5 +28,8 @@ class CrawlerTest extends TestCase
         $this->assertCount(1, $plugins);
         $plugin = array_shift($plugins);
         $this->assertTrue($plugin instanceof PluginInstallJsonRpcOperations);
+
+        $plugins = $crawler->crawlPlugins(getcwd() . '/tests', 'PluginInstall');
+        $this->assertEmpty($plugins);
     }
 }
