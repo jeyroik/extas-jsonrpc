@@ -3,8 +3,15 @@ namespace extas\components\jsonrpc;
 
 use extas\components\Plugins;
 use extas\interfaces\jsonrpc\IRouter;
+use Psr\Container\ContainerInterface;
 use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
+use Slim\Factory\AppFactory;
+use Slim\Interfaces\CallableResolverInterface;
+use Slim\Interfaces\MiddlewareDispatcherInterface;
+use Slim\Interfaces\RouteCollectorInterface;
+use Slim\Interfaces\RouteResolverInterface;
 
 /**
  * Class App
@@ -12,30 +19,51 @@ use Psr\Http\Message\ResponseInterface;
  * @package extas\components\jsonrpc
  * @author jeyroik@gmail.com
  */
-class App extends \Slim\App
+class App extends AppFactory
 {
     /**
-     * App constructor.
-     * @param array $container
+     * @param ResponseFactoryInterface|null $responseFactory
+     * @param ContainerInterface|null $container
+     * @param CallableResolverInterface|null $callableResolver
+     * @param RouteCollectorInterface|null $routeCollector
+     * @param RouteResolverInterface|null $routeResolver
+     * @param MiddlewareDispatcherInterface|null $middlewareDispatcher
+     * @return \Slim\App
      */
-    public function __construct($container = [])
+    public static function create(
+        ?ResponseFactoryInterface $responseFactory = null,
+        ?ContainerInterface $container = null,
+        ?CallableResolverInterface $callableResolver = null,
+        ?RouteCollectorInterface $routeCollector = null,
+        ?RouteResolverInterface $routeResolver = null,
+        ?MiddlewareDispatcherInterface $middlewareDispatcher = null
+    ): \Slim\App
     {
-        parent::__construct($container);
+        $app = parent::create(
+            $responseFactory,
+            $container,
+            $callableResolver,
+            $routeCollector,
+            $routeResolver,
+            $middlewareDispatcher
+        );
 
-        $this->post(
+        $app->post(
             '/api/jsonrpc',
             function (RequestInterface $request, ResponseInterface $response, array $args) {
-                return $this->getRouter($request, $response, $args)->dispatch();
+                return static::getRouter($request, $response, $args)->dispatch();
             }
         );
 
-        $this->any('/specs', function (RequestInterface $request, ResponseInterface $response, array $args)  {
-            return $this->getRouter($request, $response, $args)->getSpecs();
+        $app->any('/specs', function (RequestInterface $request, ResponseInterface $response, array $args)  {
+            return static::getRouter($request, $response, $args)->getSpecs();
         });
 
         foreach (Plugins::byStage('extas.jsonrpc.init') as $plugin) {
-            $plugin($this);
+            $plugin($app);
         }
+
+        return $app;
     }
 
     /**
@@ -44,7 +72,7 @@ class App extends \Slim\App
      * @param array $args
      * @return IRouter
      */
-    protected function getRouter(RequestInterface $request, ResponseInterface $response, array $args = []): IRouter
+    protected static function getRouter(RequestInterface $request, ResponseInterface $response, array $args = []): IRouter
     {
         return new Router([
             Router::FIELD__PSR_REQUEST => $request,

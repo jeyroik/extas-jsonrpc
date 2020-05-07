@@ -8,6 +8,5 @@ if (is_file(APP__ROOT . '/.env')) {
     $dotenv->load();
 }
 
-$app = new \extas\components\jsonrpc\App();
-
+$app = \extas\components\jsonrpc\App::create();
 $app->run();

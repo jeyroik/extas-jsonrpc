@@ -22,6 +22,7 @@ class AppTest extends TestCase
 
     public function testConstructing()
     {
-        $this->assertCount(2, (new App())->getContainer()->get('router')->getRoutes());
+        $app = App::create();
+        $this->assertCount(2, $app->getContainer()->get('router')->getRoutes());
     }
 }
