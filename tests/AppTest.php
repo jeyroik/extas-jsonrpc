@@ -9,6 +9,7 @@ use extas\components\jsonrpc\App;
 use extas\components\jsonrpc\operations\Index;
 use extas\components\jsonrpc\operations\Operation;
 use extas\components\jsonrpc\operations\OperationRepository;
+use extas\components\protocols\ProtocolRepository;
 use extas\components\SystemContainer;
 use extas\interfaces\extensions\IExtensionRepositoryGet;
 use extas\interfaces\jsonrpc\IResponse;
@@ -42,6 +43,7 @@ class AppTest extends TestCase
         $this->extRepo = new ExtensionRepository();
         $this->opRepo = new OperationRepository();
         SystemContainer::addItem('jsonRpcOperationRepository', OperationRepository::class);
+        SystemContainer::addItem('protocolRepository', ProtocolRepository::class);
     }
 
     protected function tearDown(): void
@@ -71,7 +73,10 @@ class AppTest extends TestCase
             Extension::FIELD__CLASS => ExtensionRepositoryGet::class,
             Extension::FIELD__INTERFACE => IExtensionRepositoryGet::class,
             Extension::FIELD__SUBJECT => '*',
-            Extension::FIELD__METHODS => ['jsonRpcOperationRepository']
+            Extension::FIELD__METHODS => [
+                'jsonRpcOperationRepository',
+                'protocolRepository'
+            ]
         ]));
 
         $app = App::create();
