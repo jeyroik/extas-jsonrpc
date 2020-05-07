@@ -55,6 +55,8 @@ trait THasPsrResponse
                 ]
             ]
         ));
+
+        return $response;
     }
 
     /**
