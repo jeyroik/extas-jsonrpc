@@ -1,13 +1,16 @@
 <?php
-namespace unknown;
+namespace tests;
 
 /**
- * Class PluginInstallMysteryOrSomethingElse
+ * Class PluginInstallMystery
  *
  * @package unknown
  * @author jeyroik@gmail.com
  */
-class PluginInstallMysteryOrSomethingElse
+class PluginInstallMystery
 {
-
+    public function __construct()
+    {
+        throw new \Exception('Mystery is here!');
+    }
 }
