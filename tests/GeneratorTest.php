@@ -31,16 +31,14 @@ class GeneratorTest extends TestCase
             protected function exportGeneratedData(string $path): void
             {
                 $this->generationResult = $this->result;
+                parent::exportGeneratedData(getcwd() . '/tests/generated.specs.json');
             }
         };
 
         $crawler = new Crawler();
+        $plugins = $crawler->crawlPlugins(getcwd() . '/src/components', 'PluginInstall');
 
-        $isDone = $generator->generate(
-            $crawler->crawlPlugins(getcwd() . '/src/components', 'PluginInstall'),
-            ''
-        );
-
+        $isDone = $generator->generate($plugins, '');
         $this->assertTrue($isDone);
 
         $mustBe = include 'specs.php';
@@ -48,5 +46,11 @@ class GeneratorTest extends TestCase
             $mustBe,
             $generator->generationResult['jsonrpc_operations']
         );
+
+        $generator->setFilter('unknown');
+        $generator->setOnlyEdge(false);
+
+        $generator->generate($plugins, '');
+        $this->assertEmpty($generator->generationResult['jsonrpc_operations']);
     }
 }
