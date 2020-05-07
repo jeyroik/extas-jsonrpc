@@ -2,11 +2,15 @@
 namespace tests;
 
 use Dotenv\Dotenv;
+use extas\components\extensions\Extension;
+use extas\components\extensions\ExtensionRepository;
+use extas\components\extensions\ExtensionRepositoryGet;
 use extas\components\jsonrpc\App;
 use extas\components\jsonrpc\operations\Index;
 use extas\components\jsonrpc\operations\Operation;
 use extas\components\jsonrpc\operations\OperationRepository;
 use extas\components\SystemContainer;
+use extas\interfaces\extensions\IExtensionRepositoryGet;
 use extas\interfaces\jsonrpc\IResponse;
 use extas\interfaces\jsonrpc\operations\IOperationRepository;
 use extas\interfaces\repositories\IRepository;
@@ -26,6 +30,7 @@ use Slim\Psr7\Uri;
  */
 class AppTest extends TestCase
 {
+    protected IRepository $extRepo;
     protected IRepository $opRepo;
 
     protected function setUp(): void
@@ -34,6 +39,7 @@ class AppTest extends TestCase
         $env = Dotenv::create(getcwd() . '/tests/');
         $env->load();
 
+        $this->extRepo = new ExtensionRepository();
         $this->opRepo = new OperationRepository();
         SystemContainer::addItem('jsonRpcOperationRepository', OperationRepository::class);
     }
@@ -61,6 +67,12 @@ class AppTest extends TestCase
             Operation::FIELD__ITEM_NAME => 'jsonrpc operation'
         ];
         $this->opRepo->create(new Operation($opData));
+        $this->extRepo->create(new Extension([
+            Extension::FIELD__CLASS => ExtensionRepositoryGet::class,
+            Extension::FIELD__INTERFACE => IExtensionRepositoryGet::class,
+            Extension::FIELD__SUBJECT => '*',
+            Extension::FIELD__METHODS => ['jsonRpcOperationRepository']
+        ]));
 
         $app = App::create();
         $routes = $app->getRouteCollector()->getRoutes();
