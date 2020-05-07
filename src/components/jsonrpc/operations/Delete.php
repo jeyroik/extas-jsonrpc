@@ -1,13 +1,10 @@
 <?php
 namespace extas\components\jsonrpc\operations;
 
-use extas\components\SystemContainer;
 use extas\interfaces\IHasName;
 use extas\interfaces\IItem;
-use extas\interfaces\jsonrpc\IRequest;
-use extas\interfaces\jsonrpc\IResponse;
 use extas\interfaces\jsonrpc\operations\IOperationDelete;
-use extas\interfaces\repositories\IRepository;
+use Psr\Http\Message\ResponseInterface;
 
 /**
  * Class JsonRpcDelete
@@ -18,27 +15,31 @@ use extas\interfaces\repositories\IRepository;
 class Delete extends OperationDispatcher implements IOperationDelete
 {
     /**
-     * @param IRequest $request
-     * @param IResponse $response
+     * @return ResponseInterface
      */
-    protected function dispatch(IRequest $request, IResponse &$response)
+    public function __invoke(): ResponseInterface
     {
         /**
-         * @var $repo IRepository
          * @var $item IItem|IHasName
          */
-        $repo = SystemContainer::getItem($this->getOperation()->getItemRepo());
+        $repo = $this->getItemRepo();
+        $request = $this->convertPsrToJsonRpcRequest();
         $exist = $repo->all($request->getData());
+
         if (!$exist) {
-            $response->error('Unknown entity "' . $this->getOperation()->getItemName() . '"', 404);
-        } else {
-            $repo->delete($request->getData());
-            $result = [];
-            foreach ($exist as $item) {
-                $result[] = $item->__toArray();
-            }
-            $response->success($result);
+            return $this->errorResponse(
+                $request->getId(),
+                'Unknown entity "' . $this->getOperation()->getItemName() . '"',
+                404
+            );
         }
+
+        $repo->delete($request->getData());
+        $result = [];
+        foreach ($exist as $item) {
+            $result[] = $item->__toArray();
+        }
+        return $this->successResponse($request->getId(), $result);
     }
 
     /**

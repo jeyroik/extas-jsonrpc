@@ -4,15 +4,25 @@
   "require": {
     "slim/slim": "^3.0",
     "jeyroik/extas-installer": "2.*",
-    "jeyroik/extas-expands": "1.*",
-    "jeyroik/extas-protocols": "1.*",
-    "jeyroik/extas-servers": "2.*",
+    "jeyroik/extas-expands": "2.*",
+    "jeyroik/extas-protocols": "2.*",
+    "jeyroik/extas-repositories-get": "0.*",
     "symfony/console": "5.*",
     "vlucas/phpdotenv": "^3.4"
   },
+  "require-dev": {
+    "phpunit/phpunit": "^9",
+    "jeyroik/extas-repositories-mongo": "1.*",
+    "phpstan/phpstan": "0.*"
+  },
   "autoload": {
     "psr-4": {
-      "extas\\": "src/"
+      "extas\\": "src/",
+      "tests\\": "tests/"
     }
+  },
+  "scripts": {
+    "test": "vendor/bin/phpunit --testdox --coverage-clover=coverage.xml --whitelist=src tests",
+    "stan": "vendor/bin/phpstan analyse -l 5 src"
   }
 }

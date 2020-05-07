@@ -2,7 +2,6 @@
 namespace extas\interfaces\jsonrpc;
 
 use extas\interfaces\IItem;
-use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
 /**
@@ -11,7 +10,7 @@ use Psr\Http\Message\ResponseInterface;
  * @package extas\interfaces\jsonrpc
  * @author jeyroik@gmail.com
  */
-interface IRouter extends IItem
+interface IRouter extends IItem, IHasPsrRequest, IHasPsrResponse
 {
     const SUBJECT = 'extas.jsonrpc.router';
 
@@ -26,23 +25,12 @@ interface IRouter extends IItem
     public function hasOperation(string $name): bool;
 
     /**
-     * @param RequestInterface $httpRequest
-     * @param ResponseInterface $httpResponse
-     * @param IRequest $jsonRpcRequest
-     *
      * @return ResponseInterface
      */
-    public function dispatch(
-        RequestInterface $httpRequest,
-        ResponseInterface $httpResponse,
-        IRequest $jsonRpcRequest = null
-    ): ResponseInterface;
+    public function dispatch(): ResponseInterface;
 
     /**
-     * @param RequestInterface $request
-     * @param ResponseInterface $response
-     *
      * @return ResponseInterface
      */
-    public function getSpecs(RequestInterface $request, ResponseInterface $response): ResponseInterface;
+    public function getSpecs(): ResponseInterface;
 }

@@ -1,13 +1,12 @@
 <?php
 namespace extas\components\jsonrpc\operations;
 
-use extas\components\SystemContainer;
 use extas\interfaces\IHasName;
 use extas\interfaces\IItem;
 use extas\interfaces\jsonrpc\IRequest;
-use extas\interfaces\jsonrpc\IResponse;
 use extas\interfaces\jsonrpc\operations\IOperationCreate;
 use extas\interfaces\repositories\IRepository;
+use Psr\Http\Message\ResponseInterface;
 
 /**
  * Class Create
@@ -18,34 +17,68 @@ use extas\interfaces\repositories\IRepository;
 class Create extends OperationDispatcher implements IOperationCreate
 {
     /**
-     * @param IRequest $request
-     * @param IResponse $response
+     * @return ResponseInterface
      */
-    protected function dispatch(IRequest $request, IResponse &$response)
+    public function __invoke(): ResponseInterface
     {
         /**
-         * @var $repo IRepository
          * @var $item IItem|IHasName
          */
-        $repo = SystemContainer::getItem($this->getOperation()->getItemRepo());
-        $itemClass = $this->getOperation()->getItemClass();
-        $item = new $itemClass($request->getData());
-        $pkMethod = 'get' . ucfirst($repo->getPk());
-        if (!method_exists($item, $pkMethod)) {
-            $response->error(
-                'Item has not method "' . $pkMethod . '"',
-                500
-            );
-        } else {
-            $exist = $repo->one([$repo->getPk() => $item->$pkMethod()]);
+        $repo = $this->getItemRepo();
+        $request = $this->convertPsrToJsonRpcRequest();
+        $item = $this->getItem($request);
+        $pkMethod = $this->getPkMethod($repo);
 
-            if ($exist || !$item->$pkMethod()) {
-                $response->error(ucfirst($this->getOperation()->getItemName()) . ' already exist', 400);
-            } else {
-                $item = $repo->create($item);
-                $response->success($item->__toArray());
-            }
+        if (!method_exists($item, $pkMethod)) {
+            return $this->errorResponse($request->getId(), $this->error(500, $pkMethod), 500);
         }
+
+        $exist = $repo->one([$repo->getPk() => $item->$pkMethod()]);
+
+        if ($exist || !$item->$pkMethod()) {
+            return $this->errorResponse($request->getId(), $this->error(400), 400);
+        }
+
+        $item = $repo->create($item);
+        return $this->successResponse($request->getId(), $item->__toArray());
+    }
+
+    /**
+     * @param int $code
+     * @param string $subject
+     * @return string
+     */
+    protected function error(int $code, string $subject = ''): string
+    {
+        $map = [
+            400 => function () {
+                return ucfirst($this->getOperation()->getItemName()) . ' already exist';
+            },
+            500 => function () use ($subject) {
+                return 'Item has not method "' . $subject . '"';
+            }
+        ];
+
+        return $map[$code] ? $map[$code]($subject) : '';
+    }
+
+    /**
+     * @param IRepository $repo
+     * @return string
+     */
+    protected function getPkMethod(IRepository $repo): string
+    {
+        return 'get' . ucfirst($repo->getPk());
+    }
+
+    /**
+     * @param IRequest $request
+     * @return IItem
+     */
+    protected function getItem(IRequest $request): IItem
+    {
+        $itemClass = $this->getOperation()->getItemClass();
+        return new $itemClass($request->getData());
     }
 
     /**

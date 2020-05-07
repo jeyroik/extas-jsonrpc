@@ -7,7 +7,7 @@ namespace extas\interfaces\jsonrpc\operations;
  * @package extas\interfaces\jsonrpc\operations
  * @author jeyroik@gmail.com
  */
-interface IOperationDelete extends IOperationDispatcher, IOperationCreate
+interface IOperationDelete extends IOperationCreate
 {
 
 }

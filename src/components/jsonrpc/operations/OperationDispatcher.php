@@ -2,12 +2,11 @@
 namespace extas\components\jsonrpc\operations;
 
 use extas\components\Item;
-use extas\interfaces\jsonrpc\IRequest;
-use extas\interfaces\jsonrpc\IResponse;
+use extas\components\jsonrpc\THasPsrRequest;
+use extas\components\jsonrpc\THasPsrResponse;
 use extas\interfaces\jsonrpc\operations\IOperation;
 use extas\interfaces\jsonrpc\operations\IOperationDispatcher;
-use extas\interfaces\servers\requests\IServerRequest;
-use extas\interfaces\servers\responses\IServerResponse;
+use extas\interfaces\repositories\IRepository;
 
 /**
  * Class OperationDispatcher
@@ -17,38 +16,8 @@ use extas\interfaces\servers\responses\IServerResponse;
  */
 abstract class OperationDispatcher extends Item implements IOperationDispatcher
 {
-    /**
-     * @var IServerRequest
-     */
-    protected ?IServerRequest $serverRequest = null;
-
-    /**
-     * @var IServerResponse
-     */
-    protected ?IServerResponse $serverResponse = null;
-
-    /**
-     * @param IServerRequest $serverRequest
-     * @param IServerResponse $serverResponse
-     */
-    public function __invoke(IServerRequest $serverRequest, IServerResponse &$serverResponse)
-    {
-        /**
-         * @var $jsonRpcRequest IRequest
-         * @var $jsonRpcResponse IResponse
-         */
-        $jsonRpcRequest = $serverRequest->getParameter(IRequest::SUBJECT)->getValue();
-        $jsonRpcResponseParam = $serverResponse->getParameter(IResponse::SUBJECT);
-        $jsonRpcResponse = $jsonRpcResponseParam->getValue();
-
-        $this->serverRequest = $serverRequest;
-        $this->serverResponse = $serverResponse;
-
-        $this->dispatch($jsonRpcRequest, $jsonRpcResponse);
-
-        $jsonRpcResponseParam->setValue($jsonRpcResponse);
-        $serverResponse->setParameter(IResponse::SUBJECT, $jsonRpcResponseParam);
-    }
+    use THasPsrRequest;
+    use THasPsrResponse;
 
     /**
      * @return IOperation|null
@@ -71,12 +40,13 @@ abstract class OperationDispatcher extends Item implements IOperationDispatcher
     }
 
     /**
-     * @param IRequest $request
-     * @param IResponse $response
-     *
-     * @return void
+     * @return IRepository
      */
-    abstract protected function dispatch(IRequest $request, IResponse &$response);
+    protected function getItemRepo(): IRepository
+    {
+        $repoMethod = $this->getOperation()->getItemRepo();
+        return $this->$repoMethod();
+    }
 
     /**
      * @return string

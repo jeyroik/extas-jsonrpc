@@ -2,8 +2,9 @@
 namespace extas\components\jsonrpc;
 
 use extas\components\Plugins;
-use Psr\Http\Message\RequestInterface as Request;
-use Psr\Http\Message\ResponseInterface as Response;
+use extas\interfaces\jsonrpc\IRouter;
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
 
 /**
  * Class App
@@ -20,18 +21,35 @@ class App extends \Slim\App
     public function __construct($container = [])
     {
         parent::__construct($container);
-        $router = new Router();
 
-        $this->post('/api/jsonrpc', function (Request $request, Response $response, array $args) use ($router) {
-            return $router->dispatch($request, $response);
-        });
+        $this->post(
+            '/api/jsonrpc',
+            function (RequestInterface $request, ResponseInterface $response, array $args) {
+                return $this->getRouter($request, $response, $args)->dispatch();
+            }
+        );
 
-        $this->any('/specs', function (Request $request, Response $response, array $args) use ($router)  {
-            return $router->getSpecs($request, $response);
+        $this->any('/specs', function (RequestInterface $request, ResponseInterface $response, array $args)  {
+            return $this->getRouter($request, $response, $args)->getSpecs();
         });
 
         foreach (Plugins::byStage('extas.jsonrpc.init') as $plugin) {
             $plugin($this);
         }
+    }
+
+    /**
+     * @param RequestInterface $request
+     * @param ResponseInterface $response
+     * @param array $args
+     * @return IRouter
+     */
+    protected function getRouter(RequestInterface $request, ResponseInterface $response, array $args = []): IRouter
+    {
+        return new Router([
+            Router::FIELD__PSR_REQUEST => $request,
+            Router::FIELD__PSR_RESPONSE => $response,
+            Router::FIELD__ARGUMENTS => $args
+        ]);
     }
 }

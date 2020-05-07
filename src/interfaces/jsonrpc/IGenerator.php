@@ -1,7 +1,6 @@
 <?php
 namespace extas\interfaces\jsonrpc;
 
-use extas\interfaces\plugins\IPlugin;
 use extas\interfaces\plugins\IPluginInstallDefault;
 
 /**

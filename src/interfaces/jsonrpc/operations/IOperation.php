@@ -21,31 +21,6 @@ interface IOperation extends IItem, IHasName, IHasDescription, IHasClass
     const FIELD__ITEM_CLASS = 'item_class';
     const FIELD__ITEM_REPO = 'item_repo';
     const FIELD__METHOD = 'method';
-    const FIELD__FILTER_CLASS = 'filter_class';
-
-    /**
-     * @return string
-     */
-    public function getFilterClass(): string;
-
-    /**
-     * @param string $filterClass
-     *
-     * @return IOperation
-     */
-    public function setFilterClass(string $filterClass): IOperation;
-
-    /**
-     * @return IOperationFilter|null
-     */
-    public function getFilter(): ?IOperationFilter;
-
-    /**
-     * @param IOperationFilter $filter
-     *
-     * @return IOperation
-     */
-    public function setFilter(IOperationFilter $filter): IOperation;
 
     /**
      * @return string

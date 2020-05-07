@@ -1,6 +1,11 @@
-# extas-jsonrpc
+![tests](https://github.com/jeyroik/extas-jsonrpc/workflows/PHP%20Composer/badge.svg?branch=master&event=push)
+![codecov.io](https://codecov.io/gh/jeyroik/extas-jsonrpc/coverage.svg?branch=master)
+<a href="https://github.com/phpstan/phpstan"><img src="https://img.shields.io/badge/PHPStan-enabled-brightgreen.svg?style=flat" alt="PHPStan Enabled"></a> 
+<a href="https://codeclimate.com/github/jeyroik/extas-jsonrpc/maintainability"><img src="https://api.codeclimate.com/v1/badges/5981e38afb0c2f62c78f/maintainability" /></a>
 
-Extas JsonRPC package
+# Описание
+
+Extas-совместимый JSON RPC сервер.
 
 # install operations
 

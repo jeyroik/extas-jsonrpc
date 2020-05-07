@@ -33,15 +33,9 @@ class JsonrpcCommand extends DefaultCommand
     protected function configure()
     {
         $this
-            // the name of the command (the part after "bin/console")
             ->setName('jsonrpc')
             ->setAliases([])
-
-            // the short description shown while running "php bin/console list"
             ->setDescription('Create json rpc CRUD specs.')
-
-            // the full command description shown when running the command with
-            // the "--help" option
             ->setHelp('This command allows you to create json rpc specs by install plugins.')
             ->addOption(
                 static::OPTION__PREFIX,

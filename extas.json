@@ -4,6 +4,10 @@
     {
       "interface": "extas\\interfaces\\jsonrpc\\operations\\IOperationRepository",
       "class": "extas\\components\\jsonrpc\\operations\\OperationRepository"
+    },
+    {
+      "interface": "jsonRpcOperationRepository",
+      "class": "extas\\components\\jsonrpc\\operations\\OperationRepository"
     }
   ],
   "plugins": [
@@ -16,6 +20,14 @@
       "stage": "extas.installer.command"
     }
   ],
+  "extensions": [
+    {
+      "class": "extas\\components\\extensions\\ExtensionRepositoryGet",
+      "interface": "extas\\interfaces\\extensions\\IExtensionRepositoryGet",
+      "subject": "*",
+      "methods": ["jsonRpcOperationRepository"]
+    }
+  ],
   "jsonrpc_operations": [
     {
       "name": "operation.index",
@@ -26,7 +38,6 @@
       "item_class": "extas\\components\\jsonrpc\\operations\\Operation",
       "item_repo": "extas\\interfaces\\jsonrpc\\operations\\IOperationRepository",
       "class": "extas\\components\\jsonrpc\\operations\\Index",
-      "filter": "extas\\components\\jsonrpc\\operations\\filters\\FilterDefault",
       "spec": {
         "request": {
           "type": "object",

@@ -2,30 +2,27 @@
 namespace extas\components\jsonrpc;
 
 use extas\components\Item;
-use extas\components\servers\requests\ServerRequest;
-use extas\components\servers\responses\ServerResponse;
-use extas\components\SystemContainer;
-use extas\interfaces\jsonrpc\IRequest;
-use extas\interfaces\jsonrpc\IResponse;
 use extas\interfaces\jsonrpc\IRouter;
 use extas\interfaces\jsonrpc\operations\IOperation;
 use extas\interfaces\jsonrpc\operations\IOperationDispatcher;
 use extas\interfaces\jsonrpc\operations\IOperationRepository;
-use extas\interfaces\protocols\IProtocol;
-use extas\interfaces\protocols\IProtocolRepository;
-use extas\interfaces\servers\requests\IServerRequest;
-use extas\interfaces\servers\responses\IServerResponse;
-use Psr\Http\Message\RequestInterface;
+
+use extas\interfaces\stages\IStageRunJsonRpc;
 use Psr\Http\Message\ResponseInterface;
 
 /**
  * Class Router
+ *
+ * @method jsonRpcOperationRepository() IOperationRepository
  *
  * @package extas\components\jsonrpc
  * @author jeyroik@gmail.com
  */
 class Router extends Item implements IRouter
 {
+    use THasPsrRequest;
+    use THasPsrResponse;
+
     /**
      * @param string $name
      *
@@ -33,157 +30,112 @@ class Router extends Item implements IRouter
      */
     public function hasOperation(string $name): bool
     {
-        /**
-         * @var $repo IOperationRepository
-         */
-        $repo = SystemContainer::getItem(IOperationRepository::class);
-        $operation = $repo->one([IOperation::FIELD__NAME => $name]);
-
+        $operation = $this->jsonRpcOperationRepository()->one([IOperation::FIELD__NAME => $name]);
         return $operation ? true : false;
     }
 
     /**
-     * @param RequestInterface $httpRequest
-     * @param ResponseInterface $httpResponse
-     * @param IRequest $jsonRpcRequest
-     *
      * @return ResponseInterface
      */
-    public function dispatch(
-        RequestInterface $httpRequest,
-        ResponseInterface $httpResponse,
-        IRequest $jsonRpcRequest = null
-    ): ResponseInterface
+    public function dispatch(): ResponseInterface
     {
         /**
-         * @var $repo IOperationRepository
          * @var $operation IOperation
          */
-        $jsonRpcRequest = $jsonRpcRequest ?: Request::fromHttp($httpRequest);
+        $jsonRpcRequest = $this->convertPsrToJsonRpcRequest();
         $routeName = $jsonRpcRequest->getMethod(static::ROUTE__DEFAULT);
-        $repo = SystemContainer::getItem(IOperationRepository::class);
-        $operation = $repo->one([IOperation::FIELD__NAME => $routeName]);
-
-        $serverRequest = $this->getServerRequest($httpRequest, $jsonRpcRequest);
-        $serverResponse = $this->getServerResponse($httpResponse);
+        $operation = $this->jsonRpcOperationRepository()->one([IOperation::FIELD__NAME => $routeName]);
+        $this->applyProtocols();
 
         try {
             if ($operation) {
-                foreach ($this->getPluginsByStage('before.run.jsonrpc') as $plugin) {
-                    $plugin($serverRequest, $serverResponse);
-                }
-
-                foreach ($this->getPluginsByStage('before.run.jsonrpc.' . $routeName) as $plugin) {
-                    $plugin($serverRequest, $serverResponse);
-                }
-
-                $dispatcher = $operation->buildClassWithParameters([
-                    IOperationDispatcher::FIELD__OPERATION => $operation
-                ]);
-                $dispatcher($serverRequest, $serverResponse);
-
-                foreach ($this->getPluginsByStage('after.run.jsonrpc.' . $routeName) as $plugin) {
-                    $plugin($serverRequest, $serverResponse);
-                }
-
-                foreach ($this->getPluginsByStage('after.run.jsonrpc') as $plugin) {
-                    $plugin($serverRequest, $serverResponse);
-                }
+                $this->runPluginsBefore($routeName);
+                $this->runOperationDispatcher($operation);
+                $this->runPluginsAfter($routeName);
             } else {
                 throw new \Exception('Unknown operation "' . $routeName . '"', 404);
             }
         } catch (\Exception $e) {
-            $jsonRpcResponse = $serverResponse->getParameter(IResponse::SUBJECT)->getValue();
-            $jsonRpcResponse->error($e->getMessage(), $e->getCode());
-
-            return $jsonRpcResponse->getPsrResponse();
+            return $this->errorResponse($jsonRpcRequest->getId(), $e->getMessage(), $e->getCode());
         }
 
-        /**
-         * @var $jsonRpcResponse IResponse
-         */
-        $jsonRpcResponse = $serverResponse->getParameter(IResponse::SUBJECT)->getValue();
-
-        return $jsonRpcResponse->getPsrResponse();
+        return $this->getPsrResponse();
     }
 
     /**
-     * @param RequestInterface $request
-     * @param ResponseInterface $response
-     *
      * @return ResponseInterface
      */
-    public function getSpecs(RequestInterface $request, ResponseInterface $response): ResponseInterface
+    public function getSpecs(): ResponseInterface
     {
-        $jrpcRequest = json_decode($request->getBody()->getContents(), true);
-        $routeName = $jrpcRequest[IRequest::FIELD__METHOD] ?? static::ROUTE__DEFAULT;
+        $jRpcRequest = $this->convertPsrToJsonRpcRequest();
+        $routeName = $jRpcRequest->getMethod(static::ROUTE__DEFAULT);
 
         /**
          * @var $repo IOperationRepository
          * @var $operation IOperation
          */
-        $repo = SystemContainer::getItem(IOperationRepository::class);
+        $repo = $this->jsonRpcOperationRepository();
 
         $operations = ($routeName == static::ROUTE__ALL)
             ? $repo->all([])
             : $repo->all([IOperation::FIELD__NAME => $routeName]);
 
-        $specs = [];
-        foreach ($operations as $operation) {
-            $specs[$operation->getName()] = $operation->getSpec();
-        }
+        $specs = array_column($operations, IOperation::FIELD__SPEC, IOperation::FIELD__NAME);
 
-        $jsonRpcResponse = Response::fromPsr($response);
-        $jsonRpcResponse->success($specs);
-
-        return $jsonRpcResponse->getPsrResponse();
+        return $this->successResponse($jRpcRequest->getId(), $specs);
     }
 
     /**
-     * @param ResponseInterface $httpResponse
-     *
-     * @return IServerResponse
+     * @param IOperation $operation
      */
-    protected function getServerResponse(ResponseInterface $httpResponse): IServerResponse
-    {
-        $data = [IResponse::SUBJECT => Response::fromPsr($httpResponse)];
-
-        return new ServerResponse([
-            ServerResponse::FIELD__NAME => 'jsonrpc_service',
-            ServerResponse::FIELD__PARAMETERS => ServerResponse::makeParametersFrom($data)
-        ]);
-    }
-
-    /**
-     * @param RequestInterface $request
-     * @param IRequest $jsonRpcRequest
-     *
-     * @return IServerRequest
-     */
-    protected function getServerRequest(RequestInterface $request, IRequest $jsonRpcRequest): IServerRequest
+    protected function runOperationDispatcher(IOperation $operation): void
     {
         /**
-         * @var $repo IProtocolRepository
-         * @var $protocols IProtocol[]
+         * @var IOperationDispatcher $dispatcher
          */
-        $repo = SystemContainer::getItem(IProtocolRepository::class);
-        $protocols = $repo->all([
-            IProtocol::FIELD__ACCEPT => [$request->getHeader('ACCEPT'), '*']
+        $dispatcher = $operation->buildClassWithParameters([
+            IOperationDispatcher::FIELD__OPERATION => $operation,
+            IOperationDispatcher::FIELD__PSR_REQUEST => $this->getPsrRequest(),
+            IOperationDispatcher::FIELD__PSR_RESPONSE => $this->getPsrResponse(),
+            IOperationDispatcher::FIELD__ARGUMENTS => $this->getArguments()
         ]);
 
-        $data = [];
+        $this->setPsrResponse($dispatcher());
+    }
 
-        foreach ($protocols as $protocol) {
-            $protocol($data, $request);
+    /**
+     * @param string $routeName
+     */
+    protected function runPluginsBefore(string $routeName): void
+    {
+        $this->runPluginsByStage(IStageRunJsonRpc::NAME__BEFORE);
+        $this->runPluginsByStage(IStageRunJsonRpc::NAME__BEFORE . '.' . $routeName);
+    }
+
+    /**
+     * @param string $routeName
+     */
+    protected function runPluginsAfter(string $routeName): void
+    {
+        $this->runPluginsByStage(IStageRunJsonRpc::NAME__AFTER . '.' . $routeName);
+        $this->runPluginsByStage(IStageRunJsonRpc::NAME__AFTER);
+    }
+
+    /**
+     * @param string $stage
+     */
+    protected function runPluginsByStage(string $stage)
+    {
+        foreach ($this->getPluginsByStage($stage) as $plugin) {
+            /**
+             * @var IStageRunJsonRpc $plugin
+             */
+            $plugin(
+                $this->config[static::FIELD__PSR_REQUEST],
+                $this->config[static::FIELD__PSR_RESPONSE],
+                $this->config[static::FIELD__ARGUMENTS]
+            );
         }
-
-        $data[IRequest::SUBJECT] = $jsonRpcRequest;
-        $data['extas.http.request'] = $request;
-
-        return new ServerRequest([
-            ServerRequest::FIELD__NAME => 'jsonrpc_service',
-            ServerRequest::FIELD__PARAMETERS => ServerRequest::makeParametersFrom($data)
-        ]);
     }
 
     /**

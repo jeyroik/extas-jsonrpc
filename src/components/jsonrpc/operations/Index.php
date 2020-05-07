@@ -1,13 +1,11 @@
 <?php
 namespace extas\components\jsonrpc\operations;
 
+use extas\components\conditions\ConditionParameter;
 use extas\components\expands\Expander;
-use extas\components\SystemContainer;
 use extas\interfaces\IItem;
-use extas\interfaces\jsonrpc\IRequest;
-use extas\interfaces\jsonrpc\IResponse;
 use extas\interfaces\jsonrpc\operations\IOperationIndex;
-use extas\interfaces\repositories\IRepository;
+use Psr\Http\Message\ResponseInterface;
 
 /**
  * Class Index
@@ -18,40 +16,22 @@ use extas\interfaces\repositories\IRepository;
 class Index extends OperationDispatcher implements IOperationIndex
 {
     /**
-     * @param IRequest $request
-     * @param IResponse $response
+     * @return ResponseInterface
      */
-    protected function dispatch(IRequest $request, IResponse &$response)
+    public function __invoke(): ResponseInterface
     {
-        /**
-         * @var $repo IRepository
-         * @var $records IItem[]
-         */
-        $repo = SystemContainer::getItem($this->getOperation()->getItemRepo());
+        $records = $this->getItemRepo()->all([]);
+        $request = $this->convertPsrToJsonRpcRequest();
+        $items = $this->filter($request->getFilter(), $this->cutByLimit($records));
+        $items = $this->expandItems($items);
 
-        $records = $repo->all([]);
-        $items = [];
-        $limit = $this->getLimit();
-
-        foreach ($records as $record) {
-            if (!$limit || ($limit && (count($items) < $limit))) {
-                $items[] = $record->__toArray();
-            }
-        }
-
-        $items = $this->filter($request->getFilter(), $items);
-        $itemName = $this->getOperation()->getItemName();
-        $box = Expander::getExpandingBox($this->getOperation()->getMethod(), $itemName);
-        $box->setData([$itemName . '_list' => $items]);
-        $box->expand($this->serverRequest, $this->serverResponse);
-        $box->pack();
-        $expanded = $box->getValue();
-        $items = $expanded[$itemName . '_list'] ?? $items;
-
-        $response->success([
-            'items' => $items,
-            'total' => count($items)
-        ]);
+        return $this->successResponse(
+            $request->getId(),
+            [
+                'items' => $items,
+                'total' => count($items)
+            ]
+        );
     }
 
     /**
@@ -75,6 +55,40 @@ class Index extends OperationDispatcher implements IOperationIndex
     }
 
     /**
+     * @param $items
+     * @return array
+     */
+    protected function expandItems($items): array
+    {
+        $itemName = $this->getOperation()->getItemName();
+        $box = Expander::getExpandingBox($this->getOperation()->getMethod(), $itemName);
+        $box->setData([$itemName . '_list' => $items]);
+        $box->expand($this->getPsrRequest(), $this->getPsrResponse());
+        $box->pack();
+        $expanded = $box->getValue();
+
+        return $expanded[$itemName . '_list'] ?? $items;
+    }
+
+    /**
+     * @param array $records
+     * @return array
+     */
+    protected function cutByLimit(array $records): array
+    {
+        $items = [];
+        $limit = $this->getLimit();
+
+        foreach ($records as $record) {
+            if (!$limit || ($limit && (count($items) < $limit))) {
+                $items[] = $record->__toArray();
+            }
+        }
+
+        return $items;
+    }
+
+    /**
      * @param array $filter
      * @param IItem[] $items
      *
@@ -87,34 +101,51 @@ class Index extends OperationDispatcher implements IOperationIndex
         }
 
         $result = [];
+        $conditions = [];
+
+        foreach ($filter as $fieldName => $filterOptions) {
+            $this->appendCondition($fieldName, $filterOptions, $conditions);
+        }
 
         foreach ($items as $item) {
-            $success = true;
-            foreach ($filter as $fieldName => $filterOptions) {
-                foreach ($filterOptions as $filterCompare => $filterValue) {
-                    $filterCompare = str_replace('$', '', $filterCompare);
-                    $filterDispatcher = $this->getOperation()->getFilter();
-
-                    if (!isset($item[$fieldName])) {
-                        $success = false;
-                        break 2;
-                    }
-
-                    $isValid = $filterDispatcher
-                        ? $filterDispatcher->isValid($item[$fieldName], $filterValue, $filterCompare)
-                        : false;
-
-                    if (!$isValid) {
-                        $success = false;
-                        break 2;
-                    }
-                }
-            }
-
-            $success && ($result[] = $item);
+            $this->filterByConditions($item, $conditions, $result);
         }
 
         return $result;
+    }
+
+    /**
+     * @param string $fieldName
+     * @param array $filterOptions
+     * @param array $conditions
+     */
+    protected function appendCondition(string $fieldName, array $filterOptions, array &$conditions): void
+    {
+        foreach ($filterOptions as $filterCompare => $filterValue) {
+            $conditions[] = new ConditionParameter([
+                ConditionParameter::FIELD__NAME => $fieldName,
+                ConditionParameter::FIELD__CONDITION => str_replace('$', '', $filterCompare),
+                ConditionParameter::FIELD__VALUE => $filterValue
+            ]);
+        }
+    }
+
+    /**
+     * @param $item
+     * @param $conditions
+     * @param array $result
+     */
+    protected function filterByConditions($item, $conditions, array &$result): void
+    {
+        $valid = true;
+        foreach ($conditions as $condition) {
+            if (!$condition->isConditionTrue($item[$condition->getName()] ?? null)) {
+                $valid = false;
+                break;
+            }
+        }
+
+        $valid && ($result[] = $item);
     }
 
     /**

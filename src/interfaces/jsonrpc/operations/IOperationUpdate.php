@@ -1,7 +1,13 @@
 <?php
 namespace extas\interfaces\jsonrpc\operations;
 
-interface IOperationUpdate extends IOperationDispatcher, IOperationCreate
+/**
+ * Interface IOperationUpdate
+ *
+ * @package extas\interfaces\jsonrpc\operations
+ * @author jeyroik@gmail.com
+ */
+interface IOperationUpdate extends IOperationCreate
 {
 
 }

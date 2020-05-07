@@ -2,9 +2,9 @@
 namespace extas\interfaces\jsonrpc\operations;
 
 use extas\interfaces\IItem;
-use extas\interfaces\jsonrpc\IResponse;
-use extas\interfaces\servers\requests\IServerRequest;
-use extas\interfaces\servers\responses\IServerResponse;
+use extas\interfaces\jsonrpc\IHasPsrRequest;
+use extas\interfaces\jsonrpc\IHasPsrResponse;
+use Psr\Http\Message\ResponseInterface;
 
 /**
  * Interface IOperationDispatcher
@@ -12,18 +12,15 @@ use extas\interfaces\servers\responses\IServerResponse;
  * @package extas\interfaces\jsonrpc\operations
  * @author jeyroik@gmail.com
  */
-interface IOperationDispatcher extends IItem
+interface IOperationDispatcher extends IItem, IHasPsrRequest, IHasPsrResponse
 {
     const SUBJECT = 'extas.jsonrpc.operation.dispatcher';
     const FIELD__OPERATION = 'operation';
 
     /**
-     * @param IServerRequest $serverRequest
-     * @param IServerResponse $serverResponse
-     *
-     * @return void
+     * @return ResponseInterface
      */
-    public function __invoke(IServerRequest $serverRequest, IServerResponse &$serverResponse);
+    public function __invoke(): ResponseInterface;
 
     /**
      * @return IOperation|null

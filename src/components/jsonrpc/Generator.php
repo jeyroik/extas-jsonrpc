@@ -4,11 +4,11 @@ namespace extas\components\jsonrpc;
 use extas\components\Item;
 use extas\components\jsonrpc\operations\Create;
 use extas\components\jsonrpc\operations\Delete;
-use extas\components\jsonrpc\operations\filters\FilterDefault;
 use extas\components\jsonrpc\operations\Index;
 use extas\components\jsonrpc\operations\Update;
 use extas\interfaces\jsonrpc\IGenerator;
 use extas\interfaces\jsonrpc\operations\IOperation;
+use extas\interfaces\plugins\IPlugin;
 use extas\interfaces\plugins\IPluginInstallDefault;
 
 /**
@@ -19,15 +19,19 @@ use extas\interfaces\plugins\IPluginInstallDefault;
  */
 class Generator extends Item implements IGenerator
 {
+    protected array $result = [];
+    protected array $currentProperties;
+    protected IPluginInstallDefault $currentPlugin;
+
     /**
-     * @param IPluginInstallDefault[] $plugins
+     * @param IPluginInstallDefault[]|IPlugin[] $plugins
      * @param string $path
      *
      * @return bool
      */
     public function generate(array $plugins, string $path): bool
     {
-        $result = [
+        $this->result = [
             'name' => '[auto-generated] extas/jsonrpc/operations',
             'jsonrpc_operations' => []
         ];
@@ -37,20 +41,10 @@ class Generator extends Item implements IGenerator
             $parts = explode(' ', $plugin->getPluginName());
             $fullName = implode('.', $parts);
             $dotted = $this->getOnlyEdge() ? array_pop($parts) : $fullName;
-
-            if ($filter = $this->getFilter()) {
-                if(strpos($fullName, $filter) === false) {
-                    continue;
-                }
-            }
-
-            $result['jsonrpc_operations'][] = $this->constructCreate($plugin, $dotted, $properties);
-            $result['jsonrpc_operations'][] = $this->constructIndex($plugin, $dotted, $properties);
-            $result['jsonrpc_operations'][] = $this->constructUpdate($plugin, $dotted, $properties);
-            $result['jsonrpc_operations'][] = $this->constructDelete($plugin, $dotted, $properties);
+            $this->appendCRUDOperations($fullName, $plugin, $dotted, $properties);
         }
 
-        file_put_contents($path, json_encode($result));
+        $this->exportGeneratedData($path);
 
         return true;
     }
@@ -96,6 +90,47 @@ class Generator extends Item implements IGenerator
     }
 
     /**
+     * @param string $path
+     */
+    protected function exportGeneratedData(string $path): void
+    {
+        file_put_contents($path, json_encode($this->result));
+    }
+
+    /**
+     * @param string $fullName
+     * @param $plugin
+     * @param $dotted
+     * @param $properties
+     */
+    protected function appendCRUDOperations(string $fullName, $plugin, $dotted, $properties): void
+    {
+        if ($this->isApplicablePlugin($fullName)) {
+            $this->currentPlugin = $plugin;
+            $this->currentProperties = $properties;
+            $this->result['jsonrpc_operations'][] = $this->constructCreate($dotted);
+            $this->result['jsonrpc_operations'][] = $this->constructIndex($dotted);
+            $this->result['jsonrpc_operations'][] = $this->constructUpdate($dotted);
+            $this->result['jsonrpc_operations'][] = $this->constructDelete($dotted);
+        }
+    }
+
+    /**
+     * @param string $fullName
+     * @return bool
+     */
+    protected function isApplicablePlugin(string $fullName): bool
+    {
+        $filter = $this->getFilter();
+
+        if($filter && (strpos($fullName, $filter) === false)) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
      * @param IPluginInstallDefault $plugin
      *
      * @return array
@@ -107,191 +142,155 @@ class Generator extends Item implements IGenerator
         $constants = $reflection->getConstants();
         $properties = [];
 
-        foreach ($constants as $name => $value) {
-            if (strpos($name, 'FIELD') !== false) {
-                $properties[$value] = [];
-            }
-        }
+        $this->appendConstantsToProperties($constants, $properties);
 
-        /**
-         * @var $byNameMethods \ReflectionMethod[]
-         */
         $methods = $reflection->getMethods(\ReflectionMethod::IS_PUBLIC);
-        $byNameMethods = [];
+        $byNameMethods = array_column($methods, null, 'name');
 
-        foreach ($methods as $method) {
-            $byNameMethods[$method->getName()] = $method;
-        }
-
-        foreach ($properties as $property => $spec) {
-            $methodName = 'get' . ucwords(str_replace('_', ' ', $property));
-            $type = 'string';
-            if (isset($byNameMethods[$methodName])) {
-                $returnType = $byNameMethods[$methodName]->getReturnType();
-                $type = $returnType ? $returnType->getName() : 'string';
-            }
-            $properties[$property] = ['type' => $type];
-        }
+        $this->fillInPropertySpec($byNameMethods, $properties);
 
         return $properties;
     }
 
     /**
-     * @param IPluginInstallDefault $plugin
-     * @param string $name
-     * @param array $properties
-     *
-     * @return array
+     * @param string $property
+     * @param array $byNameMethods
+     * @return string
      */
-    protected function constructCreate(IPluginInstallDefault $plugin, string $name, array $properties)
+    protected function generatePropertyType(string $property, array $byNameMethods): string
     {
-        return [
-            IOperation::FIELD__NAME => $name . '.create',
-            IOperation::FIELD__TITLE => 'Create ' . $plugin->getPluginName(),
-            IOperation::FIELD__DESCRIPTION => 'Create ' . $plugin->getPluginName(),
-            IOperation::FIELD__METHOD => 'create',
-            IOperation::FIELD__ITEM_NAME => $name,
-            IOperation::FIELD__ITEM_CLASS => $plugin->getPluginItemClass(),
-            IOperation::FIELD__ITEM_REPO => $plugin->getPluginRepositoryInterface(),
-            IOperation::FIELD__FILTER_CLASS => FilterDefault::class,
-            IOperation::FIELD__CLASS => Create::class,
-            IOperation::FIELD__SPEC => [
-                "request" => [
-                    "type" => "object",
-                    "properties" => [
-                        "data" => [
-                            "type" => "object",
-                            "properties" => $properties
-                        ]
-                    ]
-                ],
-                "response" => [
-                    "type" => "object",
-                    "properties" => $properties
-                ]
-            ]
-        ];
+        $methodName = 'get' . ucwords(str_replace('_', ' ', $property));
+        $type = 'string';
+        if (isset($byNameMethods[$methodName])) {
+            $returnType = $byNameMethods[$methodName]->getReturnType();
+            $type = $returnType ? $returnType->getName() : 'string';
+        }
+
+        return $type;
     }
 
     /**
-     * @param IPluginInstallDefault $plugin
-     * @param string $name
+     * @param array $byNameMethods
      * @param array $properties
-     *
-     * @return array
      */
-    protected function constructIndex(IPluginInstallDefault $plugin, string $name, array $properties)
+    protected function fillInPropertySpec(array $byNameMethods, array &$properties): void
     {
-        return [
-            IOperation::FIELD__NAME => $name . '.index',
-            IOperation::FIELD__TITLE => 'Index ' . $plugin->getPluginName(),
-            IOperation::FIELD__DESCRIPTION => 'Index ' . $plugin->getPluginName(),
-            IOperation::FIELD__METHOD => 'index',
-            IOperation::FIELD__ITEM_NAME => $name,
-            IOperation::FIELD__ITEM_CLASS => $plugin->getPluginItemClass(),
-            IOperation::FIELD__ITEM_REPO => $plugin->getPluginRepositoryInterface(),
-            IOperation::FIELD__FILTER_CLASS => FilterDefault::class,
-            IOperation::FIELD__CLASS => Index::class,
-            IOperation::FIELD__SPEC => [
-                "request" => [
-                    "type" => "object",
-                    "properties" => [
-                        "limit" => [
-                            "type" => "number"
-                        ]
-                    ]
-                ],
-                "response" => [
-                    "type" => "object",
-                    "properties" => [
-                        "items" => [
-                            "type" => "object",
-                            "properties" => $properties
-                        ],
-                        "total" => [
-                            "type" => "number"
-                        ]
-                    ]
-                ]
-            ]
-        ];
+        foreach ($properties as $property => $spec) {
+            $properties[$property] = ['type' => $this->generatePropertyType($property, $byNameMethods)];
+        }
     }
 
     /**
-     * @param IPluginInstallDefault $plugin
-     * @param string $name
+     * @param array $constants
      * @param array $properties
-     *
-     * @return array
      */
-    protected function constructUpdate(IPluginInstallDefault $plugin, string $name, array $properties)
+    protected function appendConstantsToProperties(array $constants, array &$properties): void
     {
-        return [
-            IOperation::FIELD__NAME => $name . '.update',
-            IOperation::FIELD__TITLE => 'Update ' . $plugin->getPluginName(),
-            IOperation::FIELD__DESCRIPTION => 'Update ' . $plugin->getPluginName(),
-            IOperation::FIELD__METHOD => 'update',
-            IOperation::FIELD__ITEM_NAME => $name,
-            IOperation::FIELD__ITEM_CLASS => $plugin->getPluginItemClass(),
-            IOperation::FIELD__ITEM_REPO => $plugin->getPluginRepositoryInterface(),
-            IOperation::FIELD__FILTER_CLASS => FilterDefault::class,
-            IOperation::FIELD__CLASS => Update::class,
-            IOperation::FIELD__SPEC => [
-                "request" => [
-                    "type" => "object",
-                    "properties" => [
-                        "data" => [
-                            "type" => "object",
-                            "properties" => $properties
-                        ]
-                    ]
-                ],
-                "response" => [
-                    "type" => "object",
-                    "properties" => $properties
-                ]
-            ]
-        ];
+        foreach ($constants as $name => $value) {
+            if (strpos($name, 'FIELD') !== false) {
+                $properties[$value] = [];
+            }
+        }
     }
 
     /**
-     * @param IPluginInstallDefault $plugin
      * @param string $name
-     * @param array $properties
      *
      * @return array
      */
-    protected function constructDelete(IPluginInstallDefault $plugin, string $name, array $properties)
+    protected function constructCreate(string $name)
     {
-        return [
-            IOperation::FIELD__NAME => $name . '.delete',
-            IOperation::FIELD__TITLE => 'Delete ' . $plugin->getPluginName(),
-            IOperation::FIELD__DESCRIPTION => 'Delete ' . $plugin->getPluginName(),
-            IOperation::FIELD__METHOD => 'delete',
-            IOperation::FIELD__ITEM_NAME => $name,
-            IOperation::FIELD__ITEM_CLASS => $plugin->getPluginItemClass(),
-            IOperation::FIELD__ITEM_REPO => $plugin->getPluginRepositoryInterface(),
-            IOperation::FIELD__FILTER_CLASS => FilterDefault::class,
-            IOperation::FIELD__CLASS => Delete::class,
-            IOperation::FIELD__SPEC => [
-                "request" => [
-                    "type" => "object",
-                    "properties" => [
-                        "data" => [
-                            "type" => "object",
-                            "properties" => [
-                                "name" => [
-                                    "type" => "string"
-                                ]
-                            ]
-                        ]
+        return $this->constructCRUDOperation('create', $name, Create::class);
+    }
+
+    /**
+     * @param string $name
+     *
+     * @return array
+     */
+    protected function constructIndex(string $name)
+    {
+        return $this->constructCRUDOperation('index', $name, Index::class, [
+            "request" => [
+                "type" => "object",
+                "properties" => [
+                    "limit" => [
+                        "type" => "number"
                     ]
-                ],
-                "response" => [
-                    "type" => "object",
-                    "properties" => $properties
+                ]
+            ],
+            "response" => [
+                "type" => "object",
+                "properties" => [
+                    "items" => [
+                        "type" => "object",
+                        "properties" => $this->currentProperties
+                    ],
+                    "total" => [
+                        "type" => "number"
+                    ]
                 ]
             ]
+        ]);
+    }
+
+    /**
+     * @param string $name
+     *
+     * @return array
+     */
+    protected function constructUpdate(string $name)
+    {
+        return $this->constructCRUDOperation('update', $name, Update::class);
+    }
+
+    /**
+     * @param string $name
+     *
+     * @return array
+     */
+    protected function constructDelete(string $name)
+    {
+        return $this->constructCRUDOperation('delete', $name, Delete::class);
+    }
+
+    /**
+     * @param string $crudName
+     * @param string $operationName
+     * @param string $operationClass
+     * @param array $specs
+     * @return array
+     */
+    protected function constructCRUDOperation(
+        string $crudName,
+        string $operationName,
+        string $operationClass,
+        array $specs = []
+    ): array
+    {
+        $specs = $specs ?: [
+            "request" => [
+                "type" => "object",
+                "properties" => [
+                    "data" => [
+                        "type" => "object",
+                        "properties" => $this->currentProperties
+                    ]
+                ]
+            ],
+            "response" => ["type" => "object", "properties" => $this->currentProperties]
+        ];
+
+        return [
+            IOperation::FIELD__NAME => $operationName . '.' . $crudName,
+            IOperation::FIELD__TITLE => ucfirst($crudName) . ' ' . $this->currentPlugin->getPluginName(),
+            IOperation::FIELD__DESCRIPTION => ucfirst($crudName) . ' ' . $this->currentPlugin->getPluginName(),
+            IOperation::FIELD__METHOD => $crudName,
+            IOperation::FIELD__ITEM_NAME => $operationName,
+            IOperation::FIELD__ITEM_CLASS => $this->currentPlugin->getPluginItemClass(),
+            IOperation::FIELD__ITEM_REPO => $this->currentPlugin->getPluginRepositoryInterface(),
+            IOperation::FIELD__CLASS => $operationClass,
+            IOperation::FIELD__SPEC => $specs
         ];
     }
 

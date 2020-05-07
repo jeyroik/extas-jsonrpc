@@ -32,24 +32,46 @@ class Crawler extends Item implements ICrawler
             /**
              * @var $file SplFileInfo
              */
-            try {
-                preg_match('/^namespace\s(.*?);$/m', $file->getContents(), $nsMatches);
-                preg_match('/^class\s(.*?)\s/m', $file->getContents(), $classMatches);
+            preg_match('/^namespace\s(.*?);$/m', $file->getContents(), $nsMatches);
+            preg_match('/^class\s(.*?)\s/m', $file->getContents(), $classMatches);
 
-                if (isset($nsMatches[1], $classMatches[1])) {
-                    $className = $nsMatches[1] . '\\' . $classMatches[1];
-                    $plugin = new $className();
-
-                    if ($plugin instanceof IPluginInstallDefault) {
-                        $plugins[] = new $className();
-                    }
-                }
-            } catch (\Exception $e) {
-                continue;
-            }
+            $plugin = $this->getPlugin($nsMatches, $classMatches);
+            $this->filterPlugin($plugin, $plugins);
         }
 
         return $plugins;
+    }
+
+    /**
+     * @param $plugin
+     * @param array $plugins
+     */
+    protected function filterPlugin($plugin, array &$plugins): void
+    {
+        if ($plugin instanceof IPluginInstallDefault) {
+            $plugins[] = $plugin;
+        }
+    }
+
+    /**
+     * @param $nsMatches
+     * @param $classMatches
+     * @return mixed|null
+     */
+    protected function getPlugin($nsMatches, $classMatches)
+    {
+        $plugin = null;
+
+        try {
+            if (isset($nsMatches[1], $classMatches[1])) {
+                $className = $nsMatches[1] . '\\' . $classMatches[1];
+                $plugin = new $className();
+            }
+        } catch (\Exception $e) {
+
+        }
+
+        return $plugin;
     }
 
     /**
