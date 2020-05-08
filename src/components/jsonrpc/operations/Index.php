@@ -78,7 +78,7 @@ class Index extends OperationDispatcher implements IOperationIndex
 
     /**
      * @param array $filter
-     * @param IItem[] $items
+     * @param array $items
      *
      * @return array
      */
@@ -119,11 +119,11 @@ class Index extends OperationDispatcher implements IOperationIndex
     }
 
     /**
-     * @param IItem $item
+     * @param array $item
      * @param ConditionParameter[] $conditions
      * @param array $result
      */
-    protected function filterByConditions(IItem $item, array $conditions, array &$result): void
+    protected function filterByConditions(array $item, array $conditions, array &$result): void
     {
         $valid = true;
         foreach ($conditions as $condition) {
