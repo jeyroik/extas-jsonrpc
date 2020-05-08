@@ -1,0 +1,15 @@
+{
+  "id": "2f5d0719-5b82-4280-9b3b-10f23aff226b",
+  "method": "jsonrpc.operation.index",
+  "params": {
+    "data": {
+      "name": "jsonrpc.operation.create.new",
+      "class": "",
+      "method": "create",
+      "spec": [],
+      "item_class": "",
+      "item_repo": "",
+      "item_name": ""
+    }
+  }
+}
