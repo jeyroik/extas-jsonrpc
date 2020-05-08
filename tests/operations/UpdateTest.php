@@ -83,7 +83,7 @@ class UpdateTest extends TestCase
 
     protected function tearDown(): void
     {
-        $this->opRepo->delete([Operation::FIELD__METHOD => 'create']);
+        $this->opRepo->delete([Operation::FIELD__METHOD => 'update']);
         $this->deleteSnuffExtensions();
     }
 
@@ -107,7 +107,7 @@ class UpdateTest extends TestCase
         );
     }
 
-    public function testItemAlreadyExists()
+    public function testItemUnknown()
     {
         $operation = $this->opRepo->create(new Operation($this->opData));
         $dispatcher = $this->getDispatcher($operation, '.update.unknown');
@@ -120,7 +120,7 @@ class UpdateTest extends TestCase
                 IResponse::RESPONSE__ERROR => [
                     IResponse::RESPONSE__ERROR_CODE => 400,
                     IResponse::RESPONSE__ERROR_DATA => [],
-                    IResponse::RESPONSE__ERROR_MESSAGE => 'Jsonrpc operation already exist'
+                    IResponse::RESPONSE__ERROR_MESSAGE => 'Unknown entity "Jsonrpc operation"'
                 ]
             ],
             $jsonRpcResponse
