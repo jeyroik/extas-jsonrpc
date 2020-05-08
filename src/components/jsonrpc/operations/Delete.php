@@ -29,7 +29,7 @@ class Delete extends OperationDispatcher implements IOperationDelete
         if (!$exist) {
             return $this->errorResponse(
                 $request->getId(),
-                'Unknown entity "' . $this->getOperation()->getItemName() . '"',
+                'Unknown entity "' . ucfirst($this->getOperation()->getItemName()) . '"',
                 404
             );
         }
