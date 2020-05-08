@@ -26,11 +26,4 @@ interface IOperationDispatcher extends IItem, IHasPsrRequest, IHasPsrResponse
      * @return IOperation|null
      */
     public function getOperation(): ?IOperation;
-
-    /**
-     * @param IOperation $operation
-     *
-     * @return IOperationDispatcher
-     */
-    public function setOperation(IOperation $operation): IOperationDispatcher;
 }

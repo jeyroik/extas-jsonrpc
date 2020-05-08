@@ -43,18 +43,6 @@ class Index extends OperationDispatcher implements IOperationIndex
     }
 
     /**
-     * @param int $limit
-     *
-     * @return IOperationIndex
-     */
-    public function setLimit(int $limit): IOperationIndex
-    {
-        $this->config[static::FIELD__LIMIT] = $limit;
-
-        return $this;
-    }
-
-    /**
      * @param $items
      * @return array
      */
@@ -131,11 +119,11 @@ class Index extends OperationDispatcher implements IOperationIndex
     }
 
     /**
-     * @param $item
-     * @param $conditions
+     * @param IItem $item
+     * @param ConditionParameter[] $conditions
      * @param array $result
      */
-    protected function filterByConditions($item, $conditions, array &$result): void
+    protected function filterByConditions(IItem $item, array $conditions, array &$result): void
     {
         $valid = true;
         foreach ($conditions as $condition) {

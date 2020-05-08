@@ -6,7 +6,6 @@ use extas\components\THasClass;
 use extas\components\THasDescription;
 use extas\components\THasName;
 use extas\interfaces\jsonrpc\operations\IOperation;
-use extas\interfaces\jsonrpc\operations\IOperationFilter;
 
 /**
  * Class Operation
@@ -42,24 +41,6 @@ class Operation extends Item implements IOperation
     public function getItemRepo(): string
     {
         return $this->config[static::FIELD__ITEM_REPO] ?? '';
-    }
-
-    /**
-     * @return string
-     */
-    public function getFilterClass(): string
-    {
-        return $this->config[static::FIELD__FILTER_CLASS] ?? '';
-    }
-
-    /**
-     * @return IOperationFilter|null
-     */
-    public function getFilter(): ?IOperationFilter
-    {
-        $filterClass = $this->getFilterClass();
-
-        return $filterClass ? new $filterClass() : null;
     }
 
     /**
@@ -104,28 +85,6 @@ class Operation extends Item implements IOperation
         $this->config[static::FIELD__ITEM_REPO] = $repoName;
 
         return $this;
-    }
-
-    /**
-     * @param string $filterClass
-     *
-     * @return IOperation
-     */
-    public function setFilterClass(string $filterClass): IOperation
-    {
-        $this->config[static::FIELD__FILTER_CLASS] = $filterClass;
-
-        return $this;
-    }
-
-    /**
-     * @param IOperationFilter $filter
-     *
-     * @return IOperation
-     */
-    public function setFilter(IOperationFilter $filter): IOperation
-    {
-        return $this->setFilterClass(get_class($filter));
     }
 
     /**

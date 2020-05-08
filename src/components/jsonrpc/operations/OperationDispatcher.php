@@ -28,31 +28,11 @@ abstract class OperationDispatcher extends Item implements IOperationDispatcher
     }
 
     /**
-     * @param IOperation $operation
-     *
-     * @return IOperationDispatcher
-     */
-    public function setOperation(IOperation $operation): IOperationDispatcher
-    {
-        $this->config[static::FIELD__OPERATION] = $operation;
-
-        return $this;
-    }
-
-    /**
      * @return IRepository
      */
     protected function getItemRepo(): IRepository
     {
         $repoMethod = $this->getOperation()->getItemRepo();
         return $this->$repoMethod();
-    }
-
-    /**
-     * @return string
-     */
-    protected function getSubjectForExtension(): string
-    {
-        return static::SUBJECT;
     }
 }
