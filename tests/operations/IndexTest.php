@@ -12,6 +12,7 @@ use extas\components\jsonrpc\operations\OperationDispatcher;
 use extas\components\jsonrpc\operations\OperationRepository;
 use extas\components\plugins\TSnuffPlugins;
 use extas\components\protocols\ProtocolRepository;
+use extas\interfaces\conditions\IConditionRepository;
 use extas\interfaces\jsonrpc\IResponse;
 use extas\interfaces\jsonrpc\operations\IOperationRepository;
 use extas\interfaces\repositories\IRepository;
@@ -54,7 +55,8 @@ class IndexTest extends TestCase
             IOperationRepository::class => OperationRepository::class,
             'jsonRpcOperationRepository' => OperationRepository::class,
             'protocolRepository' => ProtocolRepository::class,
-            'conditionRepo' => ConditionRepository::class
+            'conditionRepo' => ConditionRepository::class,
+            IConditionRepository::class => ConditionRepository::class
         ]);
         $this->createRepoExt([
             IOperationRepository::class,
