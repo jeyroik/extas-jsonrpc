@@ -1,30 +1,23 @@
 <?php
 namespace tests;
 
-use Dotenv\Dotenv;
-use extas\components\extensions\Extension;
-use extas\components\extensions\ExtensionRepository;
-use extas\components\extensions\ExtensionRepositoryGet;
+use extas\components\extensions\TSnuffExtensions;
+use extas\components\http\TSnuffHttp;
 use extas\components\jsonrpc\App;
 use extas\components\jsonrpc\operations\Index;
 use extas\components\jsonrpc\operations\Operation;
 use extas\components\jsonrpc\operations\OperationRepository;
-use extas\components\plugins\Plugin;
-use extas\components\plugins\PluginRepository;
+use extas\components\plugins\TSnuffPlugins;
 use extas\components\protocols\ProtocolRepository;
-use extas\components\SystemContainer;
-use extas\interfaces\extensions\IExtensionRepositoryGet;
 use extas\interfaces\jsonrpc\IResponse;
 use extas\interfaces\jsonrpc\operations\IOperationRepository;
 use extas\interfaces\repositories\IRepository;
 use extas\interfaces\stages\IStageJsonRpcInit;
+use extas\interfaces\stages\IStageRunJsonRpc;
 use PHPUnit\Framework\TestCase;
-use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
-use Slim\Psr7\Headers;
 use Slim\Psr7\Response;
-use Slim\Psr7\Stream;
-use Slim\Psr7\Uri;
+use Dotenv\Dotenv;
 
 /**
  * Class AppTest
@@ -34,9 +27,11 @@ use Slim\Psr7\Uri;
  */
 class AppTest extends TestCase
 {
-    protected IRepository $extRepo;
+    use TSnuffExtensions;
+    use TSnuffPlugins;
+    use TSnuffHttp;
+
     protected IRepository $opRepo;
-    protected IRepository $pluginRepo;
     protected array $opData = [
         Operation::FIELD__NAME => 'jsonrpc.operation.index',
         Operation::FIELD__CLASS => Index::class,
@@ -53,19 +48,18 @@ class AppTest extends TestCase
         $env = Dotenv::create(getcwd() . '/tests/');
         $env->load();
 
-        $this->extRepo = new ExtensionRepository();
-        $this->pluginRepo = new PluginRepository();
         $this->opRepo = new OperationRepository();
-
-        SystemContainer::addItem(IOperationRepository::class, OperationRepository::class);
-        SystemContainer::addItem('jsonRpcOperationRepository', OperationRepository::class);
-        SystemContainer::addItem('protocolRepository', ProtocolRepository::class);
+        $this->addReposForExt([
+            IOperationRepository::class => OperationRepository::class,
+            'jsonRpcOperationRepository' => OperationRepository::class,
+            'protocolRepository' => ProtocolRepository::class
+        ]);
     }
 
     protected function tearDown(): void
     {
-        $this->extRepo->delete([Extension::FIELD__CLASS => ExtensionRepositoryGet::class]);
-        $this->pluginRepo->delete([Plugin::FIELD__CLASS => PluginEmpty::class]);
+        $this->deleteSnuffPlugins();
+        $this->deleteSnuffExtensions();
         $this->opRepo->delete([Operation::FIELD__NAME => 'jsonrpc.operation.index']);
     }
 
@@ -87,7 +81,7 @@ class AppTest extends TestCase
                 /**
                  * @var ResponseInterface $response
                  */
-                $response = $dispatcher($this->getRequest(), $this->getResponse(), []);
+                $response = $dispatcher($this->getPsrRequest(), $this->getPsrResponse(), []);
                 $this->assertEquals(
                     [
                         IResponse::RESPONSE__ID => '2f5d0719-5b82-4280-9b3b-10f23aff226b',
@@ -95,6 +89,36 @@ class AppTest extends TestCase
                         IResponse::RESPONSE__RESULT => [
                             'items' => [$this->opData],
                             'total' => 1
+                        ]
+                    ],
+                    json_decode($response->getBody(), true)
+                );
+            }
+        }
+    }
+
+    public function testApiJsonRpcError()
+    {
+        $this->initOperationEnv();
+        $this->createPluginException([IStageRunJsonRpc::NAME__BEFORE]);
+
+        $app = App::create();
+        $routes = $app->getRouteCollector()->getRoutes();
+        foreach ($routes as $route) {
+            if ($route->getPattern() == '/api/jsonrpc') {
+                $dispatcher = $route->getCallable();
+                /**
+                 * @var ResponseInterface $response
+                 */
+                $response = $dispatcher($this->getPsrRequest(), $this->getPsrResponse(), []);
+                $this->assertEquals(
+                    [
+                        IResponse::RESPONSE__ID => '2f5d0719-5b82-4280-9b3b-10f23aff226b',
+                        IResponse::RESPONSE__VERSION => IResponse::VERSION_CURRENT,
+                        IResponse::RESPONSE__ERROR => [
+                            IResponse::RESPONSE__ERROR_CODE => 500,
+                            IResponse::RESPONSE__ERROR_DATA => [],
+                            IResponse::RESPONSE__ERROR_MESSAGE => 'Expected exception'
                         ]
                     ],
                     json_decode($response->getBody(), true)
@@ -115,7 +139,19 @@ class AppTest extends TestCase
                 /**
                  * @var ResponseInterface $response
                  */
-                $response = $dispatcher($this->getRequest(), $this->getResponse(), []);
+                $response = $dispatcher($this->getPsrRequest(), $this->getPsrResponse(), []);
+                $this->assertEquals(
+                    [
+                        IResponse::RESPONSE__ID => '2f5d0719-5b82-4280-9b3b-10f23aff226b',
+                        IResponse::RESPONSE__VERSION => IResponse::VERSION_CURRENT,
+                        IResponse::RESPONSE__RESULT => [
+                            'jsonrpc.operation.index' => []
+                        ]
+                    ],
+                    json_decode($response->getBody(), true)
+                );
+
+                $response = $dispatcher($this->getPsrRequest('.all'), $this->getPsrResponse(), []);
                 $this->assertEquals(
                     [
                         IResponse::RESPONSE__ID => '2f5d0719-5b82-4280-9b3b-10f23aff226b',
@@ -138,44 +174,11 @@ class AppTest extends TestCase
     protected function initOperationEnv(): void
     {
         $this->opRepo->create(new Operation($this->opData));
-        $this->extRepo->create(new Extension([
-            Extension::FIELD__CLASS => ExtensionRepositoryGet::class,
-            Extension::FIELD__INTERFACE => IExtensionRepositoryGet::class,
-            Extension::FIELD__SUBJECT => '*',
-            Extension::FIELD__METHODS => [
-                'jsonRpcOperationRepository',
-                'protocolRepository',
-                IOperationRepository::class
-            ]
-        ]));
-        $this->pluginRepo->create(new Plugin([
-            Plugin::FIELD__CLASS => PluginEmpty::class,
-            Plugin::FIELD__STAGE => IStageJsonRpcInit::NAME
-        ]));
-    }
-
-    /**
-     * @return ResponseInterface
-     */
-    protected function getResponse(): ResponseInterface
-    {
-        return new Response();
-    }
-
-    /**
-     * @return RequestInterface
-     */
-    protected function getRequest(): RequestInterface
-    {
-        return new \Slim\Psr7\Request(
-            'GET',
-            new Uri('http', 'localhost', 80, '/', 'test2=ok'),
-            new Headers([
-                'Content-type' => 'application/json'
-            ]),
-            [],
-            [],
-            new Stream(fopen(getcwd() . '/tests/request.json', 'r'))
-        );
+        $this->createRepoExt([
+            'jsonRpcOperationRepository',
+            'protocolRepository',
+            IOperationRepository::class
+        ]);
+        $this->createPluginEmpty([IStageJsonRpcInit::NAME, IStageRunJsonRpc::NAME__BEFORE]);
     }
 }

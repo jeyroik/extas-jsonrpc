@@ -2,13 +2,11 @@
 namespace tests;
 
 use Dotenv\Dotenv;
-use extas\components\extensions\Extension;
 use extas\components\extensions\ExtensionRepository;
-use extas\components\extensions\ExtensionRepositoryGet;
+use extas\components\extensions\TSnuffExtensions;
 use extas\components\jsonrpc\operations\OperationRepository;
 use extas\components\jsonrpc\Router;
 use extas\components\SystemContainer;
-use extas\interfaces\extensions\IExtensionRepositoryGet;
 use extas\interfaces\repositories\IRepository;
 use PHPUnit\Framework\TestCase;
 
@@ -20,7 +18,8 @@ use PHPUnit\Framework\TestCase;
  */
 class RouterTest extends TestCase
 {
-    protected IRepository $extRepo;
+    use TSnuffExtensions;
+
     protected IRepository $opRepo;
 
     protected function setUp(): void
@@ -29,7 +28,6 @@ class RouterTest extends TestCase
         $env = Dotenv::create(getcwd() . '/tests/');
         $env->load();
 
-        $this->extRepo = new ExtensionRepository();
         $this->opRepo = new OperationRepository();
 
         SystemContainer::addItem('jsonRpcOperationRepository', OperationRepository::class);
@@ -37,19 +35,13 @@ class RouterTest extends TestCase
 
     protected function tearDown(): void
     {
-        $this->extRepo->delete([Extension::FIELD__CLASS => ExtensionRepositoryGet::class]);
+        $this->deleteSnuffExtensions();
     }
 
     public function testHasOperation()
     {
         $router = new Router();
-        $this->extRepo->create(new Extension([
-            Extension::FIELD__CLASS => ExtensionRepositoryGet::class,
-            Extension::FIELD__INTERFACE => IExtensionRepositoryGet::class,
-            Extension::FIELD__SUBJECT => '*',
-            Extension::FIELD__METHODS => ['jsonRpcOperationRepository']
-        ]));
-
+        $this->createRepoExt(['jsonRpcOperationRepository']);
         $this->assertFalse($router->hasOperation('unknown'));
     }
 }

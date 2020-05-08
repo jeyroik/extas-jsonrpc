@@ -1,13 +1,10 @@
 <?php
 namespace tests;
 
-use Dotenv\Dotenv;
+use extas\components\http\TSnuffHttp;
 use extas\components\jsonrpc\Request;
 use PHPUnit\Framework\TestCase;
-use Psr\Http\Message\RequestInterface;
-use Slim\Psr7\Headers;
-use Slim\Psr7\Stream;
-use Slim\Psr7\Uri;
+use Dotenv\Dotenv;
 
 /**
  * Class RequestTest
@@ -17,6 +14,8 @@ use Slim\Psr7\Uri;
  */
 class RequestTest extends TestCase
 {
+    use TSnuffHttp;
+
     protected function setUp(): void
     {
         parent::setUp();
@@ -50,22 +49,5 @@ class RequestTest extends TestCase
         $request = Request::fromHttp($psrRequest);
 
         $this->assertEquals('2f5d0719-5b82-4280-9b3b-10f23aff226b', $request->getId());
-    }
-
-    /**
-     * @return RequestInterface
-     */
-    protected function getPsrRequest(): RequestInterface
-    {
-        return new \Slim\Psr7\Request(
-            'GET',
-            new Uri('http', 'localhost', 80, '/', 'test2=ok'),
-            new Headers([
-                'Content-type' => 'application/json'
-            ]),
-            [],
-            [],
-            new Stream(fopen(getcwd() . '/tests/request.json', 'r'))
-        );
     }
 }

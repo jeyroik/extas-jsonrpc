@@ -2,8 +2,6 @@
 namespace tests;
 
 use extas\components\plugins\Plugin;
-use extas\interfaces\stages\IStageJsonRpcInit;
-use Slim\App;
 
 /**
  * Class PluginEmpty
@@ -11,12 +9,12 @@ use Slim\App;
  * @package tests
  * @author jeyroik@gmail.com
  */
-class PluginEmpty extends Plugin implements IStageJsonRpcInit
+class PluginEmpty extends Plugin
 {
     /**
-     * @param App $app
+     * @param mixed ...$params
      */
-    public function __invoke(App &$app): void
+    public function __invoke(...$params): void
     {
 
     }
