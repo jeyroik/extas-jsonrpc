@@ -1,7 +1,6 @@
 <?php
 namespace tests\operations;
 
-use extas\components\conditions\ConditionRepository;
 use extas\components\extensions\TSnuffExtensions;
 use extas\components\http\TSnuffHttp;
 use extas\components\jsonrpc\operations\Create;
@@ -9,7 +8,6 @@ use extas\components\jsonrpc\operations\Operation;
 use extas\components\jsonrpc\operations\OperationRepository;
 use extas\components\plugins\Plugin;
 use extas\components\protocols\ProtocolRepository;
-use extas\interfaces\conditions\IConditionRepository;
 use extas\interfaces\jsonrpc\IResponse;
 use extas\interfaces\jsonrpc\operations\IOperation;
 use extas\interfaces\jsonrpc\operations\IOperationDispatcher;
@@ -71,8 +69,7 @@ class CreateTest extends TestCase
         $this->addReposForExt([
             IOperationRepository::class => OperationRepository::class,
             'jsonRpcOperationRepository' => OperationRepository::class,
-            'protocolRepository' => ProtocolRepository::class,
-            'conditionRepo' => ConditionRepository::class
+            'protocolRepository' => ProtocolRepository::class
         ]);
         $this->createRepoExt([
             IOperationRepository::class,
