@@ -32,7 +32,7 @@ Extas-совместимый JSON RPC сервер.
 
 # spec generation
 
-This package allow to generate specs upon to `PluginInstall-`plugins*, extended from `extas\components\plugins\PluginInstallDefault`.
+This package allows generating specs upon to `PluginInstall-`plugins, extended from `extas\components\plugins\PluginInstallDefault`.
 
 `*` - you can reset this prefix (see below).
 
