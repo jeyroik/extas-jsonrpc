@@ -4,9 +4,9 @@ namespace tests\operations;
 use extas\components\conditions\ConditionRepository;
 use extas\components\extensions\TSnuffExtensions;
 use extas\components\http\TSnuffHttp;
-use extas\components\jsonrpc\operations\Create;
 use extas\components\jsonrpc\operations\Operation;
 use extas\components\jsonrpc\operations\OperationRepository;
+use extas\components\jsonrpc\operations\Update;
 use extas\components\plugins\Plugin;
 use extas\components\protocols\ProtocolRepository;
 use extas\interfaces\conditions\IConditionRepository;
@@ -24,7 +24,7 @@ use Dotenv\Dotenv;
  * @package tests\operations
  * @author jeyroik@gmail.com
  */
-class CreateTest extends TestCase
+class UpdateTest extends TestCase
 {
     use TSnuffExtensions;
     use TSnuffHttp;
@@ -32,9 +32,9 @@ class CreateTest extends TestCase
     protected IRepository $opRepo;
 
     protected array $opDataMissedPk = [
-        Operation::FIELD__NAME => 'jsonrpc.operation.create',
-        Operation::FIELD__CLASS => Create::class,
-        Operation::FIELD__METHOD => 'create',
+        Operation::FIELD__NAME => 'jsonrpc.operation.update',
+        Operation::FIELD__CLASS => Update::class,
+        Operation::FIELD__METHOD => 'update',
         Operation::FIELD__SPEC => [],
         Operation::FIELD__ITEM_CLASS => Plugin::class,
         Operation::FIELD__ITEM_REPO => IOperationRepository::class,
@@ -42,9 +42,9 @@ class CreateTest extends TestCase
     ];
 
     protected array $opData = [
-        Operation::FIELD__NAME => 'jsonrpc.operation.create',
-        Operation::FIELD__CLASS => Create::class,
-        Operation::FIELD__METHOD => 'create',
+        Operation::FIELD__NAME => 'jsonrpc.operation.update',
+        Operation::FIELD__CLASS => Update::class,
+        Operation::FIELD__METHOD => 'update',
         Operation::FIELD__SPEC => [],
         Operation::FIELD__ITEM_CLASS => Operation::class,
         Operation::FIELD__ITEM_REPO => IOperationRepository::class,
@@ -52,13 +52,13 @@ class CreateTest extends TestCase
     ];
 
     protected array $opDataNew = [
-        Operation::FIELD__NAME => 'jsonrpc.operation.create.new',
-        Operation::FIELD__CLASS => '',
-        Operation::FIELD__METHOD => 'create',
+        Operation::FIELD__NAME => 'jsonrpc.operation.update',
+        Operation::FIELD__CLASS => Update::class,
+        Operation::FIELD__METHOD => 'update',
         Operation::FIELD__SPEC => [],
-        Operation::FIELD__ITEM_CLASS => '',
-        Operation::FIELD__ITEM_REPO => '',
-        Operation::FIELD__ITEM_NAME => ''
+        Operation::FIELD__ITEM_CLASS => Operation::class,
+        Operation::FIELD__ITEM_REPO => IOperationRepository::class,
+        Operation::FIELD__ITEM_NAME => 'test'
     ];
 
     protected function setUp(): void
@@ -90,7 +90,7 @@ class CreateTest extends TestCase
     public function testMissedPkMethod()
     {
         $operation = $this->opRepo->create(new Operation($this->opDataMissedPk));
-        $dispatcher = $this->getDispatcher($operation, '.create');
+        $dispatcher = $this->getDispatcher($operation, '.update');
         $response = $dispatcher();
         $jsonRpcResponse = json_decode($response->getBody(), true);
         $this->assertEquals(
@@ -110,7 +110,7 @@ class CreateTest extends TestCase
     public function testItemAlreadyExists()
     {
         $operation = $this->opRepo->create(new Operation($this->opData));
-        $dispatcher = $this->getDispatcher($operation, '.create.existed');
+        $dispatcher = $this->getDispatcher($operation, '.update.unknown');
         $response = $dispatcher();
         $jsonRpcResponse = json_decode($response->getBody(), true);
         $this->assertEquals(
@@ -130,14 +130,14 @@ class CreateTest extends TestCase
     public function testSuccess()
     {
         $operation = $this->opRepo->create(new Operation($this->opData));
-        $dispatcher = $this->getDispatcher($operation, '.create');
+        $dispatcher = $this->getDispatcher($operation, '.update');
         $response = $dispatcher();
         $jsonRpcResponse = json_decode($response->getBody(), true);
         $this->assertEquals(
             [
                 IResponse::RESPONSE__ID => '2f5d0719-5b82-4280-9b3b-10f23aff226b',
                 IResponse::RESPONSE__VERSION => IResponse::VERSION_CURRENT,
-                IResponse::RESPONSE__RESULT => $this->opDataNew
+                IResponse::RESPONSE__RESULT => [$this->opDataNew]
             ],
             $jsonRpcResponse
         );
@@ -150,10 +150,10 @@ class CreateTest extends TestCase
      */
     protected function getDispatcher(IOperation $operation, string $streamSuffix): IOperationDispatcher
     {
-        return new Create([
-            Create::FIELD__PSR_REQUEST => $this->getPsrRequest($streamSuffix),
-            Create::FIELD__PSR_RESPONSE => $this->getPsrResponse(),
-            Create::FIELD__OPERATION => $operation
+        return new Update([
+            Update::FIELD__PSR_REQUEST => $this->getPsrRequest($streamSuffix),
+            Update::FIELD__PSR_RESPONSE => $this->getPsrResponse(),
+            Update::FIELD__OPERATION => $operation
         ]);
     }
 }
