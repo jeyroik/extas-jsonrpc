@@ -118,7 +118,7 @@ class UpdateTest extends TestCase
                 IResponse::RESPONSE__ID => '2f5d0719-5b82-4280-9b3b-10f23aff226b',
                 IResponse::RESPONSE__VERSION => IResponse::VERSION_CURRENT,
                 IResponse::RESPONSE__ERROR => [
-                    IResponse::RESPONSE__ERROR_CODE => 400,
+                    IResponse::RESPONSE__ERROR_CODE => 404,
                     IResponse::RESPONSE__ERROR_DATA => [],
                     IResponse::RESPONSE__ERROR_MESSAGE => 'Unknown entity "Jsonrpc operation"'
                 ]
