@@ -105,14 +105,30 @@ class Generator extends Item implements IGenerator
      */
     protected function appendCRUDOperations(string $fullName, $plugin, $dotted, $properties): void
     {
+        $reflection = new \ReflectionClass($plugin->getPluginItemClass());
+        $methods = $this->grabMethodsFromComments($reflection);
+        $methods = empty($methods) ? ['create', 'index', 'update', 'delete'] : $methods;
+
         if ($this->isApplicablePlugin($fullName)) {
             $this->currentPlugin = $plugin;
             $this->currentProperties = $properties;
-            $this->result['jsonrpc_operations'][] = $this->constructCreate($dotted);
-            $this->result['jsonrpc_operations'][] = $this->constructIndex($dotted);
-            $this->result['jsonrpc_operations'][] = $this->constructUpdate($dotted);
-            $this->result['jsonrpc_operations'][] = $this->constructDelete($dotted);
+            foreach ($methods as $method) {
+                $methodConstruct = 'construct' . ucfirst($method);
+                $this->result['jsonrpc_operations'][] = $this->$methodConstruct($dotted);
+            }
         }
+    }
+
+    /**
+     * @param \ReflectionClass $reflection
+     * @return array
+     */
+    protected function grabMethodsFromComments(\ReflectionClass $reflection): array
+    {
+        $comment = $reflection->getDocComment();
+        preg_match_all('/@jsonrpc_method\s(\S+)/', $comment, $matches);
+
+        return empty($matches[1]) ? [] : $matches[1];
     }
 
     /**
