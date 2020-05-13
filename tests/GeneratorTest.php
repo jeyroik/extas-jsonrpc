@@ -55,4 +55,33 @@ class GeneratorTest extends TestCase
 
         unlink(getcwd() . '/tests/generated.specs.json');
     }
+
+    public function testDocComments()
+    {
+        $generator = new class([
+            Generator::FIELD__FILTER => '',
+            Generator::FIELD__ONLY_EDGE => false
+        ]) extends Generator {
+            public array $generationResult = [];
+            protected function exportGeneratedData(string $path): void
+            {
+                $this->generationResult = $this->result;
+                parent::exportGeneratedData(getcwd() . '/tests/generated.specs.json');
+            }
+        };
+
+        $crawler = new Crawler();
+        $plugins = $crawler->crawlPlugins(getcwd() . '/tests', 'PluginInstallItems');
+
+        $isDone = $generator->generate($plugins, '');
+        $this->assertTrue($isDone);
+
+        $mustBe = include 'specs.comments.php';
+        $this->assertEquals(
+            $mustBe,
+            $generator->generationResult['jsonrpc_operations']
+        );
+
+        unlink(getcwd() . '/tests/generated.specs.json');
+    }
 }

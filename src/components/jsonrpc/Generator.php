@@ -139,15 +139,35 @@ class Generator extends Item implements IGenerator
     protected function generateProperties(IPluginInstallDefault $plugin): array
     {
         $reflection = new \ReflectionClass($plugin->getPluginItemClass());
-        $constants = $reflection->getConstants();
+        $properties = $this->grabPropertiesFromComments($reflection);
+
+        if (empty($properties)) {
+            $constants = $reflection->getConstants();
+            $this->appendConstantsToProperties($constants, $properties);
+            $methods = $reflection->getMethods(\ReflectionMethod::IS_PUBLIC);
+            $byNameMethods = array_column($methods, null, 'name');
+
+            $this->fillInPropertySpec($byNameMethods, $properties);
+        }
+
+        return $properties;
+    }
+
+    /**
+     * @param \ReflectionClass $reflection
+     * @return array
+     */
+    protected function grabPropertiesFromComments(\ReflectionClass $reflection): array
+    {
+        $comment = $reflection->getDocComment();
+        preg_match_all('/@jsonrpc_field\s(\S+):(\S+)/', $comment, $matches);
         $properties = [];
 
-        $this->appendConstantsToProperties($constants, $properties);
-
-        $methods = $reflection->getMethods(\ReflectionMethod::IS_PUBLIC);
-        $byNameMethods = array_column($methods, null, 'name');
-
-        $this->fillInPropertySpec($byNameMethods, $properties);
+        if (!empty($matches[1])) {
+            foreach ($matches[1] as $index => $propertyName) {
+                $properties[$propertyName] = ['type' => $matches[2][$index]];
+            }
+        }
 
         return $properties;
     }
