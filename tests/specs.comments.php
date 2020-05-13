@@ -11,7 +11,7 @@ use extas\components\jsonrpc\operations\Delete;
 return [
     [
         IOperation::FIELD__NAME => 'item.doc.create',
-        IOperation::FIELD__TITLE => 'Create item doc operation',
+        IOperation::FIELD__TITLE => 'Create item doc',
         IOperation::FIELD__DESCRIPTION => 'Create item doc',
         IOperation::FIELD__METHOD => 'create',
         IOperation::FIELD__ITEM_NAME => 'item.doc',
