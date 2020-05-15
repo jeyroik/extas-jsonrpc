@@ -18,12 +18,17 @@ class Response extends Item implements IResponse
 
     /**
      * @param ResponseInterface $response
+     * @param IRequest $jsonRpcRequest
      *
      * @return IResponse
      */
-    public static function fromPsr(ResponseInterface $response): IResponse
+    public static function fromPsr(ResponseInterface $response, IRequest $jsonRpcRequest = null): IResponse
     {
-        return new static([static::FIELD__RESPONSE => $response]);
+        $data = [static::FIELD__RESPONSE => $response];
+        if ($jsonRpcRequest) {
+            $data[static::FIELD__DATA] = $jsonRpcRequest->__toArray();
+        }
+        return new static($data);
     }
 
     /**

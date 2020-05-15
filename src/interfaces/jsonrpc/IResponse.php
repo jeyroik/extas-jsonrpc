@@ -30,10 +30,11 @@ interface IResponse extends IItem
 
     /**
      * @param ResponseInterface $response
+     * @param IRequest $jsonRpcRequest
      *
      * @return IResponse
      */
-    public static function fromPsr(ResponseInterface $response): IResponse;
+    public static function fromPsr(ResponseInterface $response, IRequest $jsonRpcRequest = null): IResponse;
 
     /**
      * @return bool

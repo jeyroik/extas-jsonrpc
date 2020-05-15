@@ -65,7 +65,7 @@ class Router extends Item implements IRouter
         $operation = $repo->one([IOperation::FIELD__NAME => $routeName]);
 
         $serverRequest = $this->getServerRequest($httpRequest, $jsonRpcRequest);
-        $serverResponse = $this->getServerResponse($httpResponse);
+        $serverResponse = $this->getServerResponse($httpResponse, $jsonRpcRequest);
 
         try {
             if ($operation) {
@@ -141,12 +141,13 @@ class Router extends Item implements IRouter
 
     /**
      * @param ResponseInterface $httpResponse
+     * @param IRequest $jsonRpcRequest
      *
      * @return IServerResponse
      */
-    protected function getServerResponse(ResponseInterface $httpResponse): IServerResponse
+    protected function getServerResponse(ResponseInterface $httpResponse, IRequest $jsonRpcRequest): IServerResponse
     {
-        $data = [IResponse::SUBJECT => Response::fromPsr($httpResponse)];
+        $data = [IResponse::SUBJECT => Response::fromPsr($httpResponse, $jsonRpcRequest)];
 
         return new ServerResponse([
             ServerResponse::FIELD__NAME => 'jsonrpc_service',
