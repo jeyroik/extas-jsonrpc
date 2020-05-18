@@ -1,11 +1,11 @@
 <?php
 namespace extas\commands;
 
-use extas\components\jsonrpc\Generator;
-use extas\components\jsonrpc\Crawler;
-
+use extas\components\Plugins;
+use extas\interfaces\jsonrpc\crawlers\ICrawler;
+use extas\interfaces\jsonrpc\generators\IGenerator;
+use extas\interfaces\stages\IStageJsonRpcCommand;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
@@ -17,13 +17,6 @@ use Symfony\Component\Console\Output\OutputInterface;
 class JsonrpcCommand extends DefaultCommand
 {
     protected const VERSION = '0.1.0';
-    protected const OPTION__PREFIX = 'prefix';
-    protected const OPTION__FILTER = 'filter';
-    protected const OPTION__SPECS_PATH = 'specs';
-    protected const OPTION__ONLY_EDGE = 'only-edge';
-
-    protected const DEFAULT__PREFIX = 'PluginInstall';
-
     protected string $commandVersion = '0.2.0';
     protected string $commandTitle = 'Extas JSON-RPC spec generator';
 
@@ -35,37 +28,23 @@ class JsonrpcCommand extends DefaultCommand
         $this
             ->setName('jsonrpc')
             ->setAliases([])
-            ->setDescription('Create json rpc CRUD specs.')
-            ->setHelp('This command allows you to create json rpc specs by install plugins.')
-            ->addOption(
-                static::OPTION__PREFIX,
-                'p',
-                InputOption::VALUE_OPTIONAL,
-                'Install plugins prefix',
-                static::DEFAULT__PREFIX
-            )
-            ->addOption(
-                static::OPTION__SPECS_PATH,
-                's',
-                InputOption::VALUE_OPTIONAL,
-                'Path to store result specs',
-                getcwd() . '/specs.extas.json'
-            )
-            ->addOption(
-                static::OPTION__FILTER,
-                'f',
-                InputOption::VALUE_OPTIONAL,
-                'Filter operations by filter entry in the operation name.' .
-                'Ex.: "opera" for looking only names with "opera" in it',
-                ''
-            )->addOption(
-                static::OPTION__ONLY_EDGE,
-                'e',
-                InputOption::VALUE_OPTIONAL,
-                'Use as operation name only last word of section',
-                ''
-            )
-        ;
+            ->setDescription('Create json rpc specs.')
+            ->setHelp('This command allows you to create json rpc specs.');
+
+        $this->addOptionsByPlugins();
+    }
+
+    /**
+     * Add options for crawling and generation.
+     */
+    protected function addOptionsByPlugins(): void
+    {
+        foreach (Plugins::byStage(IStageJsonRpcCommand::NAME) as $plugin) {
+            /**
+             * @var IStageJsonRpcCommand $plugin
+             */
+            $plugin($this);
+        }
     }
 
     /**
@@ -74,16 +53,23 @@ class JsonrpcCommand extends DefaultCommand
      */
     protected function dispatch(InputInterface $input, OutputInterface &$output): void
     {
-        $prefix = $input->getOption(static::OPTION__PREFIX);
-        $path = $input->getOption(static::OPTION__SPECS_PATH);
+        $jsonRpc = new JsonRpc();
 
-        $crawler = new Crawler();
-        $plugins = $crawler->crawlPlugins(getcwd(), $prefix);
+        /**
+         * @var ICrawler[] $crawlers
+         */
+        $crawlers = $jsonRpc->jsonRpcCrawlerRepository()->all([]);
+        $applicableClasses = [];
+        foreach ($crawlers as $crawler) {
+            $applicableClasses[$crawler->getName()] = $crawler->dispatch($input, $output);
+        }
 
-        $serviceInstaller = new Generator([
-            Generator::FIELD__FILTER => $input->getOption(static::OPTION__FILTER),
-            Generator::FIELD__ONLY_EDGE => $input->getOption(static::OPTION__ONLY_EDGE)
-        ]);
-        $serviceInstaller->generate($plugins, $path);
+        /**
+         * @var IGenerator[] $generators[]
+         */
+        $generators = $jsonRpc->jsonRpcGeneratorRepository()->all([]);
+        foreach ($generators as $generator) {
+            $generator->dispatch($input, $output, $applicableClasses);
+        }
     }
 }

@@ -1,29 +1,29 @@
 <?php
-namespace extas\components\jsonrpc;
+namespace extas\components\jsonrpc\crawlers;
 
-use extas\components\Item;
-use extas\interfaces\jsonrpc\ICrawler;
-use extas\interfaces\plugins\IPlugin;
+use extas\components\plugins\jsonrpc\PluginDefaultArguments;
 use extas\interfaces\plugins\IPluginInstallDefault;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Finder\SplFileInfo;
 
 /**
- * Class Crawler
+ * Class ByPluginInstallDefault
  *
- * @package extas\components\packages
+ * @package extas\components\jsonrpc\crawlers
  * @author jeyroik@gmail.com
  */
-class Crawler extends Item implements ICrawler
+class ByPluginInstallDefault extends CrawlerDispatcher
 {
+    public const NAME = 'by.plugin.install.default';
+
     /**
-     * @param string $path
-     * @param string $prefix
-     *
-     * @return IPlugin[]
+     * @return array
      */
-    public function crawlPlugins(string $path, string $prefix): array
+    public function __invoke(): array
     {
+        $path = $this->getInput()->getOption(PluginDefaultArguments::OPTION__SPECS_PATH);
+        $prefix = $this->getInput()->getOption(PluginDefaultArguments::OPTION__PREFIX);
+
         $finder = new Finder();
         $finder->name($prefix . '*.php');
         $plugins = [];
@@ -72,13 +72,5 @@ class Crawler extends Item implements ICrawler
         }
 
         return $plugin;
-    }
-
-    /**
-     * @return string
-     */
-    protected function getSubjectForExtension(): string
-    {
-        return static::SUBJECT;
     }
 }

@@ -1,27 +1,44 @@
 <?php
-namespace extas\components\jsonrpc;
+namespace extas\components\jsonrpc\generators;
 
-use extas\components\Item;
 use extas\components\jsonrpc\operations\Create;
 use extas\components\jsonrpc\operations\Delete;
 use extas\components\jsonrpc\operations\Index;
 use extas\components\jsonrpc\operations\Update;
-use extas\interfaces\jsonrpc\IGenerator;
+use extas\components\plugins\jsonrpc\PluginDefaultArguments;
 use extas\interfaces\jsonrpc\operations\IOperation;
 use extas\interfaces\plugins\IPlugin;
 use extas\interfaces\plugins\IPluginInstallDefault;
+use extas\components\jsonrpc\crawlers\ByPluginInstallDefault as Crawler;
 
 /**
- * Class Generator
+ * Class ByPluginInstallDefault
  *
  * @package extas\components\jsonrpc
  * @author jeyroik@gmail.com
  */
-class Generator extends Item implements IGenerator
+class ByPluginInstallDefault extends GeneratorDispatcher
 {
+    public const NAME = 'by.plugin.install.default';
+
+    public const FIELD__FILTER = 'filter';
+    public const FIELD__ONLY_EDGE = 'only_edge';
+
     protected array $result = [];
     protected array $currentProperties;
     protected IPluginInstallDefault $currentPlugin;
+
+    /**
+     * @param array $applicableClasses
+     */
+    public function __invoke(array $applicableClasses): void
+    {
+        $path = $this->getInput()->getOption(PluginDefaultArguments::OPTION__SPECS_PATH);
+
+        if (isset($applicableClasses[Crawler::NAME])) {
+            $this->generate($applicableClasses[Crawler::NAME], $path);
+        }
+    }
 
     /**
      * @param IPluginInstallDefault[]|IPlugin[] $plugins
@@ -54,7 +71,7 @@ class Generator extends Item implements IGenerator
      */
     public function getOnlyEdge(): bool
     {
-        return (bool) ($this->config[static::FIELD__ONLY_EDGE] ?? false);
+        return (bool) $this->getInput()->getOption('only-edge');
     }
 
     /**
@@ -62,31 +79,7 @@ class Generator extends Item implements IGenerator
      */
     public function getFilter(): string
     {
-        return $this->config[static::FIELD__FILTER] ?? '';
-    }
-
-    /**
-     * @param string $filter
-     *
-     * @return IGenerator
-     */
-    public function setFilter(string $filter): IGenerator
-    {
-        $this->config[static::FIELD__FILTER] = $filter;
-
-        return $this;
-    }
-
-    /**
-     * @param bool $onlyEdge
-     *
-     * @return IGenerator
-     */
-    public function setOnlyEdge(bool $onlyEdge): IGenerator
-    {
-        $this->config[static::FIELD__ONLY_EDGE] = $onlyEdge;
-
-        return $this;
+        return $this->getInput()->getOption('filter');
     }
 
     /**
@@ -102,6 +95,7 @@ class Generator extends Item implements IGenerator
      * @param $plugin
      * @param $dotted
      * @param $properties
+     * @throws
      */
     protected function appendCRUDOperations(string $fullName, $plugin, $dotted, $properties): void
     {
@@ -328,13 +322,5 @@ class Generator extends Item implements IGenerator
             IOperation::FIELD__CLASS => $operationClass,
             IOperation::FIELD__SPEC => $specs
         ];
-    }
-
-    /**
-     * @return string
-     */
-    protected function getSubjectForExtension(): string
-    {
-        return static::SUBJECT;
     }
 }

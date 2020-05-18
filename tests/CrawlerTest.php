@@ -2,9 +2,13 @@
 namespace tests;
 
 use Dotenv\Dotenv;
-use extas\components\jsonrpc\Crawler;
+use extas\components\jsonrpc\crawlers\ByPluginInstallDefault;
+use extas\components\plugins\jsonrpc\PluginDefaultArguments;
 use extas\components\plugins\PluginInstallJsonRpcOperations;
+use PhpCsFixer\Console\Output\NullOutput;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\Console\Input\ArrayInput;
+use Symfony\Component\Console\Input\InputOption;
 
 /**
  * Class CrawlerTest
@@ -21,15 +25,40 @@ class CrawlerTest extends TestCase
         $env->load();
     }
 
-    public function testCrawlPlugins()
+    public function testCrawlByPluginInstallDefault()
     {
-        $crawler = new Crawler();
-        $plugins = $crawler->crawlPlugins(getcwd() . '/src/components', 'PluginInstallJson');
+        $crawler = new ByPluginInstallDefault([
+            ByPluginInstallDefault::FIELD__INPUT => new ArrayInput(
+                [
+                    PluginDefaultArguments::OPTION__SPECS_PATH => getcwd() . '/src/components',
+                    PluginDefaultArguments::OPTION__PREFIX => 'PluginInstallJson'
+                ],
+                [
+                    new InputOption(PluginDefaultArguments::OPTION__SPECS_PATH),
+                    new InputOption(PluginDefaultArguments::OPTION__PREFIX)
+                ]
+            ),
+            ByPluginInstallDefault::FIELD__OUTPUT => new NullOutput()
+        ]);
+        $plugins = $crawler();
         $this->assertCount(1, $plugins);
         $plugin = array_shift($plugins);
         $this->assertTrue($plugin instanceof PluginInstallJsonRpcOperations);
 
-        $plugins = $crawler->crawlPlugins(getcwd() . '/tests', 'PluginInstallMy');
+        $crawler = new ByPluginInstallDefault([
+            ByPluginInstallDefault::FIELD__INPUT => new ArrayInput(
+                [
+                    PluginDefaultArguments::OPTION__SPECS_PATH => getcwd() . '/tests',
+                    PluginDefaultArguments::OPTION__PREFIX => 'PluginInstallMy'
+                ],
+                [
+                    new InputOption(PluginDefaultArguments::OPTION__SPECS_PATH),
+                    new InputOption(PluginDefaultArguments::OPTION__PREFIX)
+                ]
+            ),
+            ByPluginInstallDefault::FIELD__OUTPUT => new NullOutput()
+        ]);
+        $plugins = $crawler();
         $this->assertEmpty($plugins);
     }
 }
