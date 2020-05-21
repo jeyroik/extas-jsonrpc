@@ -8,6 +8,22 @@
     {
       "interface": "jsonRpcOperationRepository",
       "class": "extas\\components\\jsonrpc\\operations\\OperationRepository"
+    },
+    {
+      "interface": "extas\\interfaces\\jsonrpc\\crawlers\\ICrawlerRepository",
+      "class": "extas\\components\\jsonrpc\\crawlers\\CrawlerRepository"
+    },
+    {
+      "interface": "jsonRpcCrawlerRepository",
+      "class": "extas\\components\\jsonrpc\\crawlers\\CrawlerRepository"
+    },
+    {
+      "interface": "extas\\interfaces\\jsonrpc\\generators\\IGeneratorRepository",
+      "class": "extas\\components\\jsonrpc\\generators\\GeneratorRepository"
+    },
+    {
+      "interface": "jsonRpcGeneratorRepository",
+      "class": "extas\\components\\jsonrpc\\generators\\GeneratorRepository"
     }
   ],
   "plugins": [
