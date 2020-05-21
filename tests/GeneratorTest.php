@@ -2,7 +2,6 @@
 namespace tests;
 
 use Dotenv\Dotenv;
-use extas\components\jsonrpc\crawlers\ByPluginInstallDefault as Crawler;
 use extas\components\jsonrpc\generators\ByDocComment;
 use extas\components\jsonrpc\generators\ByPluginInstallDefault;
 use extas\components\plugins\jsonrpc\PluginDefaultArguments;
@@ -10,7 +9,6 @@ use extas\components\plugins\PluginInstallJsonRpcOperations;
 use PhpCsFixer\Console\Output\NullOutput;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Input\ArrayInput;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputDefinition;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -94,16 +92,16 @@ class GeneratorTest extends TestCase
     {
         return new ArrayInput(
             [
-                PluginDefaultArguments::OPTION__SPECS_PATH => getcwd() . $path,
-                PluginDefaultArguments::OPTION__PREFIX => $prefix,
-                PluginDefaultArguments::OPTION__FILTER => '',
-                PluginDefaultArguments::OPTION__ONLY_EDGE => false
+                '--' . PluginDefaultArguments::OPTION__SPECS_PATH => getcwd() . $path,
+                '--' . PluginDefaultArguments::OPTION__PREFIX => $prefix,
+                '--' . PluginDefaultArguments::OPTION__FILTER => '',
+                '--' . PluginDefaultArguments::OPTION__ONLY_EDGE => false
             ],
             new InputDefinition([
-                new InputArgument(PluginDefaultArguments::OPTION__SPECS_PATH),
-                new InputArgument(PluginDefaultArguments::OPTION__PREFIX),
-                new InputArgument(PluginDefaultArguments::OPTION__FILTER),
-                new InputArgument(PluginDefaultArguments::OPTION__ONLY_EDGE)
+                new InputOption(PluginDefaultArguments::OPTION__SPECS_PATH),
+                new InputOption(PluginDefaultArguments::OPTION__PREFIX),
+                new InputOption(PluginDefaultArguments::OPTION__FILTER),
+                new InputOption(PluginDefaultArguments::OPTION__ONLY_EDGE)
             ])
         );
     }

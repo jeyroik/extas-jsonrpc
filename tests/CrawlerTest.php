@@ -9,7 +9,6 @@ use extas\components\plugins\PluginInstallJsonRpcOperations;
 use PhpCsFixer\Console\Output\NullOutput;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Input\ArrayInput;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputDefinition;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -80,12 +79,12 @@ class CrawlerTest extends TestCase
     {
         return new ArrayInput(
             [
-                PluginDefaultArguments::OPTION__CRAWL_PATH => getcwd() . $path,
-                PluginDefaultArguments::OPTION__PREFIX => $prefix
+                '--' . PluginDefaultArguments::OPTION__CRAWL_PATH => getcwd() . $path,
+                '--' . PluginDefaultArguments::OPTION__PREFIX => $prefix
             ],
             new InputDefinition([
-                new InputArgument(PluginDefaultArguments::OPTION__SPECS_PATH),
-                new InputArgument(PluginDefaultArguments::OPTION__PREFIX)
+                new InputOption(PluginDefaultArguments::OPTION__SPECS_PATH),
+                new InputOption(PluginDefaultArguments::OPTION__PREFIX)
             ])
         );
     }
