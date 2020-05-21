@@ -35,7 +35,7 @@ class ByDocComment extends GeneratorDispatcher
         foreach ($operations as $operation) {
             $reflection = new \ReflectionClass($operation);
             $this->docComment = $reflection->getDocComment();
-            if ($this->isApplicableOperation($operation)) {
+            if ($this->isApplicableOperation($this->getOperationName())) {
                 $this->addOperation($this->buildOperation($operation));
             }
         }
