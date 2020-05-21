@@ -80,17 +80,17 @@ class CrawlerTest extends TestCase
             ByDocComment::FIELD__OUTPUT => new NullOutput()
         ]);
         $operations = $crawler();
-        $this->assertEmpty($operations);
+        $this->assertEmpty($operations, 'Found doc-comments operations in src');
 
         $crawler = new ByDocComment([
-            ByDocComment::FIELD__INPUT => $this->getInput('-', '/tests'),
+            ByDocComment::FIELD__INPUT => $this->getInput('Operation', '/tests'),
             ByDocComment::FIELD__OUTPUT => new NullOutput()
         ]);
 
         $operations = $crawler();
-        $this->assertCount(1, $operations);
+        $this->assertCount(1, $operations, 'Incorrect operations count found');
         $plugin = array_shift($operations);
-        $this->assertTrue($plugin instanceof OperationWithDocComment);
+        $this->assertTrue($plugin instanceof OperationWithDocComment, 'Incorrect operation instance');
     }
 
     /**

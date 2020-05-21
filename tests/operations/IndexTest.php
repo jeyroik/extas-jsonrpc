@@ -55,14 +55,14 @@ class IndexTest extends TestCase
             IOperationRepository::class => OperationRepository::class,
             'jsonRpcOperationRepository' => OperationRepository::class,
             'protocolRepository' => ProtocolRepository::class,
-            'conditionRepo' => ConditionRepository::class,
+            'conditionRepository' => ConditionRepository::class,
             IConditionRepository::class => ConditionRepository::class
         ]);
         $this->createRepoExt([
             IOperationRepository::class,
             'jsonRpcOperationRepository',
             'protocolRepository',
-            'conditionRepo'
+            'conditionRepository'
         ]);
     }
 
