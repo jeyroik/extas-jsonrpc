@@ -72,7 +72,7 @@ class JsonrpcCommand extends DefaultCommand
     protected function addOptionsForGenerators()
     {
 
-        $this->addOptionsFor($this->rpc->jsonRpcGeneratorRepository()->all([]), 'crawler');
+        $this->addOptionsFor($this->rpc->jsonRpcGeneratorRepository()->all([]), 'generator');
     }
 
     /**
