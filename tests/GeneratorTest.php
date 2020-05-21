@@ -6,12 +6,13 @@ use extas\components\jsonrpc\generators\ByDocComment;
 use extas\components\jsonrpc\generators\ByPluginInstallDefault;
 use extas\components\plugins\jsonrpc\PluginDefaultArguments;
 use extas\components\plugins\PluginInstallJsonRpcOperations;
-use PhpCsFixer\Console\Output\NullOutput;
+
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputDefinition;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Output\NullOutput;
 
 /**
  * Class GeneratorTest
