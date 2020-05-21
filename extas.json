@@ -8,16 +8,40 @@
     {
       "interface": "jsonRpcOperationRepository",
       "class": "extas\\components\\jsonrpc\\operations\\OperationRepository"
+    },
+    {
+      "interface": "extas\\interfaces\\jsonrpc\\crawlers\\ICrawlerRepository",
+      "class": "extas\\components\\jsonrpc\\crawlers\\CrawlerRepository"
+    },
+    {
+      "interface": "jsonRpcCrawlerRepository",
+      "class": "extas\\components\\jsonrpc\\crawlers\\CrawlerRepository"
+    },
+    {
+      "interface": "extas\\interfaces\\jsonrpc\\generators\\IGeneratorRepository",
+      "class": "extas\\components\\jsonrpc\\generators\\GeneratorRepository"
+    },
+    {
+      "interface": "jsonRpcGeneratorRepository",
+      "class": "extas\\components\\jsonrpc\\generators\\GeneratorRepository"
     }
   ],
   "plugins": [
     {
-      "class": "extas\\components\\plugins\\PluginInstallJsonRpcOperations",
+      "class": [
+        "extas\\components\\plugins\\PluginInstallJsonRpcOperations",
+        "extas\\components\\plugins\\PluginInstallJsonRpcCrawlers",
+        "extas\\components\\plugins\\PluginInstallJsonRpcGenerators"
+      ],
       "stage": "extas.install"
     },
     {
       "class": "extas\\components\\plugins\\installers\\InstallerCommandPlugin",
       "stage": "extas.installer.command"
+    },
+    {
+      "class": "extas\\components\\plugins\\jsonrpc\\PluginDefaultArguments",
+      "stage": "extas.jsonrpc.command"
     }
   ],
   "extensions": [
@@ -25,7 +49,39 @@
       "class": "extas\\components\\extensions\\ExtensionRepositoryGet",
       "interface": "extas\\interfaces\\extensions\\IExtensionRepositoryGet",
       "subject": "*",
-      "methods": ["jsonRpcOperationRepository"]
+      "methods": [
+        "jsonRpcOperationRepository",
+        "jsonRpcCrawlerRepository",
+        "jsonRpcGeneratorRepository"
+      ]
+    }
+  ],
+  "jsonrpc_crawlers": [
+    {
+      "name": "by.plugin.install.default",
+      "title": "PluginInstallDefault",
+      "description": "Собирает плагины на основе PluginInstallDefault",
+      "class": "extas\\components\\jsonrpc\\crawlers\\ByPluginInstallDefault"
+    },
+    {
+      "name": "by.doc.comment",
+      "title": "Doc comment",
+      "description": "Собирает классы с тегом @jsonrpc_operation в doc comment",
+      "class": "extas\\components\\jsonrpc\\crawlers\\ByDocComment"
+    }
+  ],
+  "jsonrpc_generators": [
+    {
+      "name": "by.plugin.install.default",
+      "title": "PluginInstallDefault",
+      "description": "Парсит плагины на основе PluginInstallDefault",
+      "class": "extas\\components\\jsonrpc\\generators\\ByPluginInstallDefault"
+    },
+    {
+      "name": "by.doc.comment",
+      "title": "By doc comment",
+      "description": "Парсит классы с описанием операции в doc-блоке",
+      "class": "extas\\components\\jsonrpc\\generators\\ByDocComment"
     }
   ],
   "jsonrpc_operations": [

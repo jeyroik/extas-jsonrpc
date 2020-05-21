@@ -1,27 +1,42 @@
 <?php
-namespace extas\components\jsonrpc;
+namespace extas\components\jsonrpc\generators;
 
-use extas\components\Item;
 use extas\components\jsonrpc\operations\Create;
 use extas\components\jsonrpc\operations\Delete;
 use extas\components\jsonrpc\operations\Index;
 use extas\components\jsonrpc\operations\Update;
-use extas\interfaces\jsonrpc\IGenerator;
+use extas\components\plugins\jsonrpc\PluginDefaultArguments;
 use extas\interfaces\jsonrpc\operations\IOperation;
 use extas\interfaces\plugins\IPlugin;
 use extas\interfaces\plugins\IPluginInstallDefault;
+use extas\components\jsonrpc\crawlers\ByPluginInstallDefault as Crawler;
 
 /**
- * Class Generator
+ * Class ByPluginInstallDefault
  *
  * @package extas\components\jsonrpc
  * @author jeyroik@gmail.com
  */
-class Generator extends Item implements IGenerator
+class ByPluginInstallDefault extends GeneratorDispatcher
 {
-    protected array $result = [];
+    public const NAME = 'by.plugin.install.default';
+
+    public const FIELD__FILTER = 'filter';
+    public const FIELD__ONLY_EDGE = 'only_edge';
+
+
     protected array $currentProperties;
     protected IPluginInstallDefault $currentPlugin;
+
+    /**
+     * @param array $applicableClasses
+     */
+    public function __invoke(array $applicableClasses): void
+    {
+        if (isset($applicableClasses[Crawler::NAME])) {
+            $this->generate($applicableClasses[Crawler::NAME]);
+        }
+    }
 
     /**
      * @param IPluginInstallDefault[]|IPlugin[] $plugins
@@ -29,13 +44,8 @@ class Generator extends Item implements IGenerator
      *
      * @return bool
      */
-    public function generate(array $plugins, string $path): bool
+    public function generate(array $plugins): bool
     {
-        $this->result = [
-            'name' => '[auto-generated] extas/jsonrpc/operations',
-            'jsonrpc_operations' => []
-        ];
-
         foreach ($plugins as $plugin) {
             $properties = $this->generateProperties($plugin);
             $parts = explode(' ', $plugin->getPluginName());
@@ -44,57 +54,9 @@ class Generator extends Item implements IGenerator
             $this->appendCRUDOperations($fullName, $plugin, $dotted, $properties);
         }
 
-        $this->exportGeneratedData($path);
+        $this->exportGeneratedData();
 
         return true;
-    }
-
-    /**
-     * @return bool
-     */
-    public function getOnlyEdge(): bool
-    {
-        return (bool) ($this->config[static::FIELD__ONLY_EDGE] ?? false);
-    }
-
-    /**
-     * @return string
-     */
-    public function getFilter(): string
-    {
-        return $this->config[static::FIELD__FILTER] ?? '';
-    }
-
-    /**
-     * @param string $filter
-     *
-     * @return IGenerator
-     */
-    public function setFilter(string $filter): IGenerator
-    {
-        $this->config[static::FIELD__FILTER] = $filter;
-
-        return $this;
-    }
-
-    /**
-     * @param bool $onlyEdge
-     *
-     * @return IGenerator
-     */
-    public function setOnlyEdge(bool $onlyEdge): IGenerator
-    {
-        $this->config[static::FIELD__ONLY_EDGE] = $onlyEdge;
-
-        return $this;
-    }
-
-    /**
-     * @param string $path
-     */
-    protected function exportGeneratedData(string $path): void
-    {
-        file_put_contents($path, json_encode($this->result));
     }
 
     /**
@@ -102,6 +64,7 @@ class Generator extends Item implements IGenerator
      * @param $plugin
      * @param $dotted
      * @param $properties
+     * @throws
      */
     protected function appendCRUDOperations(string $fullName, $plugin, $dotted, $properties): void
     {
@@ -109,12 +72,12 @@ class Generator extends Item implements IGenerator
         $methods = $this->grabMethodsFromComments($reflection);
         $methods = empty($methods) ? ['create', 'index', 'update', 'delete'] : $methods;
 
-        if ($this->isApplicablePlugin($fullName)) {
+        if ($this->isApplicableOperation($fullName)) {
             $this->currentPlugin = $plugin;
             $this->currentProperties = $properties;
             foreach ($methods as $method) {
                 $methodConstruct = 'construct' . ucfirst($method);
-                $this->result['jsonrpc_operations'][] = $this->$methodConstruct($dotted);
+                $this->addOperation($this->$methodConstruct($dotted));
             }
         }
     }
@@ -129,21 +92,6 @@ class Generator extends Item implements IGenerator
         preg_match_all('/@jsonrpc_method\s(\S+)/', $comment, $matches);
 
         return empty($matches[1]) ? [] : $matches[1];
-    }
-
-    /**
-     * @param string $fullName
-     * @return bool
-     */
-    protected function isApplicablePlugin(string $fullName): bool
-    {
-        $filter = $this->getFilter();
-
-        if($filter && (strpos($fullName, $filter) === false)) {
-            return false;
-        }
-
-        return true;
     }
 
     /**
@@ -328,13 +276,5 @@ class Generator extends Item implements IGenerator
             IOperation::FIELD__CLASS => $operationClass,
             IOperation::FIELD__SPEC => $specs
         ];
-    }
-
-    /**
-     * @return string
-     */
-    protected function getSubjectForExtension(): string
-    {
-        return static::SUBJECT;
     }
 }
