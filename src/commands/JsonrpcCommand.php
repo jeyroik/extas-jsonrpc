@@ -26,12 +26,14 @@ class JsonrpcCommand extends DefaultCommand
     protected string $commandTitle = 'Extas JSON-RPC spec generator';
     protected bool $allCrawlers;
     protected bool $allGenerators;
+    protected JsonRpc $rpc;
 
     /**
      * Configure the current command.
      */
     protected function configure()
     {
+        $this->rpc = new JsonRpc();
         $this
             ->setName('jsonrpc')
             ->setAliases([])
@@ -61,7 +63,7 @@ class JsonrpcCommand extends DefaultCommand
      */
     protected function addOptionsFroCrawlers()
     {
-        $this->addOptionsFor($this->jsonRpcCrawlerRepository()->all([]), 'crawler');
+        $this->addOptionsFor($this->rpc->jsonRpcCrawlerRepository()->all([]), 'crawler');
     }
 
     /**
@@ -69,7 +71,8 @@ class JsonrpcCommand extends DefaultCommand
      */
     protected function addOptionsForGenerators()
     {
-        $this->addOptionsFor($this->jsonRpcGeneratorRepository()->all([]), 'crawler');
+
+        $this->addOptionsFor($this->rpc->jsonRpcGeneratorRepository()->all([]), 'crawler');
     }
 
     /**
@@ -105,12 +108,10 @@ class JsonrpcCommand extends DefaultCommand
     {
         $this->setAllOptions($input);
 
-        $jsonRpc = new JsonRpc();
-
         /**
          * @var ICrawler[] $crawlers
          */
-        $crawlers = $jsonRpc->jsonRpcCrawlerRepository()->all([]);
+        $crawlers = $this->rpc->jsonRpcCrawlerRepository()->all([]);
         $applicableClasses = [];
         foreach ($crawlers as $crawler) {
             if ($this->isCrawlerAllowed($crawler, $input)) {
@@ -121,7 +122,7 @@ class JsonrpcCommand extends DefaultCommand
         /**
          * @var IGenerator[] $generators[]
          */
-        $generators = $jsonRpc->jsonRpcGeneratorRepository()->all([]);
+        $generators = $this->rpc->jsonRpcGeneratorRepository()->all([]);
         foreach ($generators as $generator) {
             if ($this->isGeneratorAllowed($generator, $input)) {
                 $generator->dispatch($input, $output, $applicableClasses);
