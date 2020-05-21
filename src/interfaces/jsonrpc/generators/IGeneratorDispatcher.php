@@ -13,6 +13,8 @@ use extas\interfaces\jsonrpc\IHasOutput;
  */
 interface IGeneratorDispatcher extends IItem, IHasInput, IHasOutput
 {
+    public const FIELD__OPERATIONS = 'jsonrpc_operations';
+
     /**
      * @param array $applicableClasses
      */

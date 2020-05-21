@@ -16,6 +16,7 @@ class PluginDefaultArguments extends Plugin implements IStageJsonRpcCommand
 {
     public const OPTION__PREFIX = 'prefix';
     public const OPTION__FILTER = 'filter';
+    public const OPTION__CRAWL_PATH = 'path';
     public const OPTION__SPECS_PATH = 'specs';
     public const OPTION__ONLY_EDGE = 'only-edge';
 
@@ -32,6 +33,13 @@ class PluginDefaultArguments extends Plugin implements IStageJsonRpcCommand
                 InputOption::VALUE_OPTIONAL,
                 'Install plugins prefix',
                 static::DEFAULT__PREFIX
+            )
+            ->addOption(
+                static::OPTION__CRAWL_PATH,
+                'c',
+                InputOption::VALUE_OPTIONAL,
+                'Path for searching operations prototypes',
+                getcwd()
             )
             ->addOption(
                 static::OPTION__SPECS_PATH,

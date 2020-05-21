@@ -21,7 +21,7 @@ class ByPluginInstallDefault extends CrawlerDispatcher
      */
     public function __invoke(): array
     {
-        $path = $this->getInput()->getOption(PluginDefaultArguments::OPTION__SPECS_PATH);
+        $path = $this->getInput()->getOption(PluginDefaultArguments::OPTION__CRAWL_PATH);
         $prefix = $this->getInput()->getOption(PluginDefaultArguments::OPTION__PREFIX);
 
         $finder = new Finder();

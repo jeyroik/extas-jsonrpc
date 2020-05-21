@@ -24,7 +24,7 @@ class ByPluginInstallDefault extends GeneratorDispatcher
     public const FIELD__FILTER = 'filter';
     public const FIELD__ONLY_EDGE = 'only_edge';
 
-    protected array $result = [];
+
     protected array $currentProperties;
     protected IPluginInstallDefault $currentPlugin;
 
@@ -33,10 +33,8 @@ class ByPluginInstallDefault extends GeneratorDispatcher
      */
     public function __invoke(array $applicableClasses): void
     {
-        $path = $this->getInput()->getOption(PluginDefaultArguments::OPTION__SPECS_PATH);
-
         if (isset($applicableClasses[Crawler::NAME])) {
-            $this->generate($applicableClasses[Crawler::NAME], $path);
+            $this->generate($applicableClasses[Crawler::NAME]);
         }
     }
 
@@ -46,13 +44,8 @@ class ByPluginInstallDefault extends GeneratorDispatcher
      *
      * @return bool
      */
-    public function generate(array $plugins, string $path): bool
+    public function generate(array $plugins): bool
     {
-        $this->result = [
-            'name' => '[auto-generated] extas/jsonrpc/operations',
-            'jsonrpc_operations' => []
-        ];
-
         foreach ($plugins as $plugin) {
             $properties = $this->generateProperties($plugin);
             $parts = explode(' ', $plugin->getPluginName());
@@ -61,33 +54,9 @@ class ByPluginInstallDefault extends GeneratorDispatcher
             $this->appendCRUDOperations($fullName, $plugin, $dotted, $properties);
         }
 
-        $this->exportGeneratedData($path);
+        $this->exportGeneratedData();
 
         return true;
-    }
-
-    /**
-     * @return bool
-     */
-    public function getOnlyEdge(): bool
-    {
-        return (bool) $this->getInput()->getOption('only-edge');
-    }
-
-    /**
-     * @return string
-     */
-    public function getFilter(): string
-    {
-        return $this->getInput()->getOption('filter');
-    }
-
-    /**
-     * @param string $path
-     */
-    protected function exportGeneratedData(string $path): void
-    {
-        file_put_contents($path, json_encode($this->result));
     }
 
     /**
@@ -103,12 +72,12 @@ class ByPluginInstallDefault extends GeneratorDispatcher
         $methods = $this->grabMethodsFromComments($reflection);
         $methods = empty($methods) ? ['create', 'index', 'update', 'delete'] : $methods;
 
-        if ($this->isApplicablePlugin($fullName)) {
+        if ($this->isApplicableOperation($fullName)) {
             $this->currentPlugin = $plugin;
             $this->currentProperties = $properties;
             foreach ($methods as $method) {
                 $methodConstruct = 'construct' . ucfirst($method);
-                $this->result['jsonrpc_operations'][] = $this->$methodConstruct($dotted);
+                $this->addOperation($this->$methodConstruct($dotted));
             }
         }
     }
@@ -123,21 +92,6 @@ class ByPluginInstallDefault extends GeneratorDispatcher
         preg_match_all('/@jsonrpc_method\s(\S+)/', $comment, $matches);
 
         return empty($matches[1]) ? [] : $matches[1];
-    }
-
-    /**
-     * @param string $fullName
-     * @return bool
-     */
-    protected function isApplicablePlugin(string $fullName): bool
-    {
-        $filter = $this->getFilter();
-
-        if($filter && (strpos($fullName, $filter) === false)) {
-            return false;
-        }
-
-        return true;
     }
 
     /**

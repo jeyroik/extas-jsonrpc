@@ -60,6 +60,12 @@
       "title": "PluginInstallDefault",
       "description": "Парсит плагины на основе PluginInstallDefault",
       "class": "extas\\components\\jsonrpc\\generators\\ByPluginInstallDefault"
+    },
+    {
+      "name": "by.doc.comment",
+      "title": "By doc comment",
+      "description": "Парсит классы с описанием операции в doc-блоке",
+      "class": "extas\\components\\jsonrpc\\generators\\ByDocComment"
     }
   ],
   "jsonrpc_operations": [
