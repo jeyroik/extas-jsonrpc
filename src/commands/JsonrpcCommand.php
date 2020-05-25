@@ -1,10 +1,14 @@
 <?php
 namespace extas\commands;
 
+use extas\components\jsonrpc\crawlers\CrawlerRepository;
+use extas\components\jsonrpc\generators\GeneratorRepository;
 use extas\components\Plugins;
 use extas\interfaces\IDispatcherWrapper;
+use extas\interfaces\IItem;
 use extas\interfaces\jsonrpc\crawlers\ICrawler;
 use extas\interfaces\jsonrpc\generators\IGenerator;
+use extas\interfaces\repositories\IRepository;
 use extas\interfaces\stages\IStageJsonRpcCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -12,9 +16,6 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 /**
  * Class JsonrpcCommand
- *
- * @method jsonRpcCrawlerRepository()
- * @method jsonRpcGeneratorRepository();
  *
  * @package extas\commands
  * @author jeyroik@gmail.com
@@ -63,7 +64,7 @@ class JsonrpcCommand extends DefaultCommand
      */
     protected function addOptionsFroCrawlers()
     {
-        $this->addOptionsFor($this->rpc->jsonRpcCrawlerRepository()->all([]), 'crawler');
+        $this->addOptionsFor($this->jsonRpcCrawlerRepository()->all([]), 'crawler');
     }
 
     /**
@@ -72,11 +73,27 @@ class JsonrpcCommand extends DefaultCommand
     protected function addOptionsForGenerators()
     {
 
-        $this->addOptionsFor($this->rpc->jsonRpcGeneratorRepository()->all([]), 'generator');
+        $this->addOptionsFor($this->jsonRpcGeneratorRepository()->all([]), 'generator');
     }
 
     /**
-     * @param IDispatcherWrapper[] $items
+     * @return IRepository
+     */
+    protected function jsonRpcCrawlerRepository(): IRepository
+    {
+        return new CrawlerRepository();
+    }
+
+    /**
+     * @return IRepository
+     */
+    protected function jsonRpcGeneratorRepository(): IRepository
+    {
+        return new GeneratorRepository();
+    }
+
+    /**
+     * @param IDispatcherWrapper[]|IItem[] $items
      * @param string $prefix
      */
     protected function addOptionsFor(array $items, string $prefix): void
@@ -111,7 +128,7 @@ class JsonrpcCommand extends DefaultCommand
         /**
          * @var ICrawler[] $crawlers
          */
-        $crawlers = $this->rpc->jsonRpcCrawlerRepository()->all([]);
+        $crawlers = $this->jsonRpcCrawlerRepository()->all([]);
         $applicableClasses = [];
         foreach ($crawlers as $crawler) {
             if ($this->isCrawlerAllowed($crawler, $input)) {
@@ -122,7 +139,7 @@ class JsonrpcCommand extends DefaultCommand
         /**
          * @var IGenerator[] $generators[]
          */
-        $generators = $this->rpc->jsonRpcGeneratorRepository()->all([]);
+        $generators = $this->jsonRpcGeneratorRepository()->all([]);
         foreach ($generators as $generator) {
             if ($this->isGeneratorAllowed($generator, $input)) {
                 $generator->dispatch($input, $output, $applicableClasses);
