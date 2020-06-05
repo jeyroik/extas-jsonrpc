@@ -1,8 +1,10 @@
 <?php
 namespace extas\components\jsonrpc\crawlers;
 
+use extas\components\crawlers\CrawlerDispatcher;
+use extas\components\plugins\init\InitSection;
+use extas\components\plugins\install\InstallSection;
 use extas\components\plugins\jsonrpc\PluginDefaultArguments;
-use extas\interfaces\plugins\IPluginInstallDefault;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Finder\SplFileInfo;
 
@@ -48,7 +50,7 @@ class ByPluginInstallDefault extends CrawlerDispatcher
      */
     protected function filterPlugin($plugin, array &$plugins): void
     {
-        if ($plugin instanceof IPluginInstallDefault) {
+        if ($plugin instanceof InstallSection || $plugin instanceof InitSection) {
             $plugins[] = $plugin;
         }
     }

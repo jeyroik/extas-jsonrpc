@@ -1,19 +1,16 @@
 <?php
 namespace tests;
 
-use Dotenv\Dotenv;
+use extas\components\console\TSnuffConsole;
 use extas\components\jsonrpc\crawlers\ByDocComment;
 use extas\components\jsonrpc\crawlers\ByPluginInstallDefault;
+use extas\components\plugins\init\InitGenerators;
+use extas\components\plugins\install\InstallJsonRpcOperations;
 use extas\components\plugins\jsonrpc\PluginDefaultArguments;
-use extas\components\plugins\PluginInstallJsonRpcCrawlers;
-use extas\components\plugins\PluginInstallJsonRpcGenerators;
-use extas\components\plugins\PluginInstallJsonRpcOperations;
+
+use Dotenv\Dotenv;
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\Console\Input\ArrayInput;
-use Symfony\Component\Console\Input\InputDefinition;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\Console\Output\NullOutput;
 
 /**
  * Class CrawlerTest
@@ -23,6 +20,8 @@ use Symfony\Component\Console\Output\NullOutput;
  */
 class CrawlerTest extends TestCase
 {
+    use TSnuffConsole;
+
     protected function setUp(): void
     {
         parent::setUp();
@@ -33,8 +32,8 @@ class CrawlerTest extends TestCase
     public function testCrawlByPluginInstallDefault()
     {
         $crawler = new ByPluginInstallDefault([
-            ByPluginInstallDefault::FIELD__INPUT => $this->getInput(),
-            ByPluginInstallDefault::FIELD__OUTPUT => new NullOutput()
+            ByPluginInstallDefault::FIELD__INPUT => $this->getTestInput(),
+            ByPluginInstallDefault::FIELD__OUTPUT => $this->getOutput()
         ]);
         $plugins = $crawler();
         $this->assertCount(3, $plugins);
@@ -42,15 +41,14 @@ class CrawlerTest extends TestCase
         $this->assertTrue(in_array(
             get_class($plugin),
             [
-                PluginInstallJsonRpcOperations::class,
-                PluginInstallJsonRpcCrawlers::class,
-                PluginInstallJsonRpcGenerators::class
+                InstallJsonRpcOperations::class,
+                InitGenerators::class
             ]
         ));
 
         $crawler = new ByPluginInstallDefault([
-            ByPluginInstallDefault::FIELD__INPUT => $this->getInput('PluginInstallMy', '/tests'),
-            ByPluginInstallDefault::FIELD__OUTPUT => new NullOutput()
+            ByPluginInstallDefault::FIELD__INPUT => $this->getTestInput('PluginInstallMy', '/tests'),
+            ByPluginInstallDefault::FIELD__OUTPUT => $this->getOutput()
         ]);
         $plugins = $crawler();
         $this->assertEmpty($plugins);
@@ -59,15 +57,15 @@ class CrawlerTest extends TestCase
     public function testCrawlByDocComment()
     {
         $crawler = new ByDocComment([
-            ByDocComment::FIELD__INPUT => $this->getInput(),
-            ByDocComment::FIELD__OUTPUT => new NullOutput()
+            ByDocComment::FIELD__INPUT => $this->getTestInput(),
+            ByDocComment::FIELD__OUTPUT => $this->getOutput()
         ]);
         $operations = $crawler();
         $this->assertEmpty($operations, 'Found doc-comments operations in src');
 
         $crawler = new ByDocComment([
-            ByDocComment::FIELD__INPUT => $this->getInput('Operation', '/tests'),
-            ByDocComment::FIELD__OUTPUT => new NullOutput()
+            ByDocComment::FIELD__INPUT => $this->getTestInput('Operation', '/tests'),
+            ByDocComment::FIELD__OUTPUT => $this->getOutput()
         ]);
 
         $operations = $crawler();
@@ -81,20 +79,14 @@ class CrawlerTest extends TestCase
      * @param string $path
      * @return InputInterface
      */
-    protected function getInput(
+    protected function getTestInput(
         string $prefix = 'PluginInstallJson',
         string $path = '/src/components'
     ): InputInterface
     {
-        return new ArrayInput(
-            [
-                '--' . PluginDefaultArguments::OPTION__CRAWL_PATH => getcwd() . $path,
-                '--' . PluginDefaultArguments::OPTION__PREFIX => $prefix
-            ],
-            new InputDefinition([
-                new InputOption(PluginDefaultArguments::OPTION__CRAWL_PATH),
-                new InputOption(PluginDefaultArguments::OPTION__PREFIX)
-            ])
-        );
+        return $this->getInput([
+            PluginDefaultArguments::OPTION__CRAWL_PATH => getcwd() . $path,
+            PluginDefaultArguments::OPTION__PREFIX => $prefix
+        ]);
     }
 }

@@ -1,18 +1,17 @@
 <?php
-namespace extas\components\plugins;
+namespace extas\components\plugins\uninstall;
 
 use extas\components\jsonrpc\generators\Generator;
-use extas\interfaces\jsonrpc\generators\IGeneratorRepository;
 
 /**
- * Class PluginInstallJsonRpcGenerators
+ * Class UninstallGenerators
  *
- * @package extas\components\plugins
+ * @package extas\components\plugins\init
  * @author jeyroik@gmail.com
  */
-class PluginInstallJsonRpcGenerators extends PluginInstallDefault
+class UninstallGenerators extends UninstallSection
 {
-    protected string $selfRepositoryClass = IGeneratorRepository::class;
+    protected string $selfRepositoryClass = 'generatorRepository';
     protected string $selfUID = Generator::FIELD__NAME;
     protected string $selfSection = 'jsonrpc_generators';
     protected string $selfName = 'jsonrpc generator';

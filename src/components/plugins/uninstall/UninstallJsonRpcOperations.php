@@ -1,18 +1,17 @@
 <?php
-namespace extas\components\plugins;
+namespace extas\components\plugins\uninstall;
 
 use extas\components\jsonrpc\operations\Operation;
-use extas\interfaces\jsonrpc\operations\IOperationRepository;
 
 /**
- * Class PluginInstallJsonRpcOperations
+ * Class UninstallJsonRpcOperations
  *
- * @package extas\components\plugins
+ * @package extas\components\plugins\uninstall
  * @author jeyroik@gmail.com
  */
-class PluginInstallJsonRpcOperations extends PluginInstallDefault
+class UninstallJsonRpcOperations extends UninstallSection
 {
-    protected string $selfRepositoryClass = IOperationRepository::class;
+    protected string $selfRepositoryClass = 'jsonRpcOperationRepository';
     protected string $selfUID = Operation::FIELD__NAME;
     protected string $selfSection = 'jsonrpc_operations';
     protected string $selfName = 'jsonrpc operation';

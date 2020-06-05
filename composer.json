@@ -4,7 +4,6 @@
   "require": {
     "slim/slim": "^4.5",
     "slim/psr7": "^1.1",
-    "jeyroik/extas-installer": "2.*",
     "jeyroik/extas-expands": "2.*",
     "jeyroik/extas-protocols": "2.*",
     "jeyroik/extas-repositories-get": "0.*",

@@ -1,15 +1,12 @@
 <?php
 namespace extas\commands;
 
-use extas\components\jsonrpc\crawlers\CrawlerRepository;
-use extas\components\jsonrpc\generators\GeneratorRepository;
-use extas\components\Plugins;
+use extas\components\options\TConfigure;
+use extas\interfaces\crawlers\ICrawler;
 use extas\interfaces\IDispatcherWrapper;
 use extas\interfaces\IItem;
-use extas\interfaces\jsonrpc\crawlers\ICrawler;
 use extas\interfaces\jsonrpc\generators\IGenerator;
 use extas\interfaces\repositories\IRepository;
-use extas\interfaces\stages\IStageJsonRpcCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -17,11 +14,16 @@ use Symfony\Component\Console\Output\OutputInterface;
 /**
  * Class JsonrpcCommand
  *
+ * @method IRepository crawlerRepository()
+ * @method IRepository generatorRepository()
+ *
  * @package extas\commands
  * @author jeyroik@gmail.com
  */
 class JsonrpcCommand extends DefaultCommand
 {
+    use TConfigure;
+
     protected const VERSION = '0.1.0';
     protected string $commandVersion = '0.2.0';
     protected string $commandTitle = 'Extas JSON-RPC spec generator';
@@ -41,30 +43,17 @@ class JsonrpcCommand extends DefaultCommand
             ->setDescription('Create json rpc specs.')
             ->setHelp('This command allows you to create json rpc specs.');
 
-        $this->addOptionsByPlugins();
-        $this->addOptionsFroCrawlers();
+        $this->addOptionsForCrawlers();
         $this->addOptionsForGenerators();
-    }
-
-    /**
-     * Add options for crawling and generation.
-     */
-    protected function addOptionsByPlugins(): void
-    {
-        foreach (Plugins::byStage(IStageJsonRpcCommand::NAME) as $plugin) {
-            /**
-             * @var IStageJsonRpcCommand $plugin
-             */
-            $plugin($this);
-        }
+        $this->configureWithOptions('extas-jsonrpc', []);
     }
 
     /**
      * Add options for crawlers
      */
-    protected function addOptionsFroCrawlers()
+    protected function addOptionsForCrawlers()
     {
-        $this->addOptionsFor($this->jsonRpcCrawlerRepository()->all([]), 'crawler');
+        $this->addOptionsFor($this->crawlerRepository()->all([ICrawler::FIELD__TAGS => 'jsonrpc']), 'crawler');
     }
 
     /**
@@ -72,24 +61,10 @@ class JsonrpcCommand extends DefaultCommand
      */
     protected function addOptionsForGenerators()
     {
-
-        $this->addOptionsFor($this->jsonRpcGeneratorRepository()->all([]), 'generator');
-    }
-
-    /**
-     * @return IRepository
-     */
-    protected function jsonRpcCrawlerRepository(): IRepository
-    {
-        return new CrawlerRepository();
-    }
-
-    /**
-     * @return IRepository
-     */
-    protected function jsonRpcGeneratorRepository(): IRepository
-    {
-        return new GeneratorRepository();
+        $this->addOptionsFor(
+            $this->generatorRepository()->all([IGenerator::FIELD__TAGS => 'jsonrpc']),
+            'generator'
+        );
     }
 
     /**
@@ -128,18 +103,18 @@ class JsonrpcCommand extends DefaultCommand
         /**
          * @var ICrawler[] $crawlers
          */
-        $crawlers = $this->jsonRpcCrawlerRepository()->all([]);
+        $crawlers = $this->crawlerRepository()->all([ICrawler::FIELD__TAGS => 'jsonrpc']);
         $applicableClasses = [];
         foreach ($crawlers as $crawler) {
             if ($this->isCrawlerAllowed($crawler, $input)) {
-                $applicableClasses[$crawler->getName()] = $crawler->dispatch($input, $output);
+                $applicableClasses[$crawler->getName()] = $crawler->dispatch(getcwd(), $input, $output);
             }
         }
 
         /**
          * @var IGenerator[] $generators[]
          */
-        $generators = $this->jsonRpcGeneratorRepository()->all([]);
+        $generators = $this->generatorRepository()->all([IGenerator::FIELD__TAGS => 'jsonrpc']);
         foreach ($generators as $generator) {
             if ($this->isGeneratorAllowed($generator, $input)) {
                 $generator->dispatch($input, $output, $applicableClasses);

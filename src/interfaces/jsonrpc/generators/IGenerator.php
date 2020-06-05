@@ -2,6 +2,7 @@
 namespace extas\interfaces\jsonrpc\generators;
 
 use extas\interfaces\IDispatcherWrapper;
+use extas\interfaces\IHasTags;
 use extas\interfaces\IItem;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -12,7 +13,7 @@ use Symfony\Component\Console\Output\OutputInterface;
  * @package extas\interfaces\jsonrpc\generators
  * @author jeyroik@gmail.com
  */
-interface IGenerator extends IItem, IDispatcherWrapper
+interface IGenerator extends IItem, IDispatcherWrapper, IHasTags
 {
     public const SUBJECT = 'extas.jsonrpc.generator';
 

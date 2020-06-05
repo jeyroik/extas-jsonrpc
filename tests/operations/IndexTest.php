@@ -1,10 +1,13 @@
 <?php
 namespace tests\operations;
 
+use extas\interfaces\jsonrpc\IResponse;
+use extas\interfaces\jsonrpc\operations\IOperationRepository;
+
 use extas\components\conditions\Condition;
 use extas\components\conditions\ConditionLike;
 use extas\components\conditions\ConditionRepository;
-use extas\components\extensions\TSnuffExtensions;
+use extas\components\extensions\ExtensionRepository;
 use extas\components\http\TSnuffHttp;
 use extas\components\jsonrpc\operations\Index;
 use extas\components\jsonrpc\operations\Operation;
@@ -12,10 +15,8 @@ use extas\components\jsonrpc\operations\OperationDispatcher;
 use extas\components\jsonrpc\operations\OperationRepository;
 use extas\components\plugins\TSnuffPlugins;
 use extas\components\protocols\ProtocolRepository;
-use extas\interfaces\conditions\IConditionRepository;
-use extas\interfaces\jsonrpc\IResponse;
-use extas\interfaces\jsonrpc\operations\IOperationRepository;
-use extas\interfaces\repositories\IRepository;
+use extas\components\repositories\TSnuffRepository;
+
 use PHPUnit\Framework\TestCase;
 use Dotenv\Dotenv;
 
@@ -27,12 +28,10 @@ use Dotenv\Dotenv;
  */
 class IndexTest extends TestCase
 {
-    use TSnuffExtensions;
+    use TSnuffRepository;
     use TSnuffPlugins;
     use TSnuffHttp;
 
-    protected IRepository $opRepo;
-    protected IRepository $condRepo;
     protected array $opData = [
         Operation::FIELD__NAME => 'jsonrpc.operation.index',
         Operation::FIELD__CLASS => Index::class,
@@ -48,35 +47,23 @@ class IndexTest extends TestCase
         parent::setUp();
         $env = Dotenv::create(getcwd() . '/tests/');
         $env->load();
-
-        $this->opRepo = new OperationRepository();
-        $this->condRepo = new ConditionRepository();
-        $this->addReposForExt([
-            IOperationRepository::class => OperationRepository::class,
+        $this->registerSnuffRepos([
             'jsonRpcOperationRepository' => OperationRepository::class,
             'protocolRepository' => ProtocolRepository::class,
             'conditionRepository' => ConditionRepository::class,
-            IConditionRepository::class => ConditionRepository::class
-        ]);
-        $this->createRepoExt([
-            IOperationRepository::class,
-            'jsonRpcOperationRepository',
-            'protocolRepository',
-            'conditionRepository'
+            'extensionRepository' => ExtensionRepository::class
         ]);
     }
 
     protected function tearDown(): void
     {
-        $this->opRepo->delete([Operation::FIELD__CLASS => Index::class]);
-        $this->condRepo->delete([Condition::FIELD__NAME => 'like']);
-        $this->deleteSnuffExtensions();
+        $this->unregisterSnuffRepos();
     }
 
     public function testFilter()
     {
-        $operation = $this->opRepo->create(new Operation($this->opData));
-        $this->condRepo->create(new Condition([
+        $operation = $this->createWithSnuffRepo('jsonRpcOperationRepository', new Operation($this->opData));
+        $this->createWithSnuffRepo('conditionRepository', new Condition([
             Condition::FIELD__CLASS => ConditionLike::class,
             Condition::FIELD__ALIASES => ['like', '~'],
             Condition::FIELD__NAME => 'like'

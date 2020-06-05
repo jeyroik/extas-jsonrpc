@@ -2,10 +2,12 @@
 namespace tests;
 
 use extas\commands\JsonrpcCommand;
-use extas\components\extensions\TSnuffExtensions;
-use extas\components\jsonrpc\crawlers\CrawlerRepository;
+use extas\components\crawlers\CrawlerRepository;
+use extas\components\extensions\ExtensionRepository;
 use extas\components\jsonrpc\generators\GeneratorRepository;
 use extas\components\plugins\installers\InstallerCommandPlugin;
+use extas\components\repositories\TSnuffRepository;
+
 use PHPUnit\Framework\TestCase;
 use Dotenv\Dotenv;
 
@@ -17,7 +19,7 @@ use Dotenv\Dotenv;
  */
 class InstallerCommandPluginTest extends TestCase
 {
-    use TSnuffExtensions;
+    use TSnuffRepository;
 
     protected function setUp(): void
     {
@@ -25,16 +27,16 @@ class InstallerCommandPluginTest extends TestCase
         $env = Dotenv::create(getcwd() . '/tests/');
         $env->load();
 
-        $this->addReposForExt([
-            'jsonRpcCrawlerRepository' => CrawlerRepository::class,
-            'jsonRpcGeneratorRepository' => GeneratorRepository::class
+        $this->registerSnuffRepos([
+            'crawlerRepository' => CrawlerRepository::class,
+            'jsonRpcGeneratorRepository' => GeneratorRepository::class,
+            'extensionRepository' => ExtensionRepository::class
         ]);
-        $this->createRepoExt(['jsonRpcCrawlerRepository', 'jsonRpcGeneratorRepository']);
     }
 
     protected function tearDown(): void
     {
-        $this->deleteSnuffExtensions();
+        $this->unregisterSnuffRepos();
     }
 
     public function testInvoke()

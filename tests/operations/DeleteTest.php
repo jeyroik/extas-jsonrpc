@@ -1,17 +1,19 @@
 <?php
 namespace tests\operations;
 
-use extas\components\extensions\TSnuffExtensions;
+use extas\components\extensions\ExtensionRepository;
+use extas\interfaces\jsonrpc\IResponse;
+use extas\interfaces\jsonrpc\operations\IOperation;
+use extas\interfaces\jsonrpc\operations\IOperationDispatcher;
+use extas\interfaces\jsonrpc\operations\IOperationRepository;
+
 use extas\components\http\TSnuffHttp;
 use extas\components\jsonrpc\operations\Delete;
 use extas\components\jsonrpc\operations\Operation;
 use extas\components\jsonrpc\operations\OperationRepository;
 use extas\components\protocols\ProtocolRepository;
-use extas\interfaces\jsonrpc\IResponse;
-use extas\interfaces\jsonrpc\operations\IOperation;
-use extas\interfaces\jsonrpc\operations\IOperationDispatcher;
-use extas\interfaces\jsonrpc\operations\IOperationRepository;
-use extas\interfaces\repositories\IRepository;
+use extas\components\repositories\TSnuffRepository;
+
 use PHPUnit\Framework\TestCase;
 use Dotenv\Dotenv;
 
@@ -23,10 +25,8 @@ use Dotenv\Dotenv;
  */
 class DeleteTest extends TestCase
 {
-    use TSnuffExtensions;
+    use TSnuffRepository;
     use TSnuffHttp;
-
-    protected IRepository $opRepo;
 
     protected array $opData = [
         Operation::FIELD__NAME => 'jsonrpc.operation.delete',
@@ -43,29 +43,24 @@ class DeleteTest extends TestCase
         parent::setUp();
         $env = Dotenv::create(getcwd() . '/tests/');
         $env->load();
-
-        $this->opRepo = new OperationRepository();
-        $this->addReposForExt([
-            IOperationRepository::class => OperationRepository::class,
+        $this->registerSnuffRepos([
             'jsonRpcOperationRepository' => OperationRepository::class,
-            'protocolRepository' => ProtocolRepository::class
-        ]);
-        $this->createRepoExt([
-            IOperationRepository::class,
-            'jsonRpcOperationRepository',
-            'protocolRepository'
+            'protocolRepository' => ProtocolRepository::class,
+            'extensionRepository' => ExtensionRepository::class
         ]);
     }
 
     protected function tearDown(): void
     {
-        $this->opRepo->delete([Operation::FIELD__METHOD => 'delete']);
-        $this->deleteSnuffExtensions();
+        $this->unregisterSnuffRepos();
     }
 
     public function testItemUnknown()
     {
-        $operation = $this->opRepo->create(new Operation($this->opData));
+        /**
+         * @var IOperation $operation
+         */
+        $operation = $this->createWithSnuffRepo('jsonRpcOperationRepository', new Operation($this->opData));
         $dispatcher = $this->getDispatcher($operation, '.delete.unknown');
         $response = $dispatcher();
         $jsonRpcResponse = json_decode($response->getBody(), true);
@@ -85,7 +80,10 @@ class DeleteTest extends TestCase
 
     public function testSuccess()
     {
-        $operation = $this->opRepo->create(new Operation($this->opData));
+        /**
+         * @var IOperation $operation
+         */
+        $operation = $this->createWithSnuffRepo('jsonRpcOperationRepository', new Operation($this->opData));
         $dispatcher = $this->getDispatcher($operation, '.delete');
         $response = $dispatcher();
         $jsonRpcResponse = json_decode($response->getBody(), true);

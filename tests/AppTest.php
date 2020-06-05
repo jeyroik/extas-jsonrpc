@@ -1,22 +1,25 @@
 <?php
 namespace tests;
 
-use extas\components\extensions\TSnuffExtensions;
-use extas\components\http\TSnuffHttp;
-use extas\components\jsonrpc\App;
-use extas\components\jsonrpc\operations\Index;
-use extas\components\jsonrpc\operations\Operation;
-use extas\components\jsonrpc\operations\OperationRepository;
-use extas\components\plugins\TSnuffPlugins;
-use extas\components\protocols\ProtocolRepository;
 use extas\interfaces\jsonrpc\IResponse;
 use extas\interfaces\jsonrpc\operations\IOperationRepository;
 use extas\interfaces\repositories\IRepository;
 use extas\interfaces\stages\IStageJsonRpcInit;
 use extas\interfaces\stages\IStageRunJsonRpc;
+
+use extas\components\extensions\ExtensionRepository;
+use extas\components\http\TSnuffHttp;
+use extas\components\jsonrpc\App;
+use extas\components\jsonrpc\operations\Index;
+use extas\components\jsonrpc\operations\Operation;
+use extas\components\jsonrpc\operations\OperationRepository;
+use extas\components\plugins\PluginRepository;
+use extas\components\plugins\TSnuffPlugins;
+use extas\components\protocols\ProtocolRepository;
+use extas\components\repositories\TSnuffRepository;
+
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseInterface;
-use Slim\Psr7\Response;
 use Dotenv\Dotenv;
 
 /**
@@ -27,7 +30,7 @@ use Dotenv\Dotenv;
  */
 class AppTest extends TestCase
 {
-    use TSnuffExtensions;
+    use TSnuffRepository;
     use TSnuffPlugins;
     use TSnuffHttp;
 
@@ -47,20 +50,17 @@ class AppTest extends TestCase
         parent::setUp();
         $env = Dotenv::create(getcwd() . '/tests/');
         $env->load();
-
-        $this->opRepo = new OperationRepository();
-        $this->addReposForExt([
-            IOperationRepository::class => OperationRepository::class,
+        $this->registerSnuffRepos([
             'jsonRpcOperationRepository' => OperationRepository::class,
-            'protocolRepository' => ProtocolRepository::class
+            'protocolRepository' => ProtocolRepository::class,
+            'extensionRepository' => ExtensionRepository::class,
+            'pluginRepository' => PluginRepository::class
         ]);
     }
 
     protected function tearDown(): void
     {
-        $this->deleteSnuffPlugins();
-        $this->deleteSnuffExtensions();
-        $this->opRepo->delete([Operation::FIELD__NAME => 'jsonrpc.operation.index']);
+        $this->unregisterSnuffRepos();
     }
 
     public function testConstructing()
@@ -173,12 +173,7 @@ class AppTest extends TestCase
      */
     protected function initOperationEnv(): void
     {
-        $this->opRepo->create(new Operation($this->opData));
-        $this->createRepoExt([
-            'jsonRpcOperationRepository',
-            'protocolRepository',
-            IOperationRepository::class
-        ]);
+        $this->createWithSnuffRepo('jsonRpcOperationRepository', new Operation($this->opData));
         $this->createPluginEmpty([IStageJsonRpcInit::NAME, IStageRunJsonRpc::NAME__BEFORE]);
     }
 }
