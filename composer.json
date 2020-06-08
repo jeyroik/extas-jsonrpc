@@ -18,7 +18,8 @@
     "phpunit/phpunit": "^9",
     "jeyroik/extas-repositories-mongo": "1.*",
     "jeyroik/extas-snuffbox": "0.*",
-    "phpstan/phpstan": "0.*"
+    "phpstan/phpstan": "0.*",
+    "jeyroik/extas-installer": "*"
   },
   "autoload": {
     "psr-4": {
