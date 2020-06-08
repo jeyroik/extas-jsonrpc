@@ -29,6 +29,7 @@ class InstallerCommandPluginTest extends TestCase
 
         $this->registerSnuffRepos([
             'crawlerRepository' => CrawlerRepository::class,
+            'generatorRepository' => GeneratorRepository::class,
             'jsonRpcGeneratorRepository' => GeneratorRepository::class,
             'extensionRepository' => ExtensionRepository::class
         ]);

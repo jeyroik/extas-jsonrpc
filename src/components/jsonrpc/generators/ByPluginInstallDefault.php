@@ -128,8 +128,8 @@ class ByPluginInstallDefault extends GeneratorDispatcher
      */
     protected function generateProperties(IStageInstallSection $plugin): array
     {
-        $repoName = $this->getCurrentPluginProperty('selfRepositoryClass');
-        $reflection = new \ReflectionClass($this->$repoName());
+        $itemClass = $this->getCurrentPluginProperty('selfItemClass');
+        $reflection = new \ReflectionClass($itemClass);
         $properties = $this->grabPropertiesFromComments($reflection);
 
         if (empty($properties)) {
