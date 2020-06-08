@@ -36,7 +36,7 @@ class CrawlerTest extends TestCase
             ByPluginInstallDefault::FIELD__OUTPUT => $this->getOutput()
         ]);
         $plugins = $crawler();
-        $this->assertCount(3, $plugins);
+        $this->assertCount(1, $plugins);
         $plugin = array_shift($plugins);
         $this->assertTrue(in_array(
             get_class($plugin),
