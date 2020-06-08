@@ -5,11 +5,9 @@ use extas\components\jsonrpc\operations\Create;
 use extas\components\jsonrpc\operations\Delete;
 use extas\components\jsonrpc\operations\Index;
 use extas\components\jsonrpc\operations\Update;
-use extas\components\plugins\jsonrpc\PluginDefaultArguments;
 use extas\interfaces\jsonrpc\operations\IOperation;
-use extas\interfaces\plugins\IPlugin;
-use extas\interfaces\plugins\IPluginInstallDefault;
 use extas\components\jsonrpc\crawlers\ByPluginInstallDefault as Crawler;
+use extas\interfaces\stages\IStageInstallSection;
 
 /**
  * Class ByPluginInstallDefault
@@ -23,13 +21,17 @@ class ByPluginInstallDefault extends GeneratorDispatcher
 
     public const FIELD__FILTER = 'filter';
     public const FIELD__ONLY_EDGE = 'only_edge';
-
-
     protected array $currentProperties;
-    protected IPluginInstallDefault $currentPlugin;
+    protected IStageInstallSection $currentPlugin;
+
+    /**
+     * @var \ReflectionProperty[]
+     */
+    protected array $currentPluginProperties = [];
 
     /**
      * @param array $applicableClasses
+     * @throws \Exception
      */
     public function __invoke(array $applicableClasses): void
     {
@@ -39,16 +41,16 @@ class ByPluginInstallDefault extends GeneratorDispatcher
     }
 
     /**
-     * @param IPluginInstallDefault[]|IPlugin[] $plugins
-     * @param string $path
-     *
+     * @param IStageInstallSection[] $plugins
      * @return bool
+     * @throws \Exception
      */
     public function generate(array $plugins): bool
     {
         foreach ($plugins as $plugin) {
+            $this->grabCurrentPluginProperties($plugin);
             $properties = $this->generateProperties($plugin);
-            $parts = explode(' ', $plugin->getPluginName());
+            $parts = explode(' ', $this->getCurrentPluginProperty('selfName'));
             $fullName = implode('.', $parts);
             $dotted = $this->getOnlyEdge() ? array_pop($parts) : $fullName;
             $this->appendCRUDOperations($fullName, $plugin, $dotted, $properties);
@@ -60,6 +62,34 @@ class ByPluginInstallDefault extends GeneratorDispatcher
     }
 
     /**
+     * @param string $name
+     * @return mixed
+     * @throws \Exception
+     */
+    protected function getCurrentPluginProperty(string $name)
+    {
+        if (!isset($this->currentPluginProperties[$name])) {
+            throw new \Exception('Missed current plugin property "' . $name . '"');
+        }
+
+        return $this->currentPluginProperties[$name]->getValue();
+    }
+
+    /**
+     * @param IStageInstallSection $plugin
+     * @throws \ReflectionException
+     */
+    protected function grabCurrentPluginProperties(IStageInstallSection $plugin): void
+    {
+        $pluginReflection = new \ReflectionClass($plugin);
+        $this->currentPluginProperties = array_column(
+            $pluginReflection->getProperties(\ReflectionProperty::IS_PROTECTED),
+            null,
+            'name'
+        );
+    }
+
+    /**
      * @param string $fullName
      * @param $plugin
      * @param $dotted
@@ -68,7 +98,7 @@ class ByPluginInstallDefault extends GeneratorDispatcher
      */
     protected function appendCRUDOperations(string $fullName, $plugin, $dotted, $properties): void
     {
-        $reflection = new \ReflectionClass($plugin->getPluginItemClass());
+        $reflection = new \ReflectionClass($this->getCurrentPluginProperty('selfItemClass'));
         $methods = $this->grabMethodsFromComments($reflection);
         $methods = empty($methods) ? ['create', 'index', 'update', 'delete'] : $methods;
 
@@ -95,14 +125,29 @@ class ByPluginInstallDefault extends GeneratorDispatcher
     }
 
     /**
-     * @param IPluginInstallDefault $plugin
+     * @param IStageInstallSection $plugin
      *
      * @return array
      * @throws
      */
-    protected function generateProperties(IPluginInstallDefault $plugin): array
+    protected function generateProperties(IStageInstallSection $plugin): array
     {
-        $reflection = new \ReflectionClass($plugin->getPluginItemClass());
+        $pluginReflection = new \ReflectionClass($plugin);
+
+        /**
+         * @var \ReflectionProperty[] $properties
+         */
+        $properties = array_column(
+            $pluginReflection->getProperties(\ReflectionProperty::IS_PROTECTED),
+            null,
+            'name'
+        );
+
+        if (!isset($properties['selfRepositoryClass'])) {
+            throw new \Exception('Missed selfRepositoryClass protected property');
+        }
+
+        $reflection = new \ReflectionClass($properties['selfRepositoryClass']->getValue());
         $properties = $this->grabPropertiesFromComments($reflection);
 
         if (empty($properties)) {
@@ -179,8 +224,8 @@ class ByPluginInstallDefault extends GeneratorDispatcher
 
     /**
      * @param string $name
-     *
      * @return array
+     * @throws \Exception
      */
     protected function constructCreate(string $name)
     {
@@ -189,8 +234,8 @@ class ByPluginInstallDefault extends GeneratorDispatcher
 
     /**
      * @param string $name
-     *
      * @return array
+     * @throws \Exception
      */
     protected function constructIndex(string $name)
     {
@@ -220,8 +265,8 @@ class ByPluginInstallDefault extends GeneratorDispatcher
 
     /**
      * @param string $name
-     *
      * @return array
+     * @throws \Exception
      */
     protected function constructUpdate(string $name)
     {
@@ -230,8 +275,8 @@ class ByPluginInstallDefault extends GeneratorDispatcher
 
     /**
      * @param string $name
-     *
      * @return array
+     * @throws \Exception
      */
     protected function constructDelete(string $name)
     {
@@ -244,6 +289,7 @@ class ByPluginInstallDefault extends GeneratorDispatcher
      * @param string $operationClass
      * @param array $specs
      * @return array
+     * @throws \Exception
      */
     protected function constructCRUDOperation(
         string $crudName,
@@ -267,14 +313,24 @@ class ByPluginInstallDefault extends GeneratorDispatcher
 
         return [
             IOperation::FIELD__NAME => $operationName . '.' . $crudName,
-            IOperation::FIELD__TITLE => ucfirst($crudName) . ' ' . $this->currentPlugin->getPluginName(),
-            IOperation::FIELD__DESCRIPTION => ucfirst($crudName) . ' ' . $this->currentPlugin->getPluginName(),
+            IOperation::FIELD__TITLE => $this->getHighName($crudName),
+            IOperation::FIELD__DESCRIPTION => $this->getHighName($crudName),
             IOperation::FIELD__METHOD => $crudName,
             IOperation::FIELD__ITEM_NAME => $operationName,
-            IOperation::FIELD__ITEM_CLASS => $this->currentPlugin->getPluginItemClass(),
-            IOperation::FIELD__ITEM_REPO => $this->currentPlugin->getPluginRepositoryInterface(),
+            IOperation::FIELD__ITEM_CLASS => $this->getCurrentPluginProperty('selfItemClass'),
+            IOperation::FIELD__ITEM_REPO => $this->getCurrentPluginProperty('selfRepositoryClass'),
             IOperation::FIELD__CLASS => $operationClass,
             IOperation::FIELD__SPEC => $specs
         ];
+    }
+
+    /**
+     * @param string $crudName
+     * @return string
+     * @throws \Exception
+     */
+    protected function getHighName(string $crudName): string
+    {
+        return ucfirst($crudName) . ' ' . $this->getCurrentPluginProperty('selfName');
     }
 }
