@@ -2,9 +2,8 @@
 namespace extas\components\jsonrpc\generators;
 
 use extas\components\Item;
-use extas\components\jsonrpc\THasInput;
-use extas\components\jsonrpc\THasOutput;
 use extas\components\plugins\jsonrpc\PluginDefaultArguments;
+use extas\components\THasIO;
 use extas\interfaces\jsonrpc\generators\IGeneratorDispatcher;
 
 /**
@@ -15,8 +14,7 @@ use extas\interfaces\jsonrpc\generators\IGeneratorDispatcher;
  */
 abstract class GeneratorDispatcher extends Item implements IGeneratorDispatcher
 {
-    use THasInput;
-    use THasOutput;
+    use THasIO;
 
     protected array $result = [
         'name' => '[ auto-generated ]',
