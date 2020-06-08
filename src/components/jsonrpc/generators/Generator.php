@@ -4,9 +4,9 @@ namespace extas\components\jsonrpc\generators;
 use extas\components\Item;
 use extas\components\TDispatcherWrapper;
 use extas\components\THasTags;
+use extas\interfaces\IHasInput;
+use extas\interfaces\IHasOutput;
 use extas\interfaces\jsonrpc\generators\IGenerator;
-use extas\interfaces\jsonrpc\IHasInput;
-use extas\interfaces\jsonrpc\IHasOutput;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 

@@ -1,9 +1,8 @@
 <?php
 namespace extas\interfaces\jsonrpc\generators;
 
+use extas\interfaces\IHasIO;
 use extas\interfaces\IItem;
-use extas\interfaces\jsonrpc\IHasInput;
-use extas\interfaces\jsonrpc\IHasOutput;
 
 /**
  * Interface IGeneratorDispatcher
@@ -11,7 +10,7 @@ use extas\interfaces\jsonrpc\IHasOutput;
  * @package extas\interfaces\jsonrpc\generators
  * @author jeyroik@gmail.com
  */
-interface IGeneratorDispatcher extends IItem, IHasInput, IHasOutput
+interface IGeneratorDispatcher extends IItem, IHasIO
 {
     public const FIELD__OPERATIONS = 'jsonrpc_operations';
 
