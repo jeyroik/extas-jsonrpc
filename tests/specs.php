@@ -2,7 +2,6 @@
 
 use extas\interfaces\jsonrpc\operations\IOperation;
 use extas\components\jsonrpc\operations\Operation;
-use extas\interfaces\jsonrpc\operations\IOperationRepository;
 use extas\components\jsonrpc\operations\Create;
 use extas\components\jsonrpc\operations\Index;
 use extas\components\jsonrpc\operations\Update;
@@ -16,7 +15,7 @@ return [
         IOperation::FIELD__METHOD => 'create',
         IOperation::FIELD__ITEM_NAME => 'jsonrpc.operation',
         IOperation::FIELD__ITEM_CLASS => Operation::class,
-        IOperation::FIELD__ITEM_REPO => IOperationRepository::class,
+        IOperation::FIELD__ITEM_REPO => 'jsonRpcOperationRepository',
         IOperation::FIELD__CLASS => Create::class,
         IOperation::FIELD__SPEC => [
             "request" => [
@@ -61,7 +60,7 @@ return [
         IOperation::FIELD__METHOD => 'index',
         IOperation::FIELD__ITEM_NAME => 'jsonrpc.operation',
         IOperation::FIELD__ITEM_CLASS => Operation::class,
-        IOperation::FIELD__ITEM_REPO => IOperationRepository::class,
+        IOperation::FIELD__ITEM_REPO => 'jsonRpcOperationRepository',
         IOperation::FIELD__CLASS => Index::class,
         IOperation::FIELD__SPEC => [
             "request" => [
@@ -102,7 +101,7 @@ return [
         IOperation::FIELD__METHOD => 'update',
         IOperation::FIELD__ITEM_NAME => 'jsonrpc.operation',
         IOperation::FIELD__ITEM_CLASS => Operation::class,
-        IOperation::FIELD__ITEM_REPO => IOperationRepository::class,
+        IOperation::FIELD__ITEM_REPO => 'jsonRpcOperationRepository',
         IOperation::FIELD__CLASS => Update::class,
         IOperation::FIELD__SPEC => [
             "request" => [
@@ -146,7 +145,7 @@ return [
         IOperation::FIELD__METHOD => 'delete',
         IOperation::FIELD__ITEM_NAME => 'jsonrpc.operation',
         IOperation::FIELD__ITEM_CLASS => Operation::class,
-        IOperation::FIELD__ITEM_REPO => IOperationRepository::class,
+        IOperation::FIELD__ITEM_REPO => 'jsonRpcOperationRepository',
         IOperation::FIELD__CLASS => Delete::class,
         IOperation::FIELD__SPEC => [
             "request" => [

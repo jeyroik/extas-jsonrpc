@@ -5,15 +5,14 @@ use extas\components\Item;
 use extas\interfaces\jsonrpc\IRouter;
 use extas\interfaces\jsonrpc\operations\IOperation;
 use extas\interfaces\jsonrpc\operations\IOperationDispatcher;
-use extas\interfaces\jsonrpc\operations\IOperationRepository;
-
+use extas\interfaces\repositories\IRepository;
 use extas\interfaces\stages\IStageRunJsonRpc;
 use Psr\Http\Message\ResponseInterface;
 
 /**
  * Class Router
  *
- * @method jsonRpcOperationRepository() IOperationRepository
+ * @method IRepository jsonRpcOperationRepository()
  *
  * @package extas\components\jsonrpc
  * @author jeyroik@gmail.com
@@ -71,7 +70,6 @@ class Router extends Item implements IRouter
         $routeName = $jRpcRequest->getMethod(static::ROUTE__DEFAULT);
 
         /**
-         * @var $repo IOperationRepository
          * @var $operation IOperation
          */
         $repo = $this->jsonRpcOperationRepository();

@@ -2,7 +2,6 @@
 namespace tests\operations;
 
 use extas\interfaces\jsonrpc\IResponse;
-use extas\interfaces\jsonrpc\operations\IOperationRepository;
 
 use extas\components\conditions\Condition;
 use extas\components\conditions\ConditionLike;
@@ -38,7 +37,7 @@ class IndexTest extends TestCase
         Operation::FIELD__METHOD => 'index',
         Operation::FIELD__SPEC => [],
         Operation::FIELD__ITEM_CLASS => Operation::class,
-        Operation::FIELD__ITEM_REPO => IOperationRepository::class,
+        Operation::FIELD__ITEM_REPO => 'jsonRpcOperationRepository',
         Operation::FIELD__ITEM_NAME => 'jsonrpc operation'
     ];
 

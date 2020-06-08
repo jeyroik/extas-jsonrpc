@@ -2,7 +2,6 @@
 namespace tests;
 
 use extas\interfaces\jsonrpc\IResponse;
-use extas\interfaces\jsonrpc\operations\IOperationRepository;
 use extas\interfaces\repositories\IRepository;
 use extas\interfaces\stages\IStageJsonRpcInit;
 use extas\interfaces\stages\IStageRunJsonRpc;
@@ -41,7 +40,7 @@ class AppTest extends TestCase
         Operation::FIELD__METHOD => 'index',
         Operation::FIELD__SPEC => [],
         Operation::FIELD__ITEM_CLASS => Operation::class,
-        Operation::FIELD__ITEM_REPO => IOperationRepository::class,
+        Operation::FIELD__ITEM_REPO => 'jsonRpcOperationRepository',
         Operation::FIELD__ITEM_NAME => 'jsonrpc operation'
     ];
 

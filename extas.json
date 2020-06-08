@@ -91,7 +91,7 @@
       "method": "index",
       "item_name": "operation",
       "item_class": "extas\\components\\jsonrpc\\operations\\Operation",
-      "item_repo": "extas\\interfaces\\jsonrpc\\operations\\IOperationRepository",
+      "item_repo": "jsonRpcOperationRepository",
       "class": "extas\\components\\jsonrpc\\operations\\Index",
       "spec": {
         "request": {

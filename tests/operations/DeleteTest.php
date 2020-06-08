@@ -5,7 +5,6 @@ use extas\components\extensions\ExtensionRepository;
 use extas\interfaces\jsonrpc\IResponse;
 use extas\interfaces\jsonrpc\operations\IOperation;
 use extas\interfaces\jsonrpc\operations\IOperationDispatcher;
-use extas\interfaces\jsonrpc\operations\IOperationRepository;
 
 use extas\components\http\TSnuffHttp;
 use extas\components\jsonrpc\operations\Delete;
@@ -34,7 +33,7 @@ class DeleteTest extends TestCase
         Operation::FIELD__METHOD => 'delete',
         Operation::FIELD__SPEC => [],
         Operation::FIELD__ITEM_CLASS => Operation::class,
-        Operation::FIELD__ITEM_REPO => IOperationRepository::class,
+        Operation::FIELD__ITEM_REPO => 'jsonRpcOperationRepository',
         Operation::FIELD__ITEM_NAME => 'jsonrpc operation'
     ];
 
