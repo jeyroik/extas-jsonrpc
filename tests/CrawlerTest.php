@@ -80,7 +80,7 @@ class CrawlerTest extends TestCase
      * @return InputInterface
      */
     protected function getTestInput(
-        string $prefix = 'PluginInstallJson',
+        string $prefix = 'InstallJson',
         string $path = '/src/components'
     ): InputInterface
     {
