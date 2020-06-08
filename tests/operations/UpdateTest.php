@@ -7,8 +7,7 @@ use extas\interfaces\jsonrpc\operations\IOperationDispatcher;
 
 use extas\components\extensions\ExtensionRepository;
 use extas\components\http\TSnuffHttp;
-use extas\components\jsonrpc\operations\Operation;
-use extas\components\jsonrpc\operations\OperationRepository;
+use extas\components\operations\Operation;
 use extas\components\jsonrpc\operations\Update;
 use extas\components\plugins\Plugin;
 use extas\components\protocols\ProtocolRepository;

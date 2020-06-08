@@ -4,7 +4,7 @@ namespace tests;
 use extas\commands\JsonrpcCommand;
 use extas\components\crawlers\CrawlerRepository;
 use extas\components\extensions\ExtensionRepository;
-use extas\components\jsonrpc\generators\GeneratorRepository;
+use extas\components\generators\GeneratorRepository;
 use extas\components\options\CommandOptionRepository;
 use extas\components\plugins\installers\InstallerCommandPlugin;
 use extas\components\repositories\TSnuffRepository;
@@ -31,7 +31,6 @@ class InstallerCommandPluginTest extends TestCase
         $this->registerSnuffRepos([
             'crawlerRepository' => CrawlerRepository::class,
             'generatorRepository' => GeneratorRepository::class,
-            'jsonRpcGeneratorRepository' => GeneratorRepository::class,
             'extensionRepository' => ExtensionRepository::class,
             'commandOptionRepository' => CommandOptionRepository::class
         ]);

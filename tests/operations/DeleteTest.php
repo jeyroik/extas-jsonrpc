@@ -8,8 +8,7 @@ use extas\interfaces\jsonrpc\operations\IOperationDispatcher;
 
 use extas\components\http\TSnuffHttp;
 use extas\components\jsonrpc\operations\Delete;
-use extas\components\jsonrpc\operations\Operation;
-use extas\components\jsonrpc\operations\OperationRepository;
+use extas\components\operations\Operation;
 use extas\components\protocols\ProtocolRepository;
 use extas\components\repositories\TSnuffRepository;
 

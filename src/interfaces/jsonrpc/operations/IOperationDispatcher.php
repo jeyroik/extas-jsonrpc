@@ -1,7 +1,7 @@
 <?php
 namespace extas\interfaces\jsonrpc\operations;
 
-use extas\interfaces\IItem;
+use extas\interfaces\operations\IOperationDispatcher as BaseInterface;
 use extas\interfaces\jsonrpc\IHasPsrRequest;
 use extas\interfaces\jsonrpc\IHasPsrResponse;
 use Psr\Http\Message\ResponseInterface;
@@ -12,7 +12,7 @@ use Psr\Http\Message\ResponseInterface;
  * @package extas\interfaces\jsonrpc\operations
  * @author jeyroik@gmail.com
  */
-interface IOperationDispatcher extends IItem, IHasPsrRequest, IHasPsrResponse
+interface IOperationDispatcher extends BaseInterface, IHasPsrRequest, IHasPsrResponse
 {
     const SUBJECT = 'extas.jsonrpc.operation.dispatcher';
     const FIELD__OPERATION = 'operation';
@@ -21,9 +21,4 @@ interface IOperationDispatcher extends IItem, IHasPsrRequest, IHasPsrResponse
      * @return ResponseInterface
      */
     public function __invoke(): ResponseInterface;
-
-    /**
-     * @return IOperation|null
-     */
-    public function getOperation(): ?IOperation;
 }

@@ -8,8 +8,7 @@ use extas\interfaces\jsonrpc\operations\IOperationDispatcher;
 use extas\components\extensions\ExtensionRepository;
 use extas\components\http\TSnuffHttp;
 use extas\components\jsonrpc\operations\Create;
-use extas\components\jsonrpc\operations\Operation;
-use extas\components\jsonrpc\operations\OperationRepository;
+use extas\components\operations\Operation;
 use extas\components\plugins\Plugin;
 use extas\components\protocols\ProtocolRepository;
 use extas\components\repositories\TSnuffRepository;
@@ -32,7 +31,7 @@ class CreateTest extends TestCase
         Operation::FIELD__NAME => 'jsonrpc.operation.create',
         Operation::FIELD__CLASS => Create::class,
         Operation::FIELD__METHOD => 'create',
-        Operation::FIELD__SPEC => [],
+        Operation::FIELD__SPECS => [],
         Operation::FIELD__ITEM_CLASS => Plugin::class,
         Operation::FIELD__ITEM_REPO => 'jsonRpcOperationRepository',
         Operation::FIELD__ITEM_NAME => 'jsonrpc operation'

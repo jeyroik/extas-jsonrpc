@@ -9,10 +9,6 @@
     {
       "interface": "jsonRpcCrawlerRepository",
       "class": "extas\\components\\jsonrpc\\crawlers\\CrawlerRepository"
-    },
-    {
-      "interface": "jsonRpcGeneratorRepository",
-      "class": "extas\\components\\jsonrpc\\generators\\GeneratorRepository"
     }
   ],
   "plugins": [
@@ -21,16 +17,8 @@
       "stage": "extas.install.section.jsonrpc_operations"
     },
     {
-      "class": "extas\\components\\plugins\\init\\InitGenerators",
-      "stage": "extas.init.section.generators"
-    },
-    {
       "class": "extas\\components\\plugins\\uninstall\\UninstallJsonRpcOperations",
       "stage": "extas.uninstall.section.jsonrpc_operations"
-    },
-    {
-      "class": "extas\\components\\plugins\\uninstall\\UninstallGenerators",
-      "stage": "extas.uninstall.section.generators"
     },
     {
       "class": "extas\\components\\plugins\\installers\\InstallerCommandPlugin",
@@ -48,8 +36,7 @@
       "subject": "*",
       "methods": [
         "jsonRpcOperationRepository",
-        "jsonRpcCrawlerRepository",
-        "jsonRpcGeneratorRepository"
+        "jsonRpcCrawlerRepository"
       ]
     }
   ],
@@ -69,10 +56,10 @@
   ],
   "generators": [
     {
-      "name": "by.plugin.install.default",
-      "title": "PluginInstallDefault",
-      "description": "Парсит плагины на основе PluginInstallDefault",
-      "class": "extas\\components\\jsonrpc\\generators\\ByPluginInstallDefault",
+      "name": "by.install.section",
+      "title": "By install section",
+      "description": "Парсит плагины на основе InstallSection",
+      "class": "extas\\components\\jsonrpc\\generators\\ByInstallSection",
       "tags": ["jsonrpc"]
     },
     {

@@ -1,7 +1,7 @@
 <?php
 namespace extas\components\plugins\install;
 
-use extas\components\jsonrpc\operations\Operation;
+use extas\components\operations\JsonRpcOperation;
 
 /**
  * Class InstallJsonRpcOperations
@@ -12,8 +12,8 @@ use extas\components\jsonrpc\operations\Operation;
 class InstallJsonRpcOperations extends InstallSection
 {
     protected string $selfRepositoryClass = 'jsonRpcOperationRepository';
-    protected string $selfUID = Operation::FIELD__NAME;
+    protected string $selfUID = JsonRpcOperation::FIELD__NAME;
     protected string $selfSection = 'jsonrpc_operations';
     protected string $selfName = 'jsonrpc operation';
-    protected string $selfItemClass = Operation::class;
+    protected string $selfItemClass = JsonRpcOperation::class;
 }

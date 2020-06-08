@@ -10,8 +10,7 @@ use extas\components\extensions\ExtensionRepository;
 use extas\components\http\TSnuffHttp;
 use extas\components\jsonrpc\App;
 use extas\components\jsonrpc\operations\Index;
-use extas\components\jsonrpc\operations\Operation;
-use extas\components\jsonrpc\operations\OperationRepository;
+use extas\components\operations\Operation;
 use extas\components\plugins\PluginRepository;
 use extas\components\plugins\TSnuffPlugins;
 use extas\components\protocols\ProtocolRepository;
@@ -38,7 +37,7 @@ class AppTest extends TestCase
         Operation::FIELD__NAME => 'jsonrpc.operation.index',
         Operation::FIELD__CLASS => Index::class,
         Operation::FIELD__METHOD => 'index',
-        Operation::FIELD__SPEC => [],
+        Operation::FIELD__SPECS => [],
         Operation::FIELD__ITEM_CLASS => Operation::class,
         Operation::FIELD__ITEM_REPO => 'jsonRpcOperationRepository',
         Operation::FIELD__ITEM_NAME => 'jsonrpc operation'
