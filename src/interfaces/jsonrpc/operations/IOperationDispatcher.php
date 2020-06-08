@@ -14,7 +14,6 @@ use Psr\Http\Message\ResponseInterface;
  */
 interface IOperationDispatcher extends BaseInterface, IHasPsrRequest, IHasPsrResponse
 {
-    const SUBJECT = 'extas.jsonrpc.operation.dispatcher';
     const FIELD__OPERATION = 'operation';
 
     /**
