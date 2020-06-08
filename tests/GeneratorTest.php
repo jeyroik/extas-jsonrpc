@@ -2,12 +2,15 @@
 namespace tests;
 
 use extas\components\console\TSnuffConsole;
+use extas\components\crawlers\CrawlerRepository;
 use extas\components\jsonrpc\generators\ByDocComment;
 use extas\components\jsonrpc\generators\ByPluginInstallDefault;
+use extas\components\jsonrpc\operations\OperationRepository;
 use extas\components\plugins\install\InstallJsonRpcOperations;
 use extas\components\plugins\jsonrpc\PluginDefaultArguments;
 
 use Dotenv\Dotenv;
+use extas\components\repositories\TSnuffRepository;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Input\InputInterface;
 
@@ -20,12 +23,22 @@ use Symfony\Component\Console\Input\InputInterface;
 class GeneratorTest extends TestCase
 {
     use TSnuffConsole;
+    use TSnuffRepository;
 
     protected function setUp(): void
     {
         parent::setUp();
         $env = Dotenv::create(getcwd() . '/tests/');
         $env->load();
+        $this->registerSnuffRepos([
+            'jsonRpcOperationRepository' => OperationRepository::class,
+            'crawlerRepository' => CrawlerRepository::class
+        ]);
+    }
+
+    protected function tearDown(): void
+    {
+        $this->unregisterSnuffRepos();
     }
 
     public function testGenerateByPluginInstallDefault()
