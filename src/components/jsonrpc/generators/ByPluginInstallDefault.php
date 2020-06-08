@@ -72,7 +72,7 @@ class ByPluginInstallDefault extends GeneratorDispatcher
             throw new \Exception('Missed current plugin property "' . $name . '"');
         }
 
-        return $this->currentPluginProperties[$name]->getValue();
+        return $this->currentPluginProperties[$name];
     }
 
     /**
@@ -82,11 +82,7 @@ class ByPluginInstallDefault extends GeneratorDispatcher
     protected function grabCurrentPluginProperties(IStageInstallSection $plugin): void
     {
         $pluginReflection = new \ReflectionClass($plugin);
-        $this->currentPluginProperties = array_column(
-            $pluginReflection->getProperties(\ReflectionProperty::IS_PROTECTED),
-            null,
-            'name'
-        );
+        $this->currentPluginProperties = $pluginReflection->getDefaultProperties();
     }
 
     /**
@@ -132,22 +128,7 @@ class ByPluginInstallDefault extends GeneratorDispatcher
      */
     protected function generateProperties(IStageInstallSection $plugin): array
     {
-        $pluginReflection = new \ReflectionClass($plugin);
-
-        /**
-         * @var \ReflectionProperty[] $properties
-         */
-        $properties = array_column(
-            $pluginReflection->getProperties(\ReflectionProperty::IS_PROTECTED),
-            null,
-            'name'
-        );
-
-        if (!isset($properties['selfRepositoryClass'])) {
-            throw new \Exception('Missed selfRepositoryClass protected property');
-        }
-
-        $reflection = new \ReflectionClass($properties['selfRepositoryClass']->getValue());
+        $reflection = new \ReflectionClass($this->getCurrentPluginProperty('selfRepositoryName'));
         $properties = $this->grabPropertiesFromComments($reflection);
 
         if (empty($properties)) {
