@@ -14,8 +14,6 @@ use Psr\Http\Message\ResponseInterface;
  */
 interface IOperationDispatcher extends BaseInterface, IHasPsrRequest, IHasPsrResponse
 {
-    const FIELD__OPERATION = 'operation';
-
     /**
      * @return ResponseInterface
      */
