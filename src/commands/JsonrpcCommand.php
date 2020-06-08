@@ -53,7 +53,10 @@ class JsonrpcCommand extends DefaultCommand
      */
     protected function addOptionsForCrawlers()
     {
-        $this->addOptionsFor($this->crawlerRepository()->all([ICrawler::FIELD__TAGS => 'jsonrpc']), 'crawler');
+        $this->addOptionsFor(
+            $this->getRepo('crawlerRepository')->all([ICrawler::FIELD__TAGS => 'jsonrpc']),
+            'crawler'
+        );
     }
 
     /**
@@ -62,7 +65,7 @@ class JsonrpcCommand extends DefaultCommand
     protected function addOptionsForGenerators()
     {
         $this->addOptionsFor(
-            $this->generatorRepository()->all([IGenerator::FIELD__TAGS => 'jsonrpc']),
+            $this->getRepo('generatorRepository')->all([IGenerator::FIELD__TAGS => 'jsonrpc']),
             'generator'
         );
     }
@@ -90,6 +93,16 @@ class JsonrpcCommand extends DefaultCommand
                 false
             );
         }
+    }
+
+    /**
+     * @param string $name
+     * @return IRepository
+     */
+    protected function getRepo(string $name): IRepository
+    {
+        $jsonRpc = new JsonRpc();
+        return $jsonRpc->$name();
     }
 
     /**
