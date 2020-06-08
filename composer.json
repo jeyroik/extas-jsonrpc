@@ -9,6 +9,7 @@
     "jeyroik/extas-repositories-get": "0.*",
     "jeyroik/extas-conditions": "0.*",
     "jeyroik/extas-crawlers": "0.*",
+    "jeyroik/extas-console": "0.*",
     "symfony/console": "5.*",
     "vlucas/phpdotenv": "^3.4"
   },
