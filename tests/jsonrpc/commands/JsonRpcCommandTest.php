@@ -17,6 +17,7 @@ use extas\components\repositories\TSnuffRepository;
 
 use Dotenv\Dotenv;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\BufferedOutput;
 
 /**
@@ -61,20 +62,25 @@ class JsonRpcCommandTest extends TestCase
         $this->prepareCommand();
 
         $command = new JsonrpcCommand();
-        $command->run(
-            $this->getInput([
-                'path' => getcwd() . '/tests',
-                'export-path' => getcwd() . '/tests/runtime.json',
-                'crawler-test_crawler' => true,
-                'generator-test_generator' => true
-            ]),
-            $output
-        );
+        $command->run($this->getTestInput(), $output);
 
         $outputText = $output->fetch();
         $this->assertStringContainsString('Exported result of generator "test-generator"', $outputText);
         $storage = json_decode(file_get_contents(getcwd() . '/tests/runtime.json'), true);
         $this->assertCount(2, $storage['jsonrpc_operations']);
+    }
+
+    /**
+     * @return InputInterface
+     */
+    protected function getTestInput(): InputInterface
+    {
+        return $this->getInput([
+            'path' => getcwd() . '/tests',
+            'export-path' => getcwd() . '/tests/runtime.json',
+            'crawler-test_crawler' => true,
+            'generator-test_generator' => true
+        ]);
     }
 
     protected function prepareCommand()
