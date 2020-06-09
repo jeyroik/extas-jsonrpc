@@ -1,5 +1,5 @@
 <?php
-namespace tests\operations;
+namespace tests\jsonrpc\operations;
 
 use extas\components\operations\JsonRpcOperationRepository;
 use extas\interfaces\jsonrpc\IResponse;

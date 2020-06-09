@@ -1,5 +1,5 @@
 <?php
-namespace tests;
+namespace tests\jsonrpc;
 
 use extas\components\repositories\TSnuffRepository;
 use extas\components\operations\OperationRepository;

@@ -1,5 +1,5 @@
 <?php
-namespace tests;
+namespace tests\jsonrpc;
 
 use extas\components\http\TSnuffHttp;
 use extas\components\jsonrpc\Request;

@@ -21,7 +21,7 @@
   ],
   "crawlers": [
     {
-      "name": "by.plugin.install.default",
+      "name": "by.install.section",
       "title": "PluginInstallDefault",
       "description": "Собирает плагины на основе PluginInstallDefault",
       "class": "extas\\components\\jsonrpc\\crawlers\\ByPluginInstallDefault"

@@ -9,14 +9,14 @@ use Symfony\Component\Finder\Finder;
 use Symfony\Component\Finder\SplFileInfo;
 
 /**
- * Class ByPluginInstallDefault
+ * Class ByInstallSection
  *
  * @package extas\components\jsonrpc\crawlers
  * @author jeyroik@gmail.com
  */
-class ByPluginInstallDefault extends CrawlerDispatcher
+class ByInstallSection extends CrawlerDispatcher
 {
-    public const NAME = 'by.plugin.install.default';
+    public const NAME = 'by.install.section';
 
     /**
      * @return array

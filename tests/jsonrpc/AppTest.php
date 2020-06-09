@@ -1,15 +1,14 @@
 <?php
-namespace tests;
+namespace tests\jsonrpc;
 
-use extas\components\operations\JsonRpcOperation;
-use extas\components\operations\JsonRpcOperationRepository;
-use extas\components\operations\OperationRepository;
 use extas\interfaces\jsonrpc\IResponse;
 use extas\interfaces\repositories\IRepository;
 use extas\interfaces\samples\parameters\ISampleParameter;
 use extas\interfaces\stages\IStageJsonRpcInit;
 use extas\interfaces\stages\IStageRunJsonRpc;
 
+use extas\components\operations\JsonRpcOperation;
+use extas\components\operations\JsonRpcOperationRepository;
 use extas\components\extensions\ExtensionRepository;
 use extas\components\http\TSnuffHttp;
 use extas\components\jsonrpc\App;

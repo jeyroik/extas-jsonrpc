@@ -1,5 +1,5 @@
 <?php
-namespace tests;
+namespace tests\jsonrpc;
 
 use extas\components\console\TSnuffConsole;
 use extas\components\jsonrpc\crawlers\ByDocComment;

@@ -1,5 +1,5 @@
 <?php
-namespace tests;
+namespace tests\jsonrpc;
 
 use extas\commands\JsonrpcCommand;
 use extas\components\crawlers\CrawlerRepository;
