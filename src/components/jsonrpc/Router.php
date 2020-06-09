@@ -78,7 +78,7 @@ class Router extends Item implements IRouter
             ? $repo->all([])
             : $repo->all([IOperation::FIELD__NAME => $routeName]);
 
-        $specs = array_column($operations, IOperation::FIELD__SPEC, IOperation::FIELD__NAME);
+        $specs = array_column($operations, IOperation::FIELD__SPECS, IOperation::FIELD__NAME);
 
         return $this->successResponse($jRpcRequest->getId(), $specs);
     }
