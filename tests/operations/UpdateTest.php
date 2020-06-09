@@ -2,13 +2,13 @@
 namespace tests\operations;
 
 use extas\interfaces\jsonrpc\IResponse;
-use extas\interfaces\operations\IJsonRpcOperation as IOperation;
+use extas\interfaces\operations\IJsonRpcOperation;
 use extas\interfaces\jsonrpc\operations\IOperationDispatcher;
 
 use extas\components\operations\OperationRepository;
 use extas\components\extensions\ExtensionRepository;
 use extas\components\http\TSnuffHttp;
-use extas\components\operations\JsonRpcOperation as Operation;
+use extas\components\operations\JsonRpcOperation;
 use extas\components\jsonrpc\operations\Update;
 use extas\components\plugins\Plugin;
 use extas\components\protocols\ProtocolRepository;
@@ -30,72 +30,72 @@ class UpdateTest extends TestCase
     use TSnuffHttp;
 
     protected array $opDataMissedPk = [
-        Operation::FIELD__NAME => 'jsonrpc.operation.update',
-        Operation::FIELD__CLASS => Update::class,
-        Operation::FIELD__SPECS => [],
-        Operation::FIELD__PARAMETERS => [
-            Operation::PARAM__METHOD => [
-                ISampleParameter::FIELD__NAME => Operation::PARAM__ITEM_NAME,
+        JsonRpcOperation::FIELD__NAME => 'jsonrpc.operation.update',
+        JsonRpcOperation::FIELD__CLASS => Update::class,
+        JsonRpcOperation::FIELD__SPECS => [],
+        JsonRpcOperation::FIELD__PARAMETERS => [
+            JsonRpcOperation::PARAM__METHOD => [
+                ISampleParameter::FIELD__NAME => JsonRpcOperation::PARAM__ITEM_NAME,
                 ISampleParameter::FIELD__VALUE => 'update'
             ],
-            Operation::PARAM__ITEM_CLASS => [
-                ISampleParameter::FIELD__NAME => Operation::PARAM__ITEM_CLASS,
+            JsonRpcOperation::PARAM__ITEM_CLASS => [
+                ISampleParameter::FIELD__NAME => JsonRpcOperation::PARAM__ITEM_CLASS,
                 ISampleParameter::FIELD__VALUE => Plugin::class
             ],
-            Operation::PARAM__ITEM_REPOSITORY => [
-                ISampleParameter::FIELD__NAME => Operation::PARAM__ITEM_NAME,
+            JsonRpcOperation::PARAM__ITEM_REPOSITORY => [
+                ISampleParameter::FIELD__NAME => JsonRpcOperation::PARAM__ITEM_NAME,
                 ISampleParameter::FIELD__VALUE => 'jsonRpcOperationRepository'
             ],
-            Operation::PARAM__ITEM_NAME => [
-                ISampleParameter::FIELD__NAME => Operation::PARAM__ITEM_NAME,
+            JsonRpcOperation::PARAM__ITEM_NAME => [
+                ISampleParameter::FIELD__NAME => JsonRpcOperation::PARAM__ITEM_NAME,
                 ISampleParameter::FIELD__VALUE => 'jsonrpc operation'
             ]
         ]
     ];
 
     protected array $opData = [
-        Operation::FIELD__NAME => 'jsonrpc.operation.update',
-        Operation::FIELD__CLASS => Update::class,
-        Operation::FIELD__SPECS => [],
-        Operation::FIELD__PARAMETERS => [
-            Operation::PARAM__METHOD => [
-                ISampleParameter::FIELD__NAME => Operation::PARAM__ITEM_NAME,
+        JsonRpcOperation::FIELD__NAME => 'jsonrpc.operation.update',
+        JsonRpcOperation::FIELD__CLASS => Update::class,
+        JsonRpcOperation::FIELD__SPECS => [],
+        JsonRpcOperation::FIELD__PARAMETERS => [
+            JsonRpcOperation::PARAM__METHOD => [
+                ISampleParameter::FIELD__NAME => JsonRpcOperation::PARAM__ITEM_NAME,
                 ISampleParameter::FIELD__VALUE => 'update'
             ],
-            Operation::PARAM__ITEM_CLASS => [
-                ISampleParameter::FIELD__NAME => Operation::PARAM__ITEM_CLASS,
-                ISampleParameter::FIELD__VALUE => Operation::class
+            JsonRpcOperation::PARAM__ITEM_CLASS => [
+                ISampleParameter::FIELD__NAME => JsonRpcOperation::PARAM__ITEM_CLASS,
+                ISampleParameter::FIELD__VALUE => JsonRpcOperation::class
             ],
-            Operation::PARAM__ITEM_REPOSITORY => [
-                ISampleParameter::FIELD__NAME => Operation::PARAM__ITEM_NAME,
+            JsonRpcOperation::PARAM__ITEM_REPOSITORY => [
+                ISampleParameter::FIELD__NAME => JsonRpcOperation::PARAM__ITEM_NAME,
                 ISampleParameter::FIELD__VALUE => 'jsonRpcOperationRepository'
             ],
-            Operation::PARAM__ITEM_NAME => [
-                ISampleParameter::FIELD__NAME => Operation::PARAM__ITEM_NAME,
+            JsonRpcOperation::PARAM__ITEM_NAME => [
+                ISampleParameter::FIELD__NAME => JsonRpcOperation::PARAM__ITEM_NAME,
                 ISampleParameter::FIELD__VALUE => 'jsonrpc operation'
             ]
         ]
     ];
 
     protected array $opDataNew = [
-        Operation::FIELD__NAME => 'jsonrpc.operation.update',
-        Operation::FIELD__CLASS => Update::class,
-        Operation::FIELD__SPECS => [],
-        Operation::FIELD__PARAMETERS => [
-            Operation::PARAM__METHOD => [
-                ISampleParameter::FIELD__NAME => Operation::PARAM__ITEM_NAME,
+        JsonRpcOperation::FIELD__NAME => 'jsonrpc.operation.update',
+        JsonRpcOperation::FIELD__CLASS => Update::class,
+        JsonRpcOperation::FIELD__SPECS => [],
+        JsonRpcOperation::FIELD__PARAMETERS => [
+            JsonRpcOperation::PARAM__METHOD => [
+                ISampleParameter::FIELD__NAME => JsonRpcOperation::PARAM__ITEM_NAME,
                 ISampleParameter::FIELD__VALUE => 'update'
             ],
-            Operation::PARAM__ITEM_CLASS => [
-                ISampleParameter::FIELD__NAME => Operation::PARAM__ITEM_CLASS,
-                ISampleParameter::FIELD__VALUE => Operation::class
+            JsonRpcOperation::PARAM__ITEM_CLASS => [
+                ISampleParameter::FIELD__NAME => JsonRpcOperation::PARAM__ITEM_CLASS,
+                ISampleParameter::FIELD__VALUE => JsonRpcOperation::class
             ],
-            Operation::PARAM__ITEM_REPOSITORY => [
-                ISampleParameter::FIELD__NAME => Operation::PARAM__ITEM_NAME,
+            JsonRpcOperation::PARAM__ITEM_REPOSITORY => [
+                ISampleParameter::FIELD__NAME => JsonRpcOperation::PARAM__ITEM_NAME,
                 ISampleParameter::FIELD__VALUE => 'jsonRpcOperationRepository'
             ],
-            Operation::PARAM__ITEM_NAME => [
-                ISampleParameter::FIELD__NAME => Operation::PARAM__ITEM_NAME,
+            JsonRpcOperation::PARAM__ITEM_NAME => [
+                ISampleParameter::FIELD__NAME => JsonRpcOperation::PARAM__ITEM_NAME,
                 ISampleParameter::FIELD__VALUE => 'jsonrpc operation'
             ]
         ]
@@ -121,11 +121,11 @@ class UpdateTest extends TestCase
     public function testMissedPkMethod()
     {
         /**
-         * @var IOperation $operation
+         * @var IJsonRpcOperation $operation
          */
         $operation = $this->createWithSnuffRepo(
             'jsonRpcOperationRepository',
-            new Operation($this->opDataMissedPk)
+            new JsonRpcOperation($this->opDataMissedPk)
         );
         $dispatcher = $this->getDispatcher($operation, '.update');
         $response = $dispatcher();
@@ -148,9 +148,9 @@ class UpdateTest extends TestCase
     public function testItemUnknown()
     {
         /**
-         * @var IOperation $operation
+         * @var IJsonRpcOperation $operation
          */
-        $operation = $this->createWithSnuffRepo('jsonRpcOperationRepository', new Operation($this->opData));
+        $operation = $this->createWithSnuffRepo('jsonRpcOperationRepository', new JsonRpcOperation($this->opData));
         $dispatcher = $this->getDispatcher($operation, '.update.unknown');
         $response = $dispatcher();
         $jsonRpcResponse = json_decode($response->getBody(), true);
@@ -172,9 +172,9 @@ class UpdateTest extends TestCase
     public function testSuccess()
     {
         /**
-         * @var IOperation $operation
+         * @var IJsonRpcOperation $operation
          */
-        $operation = $this->createWithSnuffRepo('jsonRpcOperationRepository', new Operation($this->opData));
+        $operation = $this->createWithSnuffRepo('jsonRpcOperationRepository', new JsonRpcOperation($this->opData));
         $dispatcher = $this->getDispatcher($operation, '.update');
         $response = $dispatcher();
         $jsonRpcResponse = json_decode($response->getBody(), true);
@@ -190,11 +190,11 @@ class UpdateTest extends TestCase
     }
 
     /**
-     * @param IOperation $operation
+     * @param IJsonRpcOperation $operation
      * @param string $streamSuffix
      * @return IOperationDispatcher
      */
-    protected function getDispatcher(IOperation $operation, string $streamSuffix): IOperationDispatcher
+    protected function getDispatcher(IJsonRpcOperation $operation, string $streamSuffix): IOperationDispatcher
     {
         return new Update([
             Update::FIELD__PSR_REQUEST => $this->getPsrRequest($streamSuffix),

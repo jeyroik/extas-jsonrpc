@@ -4,7 +4,24 @@
   "params": {
     "data": {
       "name": "jsonrpc.operation.update",
-      "item_name": "test"
+      "parameters": {
+        "method": {
+          "name": "method",
+          "value": "update"
+        },
+        "item_class": {
+          "name": "item_class",
+          "value": "extas\\components\\operations\\JsonRpcOperation"
+        },
+        "item_repository": {
+          "name": "item_repository",
+          "value": "jsonRpcOperationRepository"
+        },
+        "item_name": {
+          "name": "item_name",
+          "value": "test"
+        }
+      }
     }
   }
 }
