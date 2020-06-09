@@ -140,7 +140,8 @@ class UpdateTest extends TestCase
                     IResponse::RESPONSE__ERROR_MESSAGE => 'Item has not method "getName"'
                 ]
             ],
-            $jsonRpcResponse
+            $jsonRpcResponse,
+            'Current response: ' . print_r($jsonRpcResponse, true)
         );
     }
 
@@ -163,7 +164,8 @@ class UpdateTest extends TestCase
                     IResponse::RESPONSE__ERROR_MESSAGE => 'Unknown entity "Jsonrpc operation"'
                 ]
             ],
-            $jsonRpcResponse
+            $jsonRpcResponse,
+            'Current response: ' . print_r($jsonRpcResponse, true)
         );
     }
 
@@ -182,7 +184,8 @@ class UpdateTest extends TestCase
                 IResponse::RESPONSE__VERSION => IResponse::VERSION_CURRENT,
                 IResponse::RESPONSE__RESULT => [$this->opDataNew]
             ],
-            $jsonRpcResponse
+            $jsonRpcResponse,
+            'Current response: ' . print_r($jsonRpcResponse, true)
         );
     }
 
