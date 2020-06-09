@@ -98,12 +98,14 @@ class JsonRpcCommandTest extends TestCase
 
         $this->createWithSnuffRepo('crawlerRepository', new Crawler([
             Crawler::FIELD__NAME => 'test_crawler',
-            Crawler::FIELD__CLASS => ByDocComment::class
+            Crawler::FIELD__CLASS => ByDocComment::class,
+            Crawler::FIELD__TAGS => ['jsonrpc']
         ]));
 
         $this->createWithSnuffRepo('generatorRepository', new Generator([
             Generator::FIELD__NAME => 'test_generator',
-            Generator::FIELD__CLASS => \extas\components\generators\jsonrpc\ByDocComment::class
+            Generator::FIELD__CLASS => \extas\components\generators\jsonrpc\ByDocComment::class,
+            Generator::FIELD__TAGS => ['jsonrpc']
         ]));
 
         file_put_contents(getcwd() . '/tests/runtime.json', json_encode([
