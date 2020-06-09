@@ -9,6 +9,7 @@ use extas\components\extensions\ExtensionRepository;
 use extas\components\generators\Generator;
 use extas\components\generators\GeneratorRepository;
 use extas\components\jsonrpc\crawlers\ByDocComment;
+use extas\components\options\CommandOption;
 use extas\components\options\CommandOptionRepository;
 use extas\components\packages\entities\EntityRepository;
 use extas\components\plugins\PluginRepository;
@@ -37,6 +38,7 @@ class JsonRpcCommandTest extends TestCase
         parent::setUp();
         $env = Dotenv::create(getcwd() . '/tests/');
         $env->load();
+
         $this->registerSnuffRepos([
             'pluginRepository' => PluginRepository::class,
             'extensionRepository' => ExtensionRepository::class,
@@ -85,6 +87,15 @@ class JsonRpcCommandTest extends TestCase
 
     protected function prepareCommand()
     {
+        $this->createWithSnuffRepo('commandOptionRepository', new CommandOption([
+            'name' => 'path',
+            'shortcut' => '',
+            'mode' => 4,
+            'default' => '',
+            'description' => '',
+            'commands' => ['extas-jsonrpc']
+        ]));
+
         $this->createWithSnuffRepo('crawlerRepository', new Crawler([
             Crawler::FIELD__NAME => 'test_crawler',
             Crawler::FIELD__CLASS => ByDocComment::class
