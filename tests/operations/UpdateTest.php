@@ -96,7 +96,7 @@ class UpdateTest extends TestCase
             ],
             JsonRpcOperation::PARAM__ITEM_NAME => [
                 ISampleParameter::FIELD__NAME => JsonRpcOperation::PARAM__ITEM_NAME,
-                ISampleParameter::FIELD__VALUE => 'jsonrpc operation'
+                ISampleParameter::FIELD__VALUE => 'test'
             ]
         ]
     ];
