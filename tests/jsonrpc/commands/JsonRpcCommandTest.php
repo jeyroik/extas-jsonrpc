@@ -95,6 +95,14 @@ class JsonRpcCommandTest extends TestCase
             'description' => '',
             'commands' => ['extas-jsonrpc']
         ]));
+        $this->createWithSnuffRepo('commandOptionRepository', new CommandOption([
+            'name' => 'prefix',
+            'shortcut' => '',
+            'mode' => 4,
+            'default' => '',
+            'description' => '',
+            'commands' => ['extas-jsonrpc']
+        ]));
 
         $this->createWithSnuffRepo('crawlerRepository', new Crawler([
             Crawler::FIELD__NAME => 'test_crawler',
