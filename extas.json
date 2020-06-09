@@ -1,16 +1,6 @@
 {
   "name": "extas/jsonrpc",
   "installer_version": 3,
-  "package_classes": [
-    {
-      "interface": "jsonRpcOperationRepository",
-      "class": "extas\\components\\jsonrpc\\operations\\OperationRepository"
-    },
-    {
-      "interface": "jsonRpcCrawlerRepository",
-      "class": "extas\\components\\jsonrpc\\crawlers\\CrawlerRepository"
-    }
-  ],
   "plugins": [
     {
       "class": "extas\\components\\plugins\\install\\InstallJsonRpcOperations",
@@ -29,18 +19,7 @@
       "stage": "extas.jsonrpc.command"
     }
   ],
-  "extensions": [
-    {
-      "class": "extas\\components\\extensions\\ExtensionRepositoryGet",
-      "interface": "extas\\interfaces\\extensions\\IExtensionRepositoryGet",
-      "subject": "*",
-      "methods": [
-        "jsonRpcOperationRepository",
-        "jsonRpcCrawlerRepository"
-      ]
-    }
-  ],
-  "jsonrpc_crawlers": [
+  "crawlers": [
     {
       "name": "by.plugin.install.default",
       "title": "PluginInstallDefault",

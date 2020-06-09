@@ -1,6 +1,8 @@
 <?php
 namespace tests;
 
+use extas\components\operations\JsonRpcOperation;
+use extas\components\operations\JsonRpcOperationRepository;
 use extas\components\operations\OperationRepository;
 use extas\interfaces\jsonrpc\IResponse;
 use extas\interfaces\repositories\IRepository;
@@ -65,7 +67,7 @@ class AppTest extends TestCase
         $env = Dotenv::create(getcwd() . '/tests/');
         $env->load();
         $this->registerSnuffRepos([
-            'jsonRpcOperationRepository' => OperationRepository::class,
+            'jsonRpcOperationRepository' => JsonRpcOperationRepository::class,
             'protocolRepository' => ProtocolRepository::class,
             'extensionRepository' => ExtensionRepository::class,
             'pluginRepository' => PluginRepository::class
@@ -188,7 +190,7 @@ class AppTest extends TestCase
      */
     protected function initOperationEnv(): void
     {
-        $this->createWithSnuffRepo('jsonRpcOperationRepository', new Operation($this->opData));
+        $this->createWithSnuffRepo('jsonRpcOperationRepository', new JsonRpcOperation($this->opData));
         $this->createPluginEmpty([IStageJsonRpcInit::NAME, IStageRunJsonRpc::NAME__BEFORE]);
     }
 }
