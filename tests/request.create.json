@@ -5,11 +5,25 @@
     "data": {
       "name": "jsonrpc.operation.create.new",
       "class": "",
-      "method": "create",
       "spec": [],
-      "item_class": "",
-      "item_repo": "",
-      "item_name": ""
+      "parameters": {
+        "method": {
+          "name": "method",
+          "value": "create"
+        },
+        "item_class": {
+          "name": "item_class",
+          "value": ""
+        },
+        "item_repository": {
+          "name": "item_repository",
+          "value": ""
+        },
+        "item_name": {
+          "name": "item_name",
+          "value": ""
+        }
+      }
     }
   }
 }

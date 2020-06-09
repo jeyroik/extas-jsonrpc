@@ -1,6 +1,7 @@
 <?php
 namespace tests\operations;
 
+use extas\components\operations\JsonRpcOperationRepository;
 use extas\interfaces\jsonrpc\IResponse;
 use extas\interfaces\samples\parameters\ISampleParameter;
 
@@ -15,7 +16,6 @@ use extas\components\jsonrpc\operations\OperationDispatcher;
 use extas\components\plugins\TSnuffPlugins;
 use extas\components\protocols\ProtocolRepository;
 use extas\components\repositories\TSnuffRepository;
-use extas\components\operations\OperationRepository;
 
 use PHPUnit\Framework\TestCase;
 use Dotenv\Dotenv;
@@ -62,7 +62,7 @@ class IndexTest extends TestCase
         $env = Dotenv::create(getcwd() . '/tests/');
         $env->load();
         $this->registerSnuffRepos([
-            'jsonRpcOperationRepository' => OperationRepository::class,
+            'jsonRpcOperationRepository' => JsonRpcOperationRepository::class,
             'protocolRepository' => ProtocolRepository::class,
             'conditionRepository' => ConditionRepository::class,
             'extensionRepository' => ExtensionRepository::class
