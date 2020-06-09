@@ -1,12 +1,12 @@
 <?php
 namespace tests\operations;
 
-use extas\components\extensions\ExtensionRepository;
-use extas\components\operations\OperationRepository;
 use extas\interfaces\jsonrpc\IResponse;
 use extas\interfaces\operations\IJsonRpcOperation as IOperation;
 use extas\interfaces\jsonrpc\operations\IOperationDispatcher;
 
+use extas\components\extensions\ExtensionRepository;
+use extas\components\operations\OperationRepository;
 use extas\components\http\TSnuffHttp;
 use extas\components\jsonrpc\operations\Delete;
 use extas\components\operations\JsonRpcOperation as Operation;

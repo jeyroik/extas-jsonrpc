@@ -14,7 +14,7 @@ use extas\components\jsonrpc\operations\OperationDispatcher;
 use extas\components\plugins\TSnuffPlugins;
 use extas\components\protocols\ProtocolRepository;
 use extas\components\repositories\TSnuffRepository;
-
+use extas\components\operations\OperationRepository;
 use extas\interfaces\samples\parameters\ISampleParameter;
 use PHPUnit\Framework\TestCase;
 use Dotenv\Dotenv;
