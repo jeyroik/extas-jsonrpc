@@ -3,7 +3,7 @@ namespace tests\jsonrpc;
 
 use extas\components\console\TSnuffConsole;
 use extas\components\jsonrpc\crawlers\ByDocComment;
-use extas\components\jsonrpc\crawlers\ByPluginInstallDefault;
+use extas\components\jsonrpc\crawlers\ByInstallSection;
 use extas\components\plugins\init\InitGenerators;
 use extas\components\plugins\install\InstallJsonRpcOperations;
 use extas\components\plugins\jsonrpc\PluginDefaultArguments;
@@ -11,6 +11,7 @@ use extas\components\plugins\jsonrpc\PluginDefaultArguments;
 use Dotenv\Dotenv;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Input\InputInterface;
+use tests\OperationWithDocComment;
 
 /**
  * Class CrawlerTest
@@ -29,11 +30,11 @@ class CrawlerTest extends TestCase
         $env->load();
     }
 
-    public function testCrawlByPluginInstallDefault()
+    public function testCrawlByInstallSection()
     {
-        $crawler = new ByPluginInstallDefault([
-            ByPluginInstallDefault::FIELD__INPUT => $this->getTestInput(),
-            ByPluginInstallDefault::FIELD__OUTPUT => $this->getOutput()
+        $crawler = new ByInstallSection([
+            ByInstallSection::FIELD__INPUT => $this->getTestInput(),
+            ByInstallSection::FIELD__OUTPUT => $this->getOutput()
         ]);
         $plugins = $crawler();
         $this->assertCount(1, $plugins);
@@ -46,9 +47,9 @@ class CrawlerTest extends TestCase
             ]
         ));
 
-        $crawler = new ByPluginInstallDefault([
-            ByPluginInstallDefault::FIELD__INPUT => $this->getTestInput('PluginInstallMy', '/tests'),
-            ByPluginInstallDefault::FIELD__OUTPUT => $this->getOutput()
+        $crawler = new ByInstallSection([
+            ByInstallSection::FIELD__INPUT => $this->getTestInput('PluginInstallMy', '/tests'),
+            ByInstallSection::FIELD__OUTPUT => $this->getOutput()
         ]);
         $plugins = $crawler();
         $this->assertEmpty($plugins);

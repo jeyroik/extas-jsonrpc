@@ -23,8 +23,8 @@
     {
       "name": "by.install.section",
       "title": "PluginInstallDefault",
-      "description": "Собирает плагины на основе PluginInstallDefault",
-      "class": "extas\\components\\jsonrpc\\crawlers\\ByPluginInstallDefault"
+      "description": "Собирает плагины на основе InstallSection",
+      "class": "extas\\components\\jsonrpc\\crawlers\\ByInstallSection"
     },
     {
       "name": "by.doc.comment",

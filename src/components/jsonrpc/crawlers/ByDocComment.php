@@ -7,7 +7,7 @@ namespace extas\components\jsonrpc\crawlers;
  * @package extas\components\jsonrpc\crawlers
  * @author jeyroik@gmail.com
  */
-class ByDocComment extends ByPluginInstallDefault
+class ByDocComment extends ByInstallSection
 {
     public const NAME = 'by.doc.comment';
 
