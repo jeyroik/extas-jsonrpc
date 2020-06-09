@@ -7,6 +7,7 @@ use extas\components\crawlers\Crawler;
 use extas\components\crawlers\CrawlerRepository;
 use extas\components\extensions\ExtensionRepository;
 use extas\components\generators\Generator;
+use extas\components\generators\GeneratorRepository;
 use extas\components\jsonrpc\crawlers\ByDocComment;
 use extas\components\options\CommandOptionRepository;
 use extas\components\packages\entities\EntityRepository;
@@ -40,6 +41,7 @@ class JsonRpcCommandTest extends TestCase
             'extensionRepository' => ExtensionRepository::class,
             'entityRepository' => EntityRepository::class,
             'crawlerRepository' => CrawlerRepository::class,
+            'generatorRepository' => GeneratorRepository::class,
             'commandOptionRepository' => CommandOptionRepository::class
         ]);
     }
