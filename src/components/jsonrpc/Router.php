@@ -3,7 +3,7 @@ namespace extas\components\jsonrpc;
 
 use extas\components\Item;
 use extas\interfaces\jsonrpc\IRouter;
-use extas\interfaces\jsonrpc\operations\IOperation;
+use extas\interfaces\operations\IOperation;
 use extas\interfaces\jsonrpc\operations\IOperationDispatcher;
 use extas\interfaces\repositories\IRepository;
 use extas\interfaces\stages\IStageRunJsonRpc;
