@@ -4,8 +4,9 @@ namespace tests\operations;
 use extas\interfaces\jsonrpc\IResponse;
 use extas\interfaces\operations\IJsonRpcOperation;
 use extas\interfaces\jsonrpc\operations\IOperationDispatcher;
+use extas\interfaces\samples\parameters\ISampleParameter;
 
-use extas\components\operations\OperationRepository;
+use extas\components\operations\JsonRpcOperationRepository;
 use extas\components\extensions\ExtensionRepository;
 use extas\components\http\TSnuffHttp;
 use extas\components\operations\JsonRpcOperation;
@@ -14,7 +15,6 @@ use extas\components\plugins\Plugin;
 use extas\components\protocols\ProtocolRepository;
 use extas\components\repositories\TSnuffRepository;
 
-use extas\interfaces\samples\parameters\ISampleParameter;
 use PHPUnit\Framework\TestCase;
 use Dotenv\Dotenv;
 
@@ -107,7 +107,7 @@ class UpdateTest extends TestCase
         $env = Dotenv::create(getcwd() . '/tests/');
         $env->load();
         $this->registerSnuffRepos([
-            'jsonRpcOperationRepository' => OperationRepository::class,
+            'jsonRpcOperationRepository' => JsonRpcOperationRepository::class,
             'protocolRepository' => ProtocolRepository::class,
             'extensionRepository' => ExtensionRepository::class
         ]);
