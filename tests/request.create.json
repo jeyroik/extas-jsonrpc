@@ -5,7 +5,7 @@
     "data": {
       "name": "jsonrpc.operation.create.new",
       "class": "",
-      "spec": [],
+      "specs": [],
       "parameters": {
         "method": {
           "name": "method",
