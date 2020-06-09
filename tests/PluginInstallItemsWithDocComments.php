@@ -1,7 +1,7 @@
 <?php
 namespace tests;
 
-use extas\components\plugins\PluginInstallDefault;
+use extas\components\plugins\install\InstallSection;
 
 /**
  * Class PluginInstallItemsWithDocComments
@@ -9,7 +9,7 @@ use extas\components\plugins\PluginInstallDefault;
  * @package tests
  * @author jeyroik@gmail.com
  */
-class PluginInstallItemsWithDocComments extends PluginInstallDefault
+class PluginInstallItemsWithDocComments extends InstallSection
 {
     protected string $selfSection = 'items_doc';
     protected string $selfName = 'item doc';
