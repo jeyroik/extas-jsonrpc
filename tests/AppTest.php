@@ -105,7 +105,8 @@ class AppTest extends TestCase
                             'total' => 1
                         ]
                     ],
-                    json_decode($response->getBody(), true)
+                    json_decode($response->getBody(), true),
+                    (string) $response->getBody()
                 );
             }
         }
