@@ -88,7 +88,7 @@ class CreateTest extends TestCase
             ],
             JsonRpcOperation::PARAM__ITEM_CLASS => [
                 ISampleParameter::FIELD__NAME => JsonRpcOperation::PARAM__ITEM_CLASS,
-                ISampleParameter::FIELD__VALUE => JsonRpcOperation::class
+                ISampleParameter::FIELD__VALUE => ''
             ],
             JsonRpcOperation::PARAM__ITEM_REPOSITORY => [
                 ISampleParameter::FIELD__NAME => JsonRpcOperation::PARAM__ITEM_REPOSITORY,

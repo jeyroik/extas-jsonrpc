@@ -69,9 +69,16 @@ class CrawlerTest extends TestCase
         ]);
 
         $operations = $crawler();
-        $this->assertCount(1, $operations, 'Incorrect operations count found');
+        $this->assertCount(
+            1,
+            $operations,
+            'Incorrect operations count found:' . print_r($operations, true)
+        );
         $plugin = array_shift($operations);
-        $this->assertTrue($plugin instanceof OperationWithDocComment, 'Incorrect operation instance');
+        $this->assertTrue(
+            $plugin instanceof OperationWithDocComment,
+            'Incorrect operation instance: ' . get_class($plugin)
+        );
     }
 
     /**
