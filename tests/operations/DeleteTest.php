@@ -2,14 +2,14 @@
 namespace tests\operations;
 
 use extas\interfaces\jsonrpc\IResponse;
-use extas\interfaces\operations\IJsonRpcOperation as IOperation;
+use extas\interfaces\operations\IJsonRpcOperation;
 use extas\interfaces\jsonrpc\operations\IOperationDispatcher;
 
 use extas\components\extensions\ExtensionRepository;
 use extas\components\operations\OperationRepository;
 use extas\components\http\TSnuffHttp;
 use extas\components\jsonrpc\operations\Delete;
-use extas\components\operations\JsonRpcOperation as Operation;
+use extas\components\operations\JsonRpcOperation;
 use extas\components\protocols\ProtocolRepository;
 use extas\components\repositories\TSnuffRepository;
 
@@ -29,24 +29,24 @@ class DeleteTest extends TestCase
     use TSnuffHttp;
 
     protected array $opData = [
-        Operation::FIELD__NAME => 'jsonrpc.operation.delete',
-        Operation::FIELD__CLASS => Delete::class,
-        Operation::FIELD__SPECS => [],
-        Operation::FIELD__PARAMETERS => [
-            Operation::PARAM__METHOD => [
-                ISampleParameter::FIELD__NAME => Operation::PARAM__ITEM_NAME,
+        JsonRpcOperation::FIELD__NAME => 'jsonrpc.operation.delete',
+        JsonRpcOperation::FIELD__CLASS => Delete::class,
+        JsonRpcOperation::FIELD__SPECS => [],
+        JsonRpcOperation::FIELD__PARAMETERS => [
+            JsonRpcOperation::PARAM__METHOD => [
+                ISampleParameter::FIELD__NAME => JsonRpcOperation::PARAM__METHOD,
                 ISampleParameter::FIELD__VALUE => 'delete'
             ],
-            Operation::PARAM__ITEM_CLASS => [
-                ISampleParameter::FIELD__NAME => Operation::PARAM__ITEM_CLASS,
-                ISampleParameter::FIELD__VALUE => Operation::class
+            JsonRpcOperation::PARAM__ITEM_CLASS => [
+                ISampleParameter::FIELD__NAME => JsonRpcOperation::PARAM__ITEM_CLASS,
+                ISampleParameter::FIELD__VALUE => JsonRpcOperation::class
             ],
-            Operation::PARAM__ITEM_REPOSITORY => [
-                ISampleParameter::FIELD__NAME => Operation::PARAM__ITEM_NAME,
+            JsonRpcOperation::PARAM__ITEM_REPOSITORY => [
+                ISampleParameter::FIELD__NAME => JsonRpcOperation::PARAM__ITEM_REPOSITORY,
                 ISampleParameter::FIELD__VALUE => 'jsonRpcOperationRepository'
             ],
-            Operation::PARAM__ITEM_NAME => [
-                ISampleParameter::FIELD__NAME => Operation::PARAM__ITEM_NAME,
+            JsonRpcOperation::PARAM__ITEM_NAME => [
+                ISampleParameter::FIELD__NAME => JsonRpcOperation::PARAM__ITEM_NAME,
                 ISampleParameter::FIELD__VALUE => 'jsonrpc operation'
             ]
         ]
@@ -72,9 +72,9 @@ class DeleteTest extends TestCase
     public function testItemUnknown()
     {
         /**
-         * @var IOperation $operation
+         * @var IJsonRpcOperation $operation
          */
-        $operation = $this->createWithSnuffRepo('jsonRpcOperationRepository', new Operation($this->opData));
+        $operation = $this->createWithSnuffRepo('jsonRpcOperationRepository', new JsonRpcOperation($this->opData));
         $dispatcher = $this->getDispatcher($operation, '.delete.unknown');
         $response = $dispatcher();
         $jsonRpcResponse = json_decode($response->getBody(), true);
@@ -88,16 +88,17 @@ class DeleteTest extends TestCase
                     IResponse::RESPONSE__ERROR_MESSAGE => 'Unknown entity "Jsonrpc operation"'
                 ]
             ],
-            $jsonRpcResponse
+            $jsonRpcResponse,
+            'Current response: ' . print_r($jsonRpcResponse, true)
         );
     }
 
     public function testSuccess()
     {
         /**
-         * @var IOperation $operation
+         * @var IJsonRpcOperation $operation
          */
-        $operation = $this->createWithSnuffRepo('jsonRpcOperationRepository', new Operation($this->opData));
+        $operation = $this->createWithSnuffRepo('jsonRpcOperationRepository', new JsonRpcOperation($this->opData));
         $dispatcher = $this->getDispatcher($operation, '.delete');
         $response = $dispatcher();
         $jsonRpcResponse = json_decode($response->getBody(), true);
@@ -107,16 +108,17 @@ class DeleteTest extends TestCase
                 IResponse::RESPONSE__VERSION => IResponse::VERSION_CURRENT,
                 IResponse::RESPONSE__RESULT => [$this->opData]
             ],
-            $jsonRpcResponse
+            $jsonRpcResponse,
+            'Current response: ' . print_r($jsonRpcResponse, true)
         );
     }
 
     /**
-     * @param IOperation $operation
+     * @param IJsonRpcOperation $operation
      * @param string $streamSuffix
      * @return IOperationDispatcher
      */
-    protected function getDispatcher(IOperation $operation, string $streamSuffix): IOperationDispatcher
+    protected function getDispatcher(IJsonRpcOperation $operation, string $streamSuffix): IOperationDispatcher
     {
         return new Delete([
             Delete::FIELD__PSR_REQUEST => $this->getPsrRequest($streamSuffix),

@@ -2,6 +2,7 @@
 namespace tests\operations;
 
 use extas\interfaces\jsonrpc\IResponse;
+use extas\interfaces\samples\parameters\ISampleParameter;
 
 use extas\components\conditions\Condition;
 use extas\components\conditions\ConditionLike;
@@ -9,13 +10,13 @@ use extas\components\conditions\ConditionRepository;
 use extas\components\extensions\ExtensionRepository;
 use extas\components\http\TSnuffHttp;
 use extas\components\jsonrpc\operations\Index;
-use extas\components\operations\JsonRpcOperation as Operation;
+use extas\components\operations\JsonRpcOperation;
 use extas\components\jsonrpc\operations\OperationDispatcher;
 use extas\components\plugins\TSnuffPlugins;
 use extas\components\protocols\ProtocolRepository;
 use extas\components\repositories\TSnuffRepository;
 use extas\components\operations\OperationRepository;
-use extas\interfaces\samples\parameters\ISampleParameter;
+
 use PHPUnit\Framework\TestCase;
 use Dotenv\Dotenv;
 
@@ -32,24 +33,24 @@ class IndexTest extends TestCase
     use TSnuffHttp;
 
     protected array $opData = [
-        Operation::FIELD__NAME => 'jsonrpc.operation.index',
-        Operation::FIELD__CLASS => Index::class,
-        Operation::FIELD__SPECS => [],
-        Operation::FIELD__PARAMETERS => [
-            Operation::PARAM__METHOD => [
-                ISampleParameter::FIELD__NAME => Operation::PARAM__ITEM_NAME,
+        JsonRpcOperation::FIELD__NAME => 'jsonrpc.operation.index',
+        JsonRpcOperation::FIELD__CLASS => Index::class,
+        JsonRpcOperation::FIELD__SPECS => [],
+        JsonRpcOperation::FIELD__PARAMETERS => [
+            JsonRpcOperation::PARAM__METHOD => [
+                ISampleParameter::FIELD__NAME => JsonRpcOperation::PARAM__METHOD,
                 ISampleParameter::FIELD__VALUE => 'index'
             ],
-            Operation::PARAM__ITEM_CLASS => [
-                ISampleParameter::FIELD__NAME => Operation::PARAM__ITEM_CLASS,
-                ISampleParameter::FIELD__VALUE => Operation::class
+            JsonRpcOperation::PARAM__ITEM_CLASS => [
+                ISampleParameter::FIELD__NAME => JsonRpcOperation::PARAM__ITEM_CLASS,
+                ISampleParameter::FIELD__VALUE => JsonRpcOperation::class
             ],
-            Operation::PARAM__ITEM_REPOSITORY => [
-                ISampleParameter::FIELD__NAME => Operation::PARAM__ITEM_NAME,
+            JsonRpcOperation::PARAM__ITEM_REPOSITORY => [
+                ISampleParameter::FIELD__NAME => JsonRpcOperation::PARAM__ITEM_REPOSITORY,
                 ISampleParameter::FIELD__VALUE => 'jsonRpcOperationRepository'
             ],
-            Operation::PARAM__ITEM_NAME => [
-                ISampleParameter::FIELD__NAME => Operation::PARAM__ITEM_NAME,
+            JsonRpcOperation::PARAM__ITEM_NAME => [
+                ISampleParameter::FIELD__NAME => JsonRpcOperation::PARAM__ITEM_NAME,
                 ISampleParameter::FIELD__VALUE => 'jsonrpc operation'
             ]
         ]
@@ -75,7 +76,7 @@ class IndexTest extends TestCase
 
     public function testFilter()
     {
-        $operation = $this->createWithSnuffRepo('jsonRpcOperationRepository', new Operation($this->opData));
+        $operation = $this->createWithSnuffRepo('jsonRpcOperationRepository', new JsonRpcOperation($this->opData));
         $this->createWithSnuffRepo('conditionRepository', new Condition([
             Condition::FIELD__CLASS => ConditionLike::class,
             Condition::FIELD__ALIASES => ['like', '~'],
@@ -101,7 +102,8 @@ class IndexTest extends TestCase
                     'total' => 0
                 ]
             ],
-            $jsonRpcResponse
+            $jsonRpcResponse,
+            'Current response: ' . print_r($jsonRpcResponse, true)
         );
     }
 }

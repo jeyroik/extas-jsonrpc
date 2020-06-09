@@ -2,14 +2,14 @@
 namespace tests\operations;
 
 use extas\interfaces\jsonrpc\IResponse;
-use extas\interfaces\operations\IJsonRpcOperation as IOperation;
+use extas\interfaces\operations\IJsonRpcOperation;
 use extas\interfaces\jsonrpc\operations\IOperationDispatcher;
 
 use extas\components\operations\OperationRepository;
 use extas\components\extensions\ExtensionRepository;
 use extas\components\http\TSnuffHttp;
 use extas\components\jsonrpc\operations\Create;
-use extas\components\operations\JsonRpcOperation as Operation;
+use extas\components\operations\JsonRpcOperation;
 use extas\components\plugins\Plugin;
 use extas\components\protocols\ProtocolRepository;
 use extas\components\repositories\TSnuffRepository;
@@ -30,72 +30,72 @@ class CreateTest extends TestCase
     use TSnuffHttp;
 
     protected array $opDataMissedPk = [
-        Operation::FIELD__NAME => 'jsonrpc.operation.create',
-        Operation::FIELD__CLASS => Create::class,
-        Operation::FIELD__SPECS => [],
-        Operation::FIELD__PARAMETERS => [
-            Operation::PARAM__METHOD => [
-                ISampleParameter::FIELD__NAME => Operation::PARAM__METHOD,
+        JsonRpcOperation::FIELD__NAME => 'jsonrpc.operation.create',
+        JsonRpcOperation::FIELD__CLASS => Create::class,
+        JsonRpcOperation::FIELD__SPECS => [],
+        JsonRpcOperation::FIELD__PARAMETERS => [
+            JsonRpcOperation::PARAM__METHOD => [
+                ISampleParameter::FIELD__NAME => JsonRpcOperation::PARAM__METHOD,
                 ISampleParameter::FIELD__VALUE => 'create'
             ],
-            Operation::PARAM__ITEM_CLASS => [
-                ISampleParameter::FIELD__NAME => Operation::PARAM__ITEM_CLASS,
+            JsonRpcOperation::PARAM__ITEM_CLASS => [
+                ISampleParameter::FIELD__NAME => JsonRpcOperation::PARAM__ITEM_CLASS,
                 ISampleParameter::FIELD__VALUE => Plugin::class
             ],
-            Operation::PARAM__ITEM_REPOSITORY => [
-                ISampleParameter::FIELD__NAME => Operation::PARAM__ITEM_REPOSITORY,
+            JsonRpcOperation::PARAM__ITEM_REPOSITORY => [
+                ISampleParameter::FIELD__NAME => JsonRpcOperation::PARAM__ITEM_REPOSITORY,
                 ISampleParameter::FIELD__VALUE => 'jsonRpcOperationRepository'
             ],
-            Operation::PARAM__ITEM_NAME => [
-                ISampleParameter::FIELD__NAME => Operation::PARAM__ITEM_NAME,
+            JsonRpcOperation::PARAM__ITEM_NAME => [
+                ISampleParameter::FIELD__NAME => JsonRpcOperation::PARAM__ITEM_NAME,
                 ISampleParameter::FIELD__VALUE => 'jsonrpc operation'
             ]
         ]
     ];
 
     protected array $opData = [
-        Operation::FIELD__NAME => 'jsonrpc.operation.create',
-        Operation::FIELD__CLASS => Create::class,
-        Operation::FIELD__SPECS => [],
-        Operation::FIELD__PARAMETERS => [
-            Operation::PARAM__METHOD => [
-                ISampleParameter::FIELD__NAME => Operation::PARAM__METHOD,
+        JsonRpcOperation::FIELD__NAME => 'jsonrpc.operation.create',
+        JsonRpcOperation::FIELD__CLASS => Create::class,
+        JsonRpcOperation::FIELD__SPECS => [],
+        JsonRpcOperation::FIELD__PARAMETERS => [
+            JsonRpcOperation::PARAM__METHOD => [
+                ISampleParameter::FIELD__NAME => JsonRpcOperation::PARAM__METHOD,
                 ISampleParameter::FIELD__VALUE => 'create'
             ],
-            Operation::PARAM__ITEM_CLASS => [
-                ISampleParameter::FIELD__NAME => Operation::PARAM__ITEM_CLASS,
-                ISampleParameter::FIELD__VALUE => Operation::class
+            JsonRpcOperation::PARAM__ITEM_CLASS => [
+                ISampleParameter::FIELD__NAME => JsonRpcOperation::PARAM__ITEM_CLASS,
+                ISampleParameter::FIELD__VALUE => JsonRpcOperation::class
             ],
-            Operation::PARAM__ITEM_REPOSITORY => [
-                ISampleParameter::FIELD__NAME => Operation::PARAM__ITEM_REPOSITORY,
+            JsonRpcOperation::PARAM__ITEM_REPOSITORY => [
+                ISampleParameter::FIELD__NAME => JsonRpcOperation::PARAM__ITEM_REPOSITORY,
                 ISampleParameter::FIELD__VALUE => 'jsonRpcOperationRepository'
             ],
-            Operation::PARAM__ITEM_NAME => [
-                ISampleParameter::FIELD__NAME => Operation::PARAM__ITEM_NAME,
+            JsonRpcOperation::PARAM__ITEM_NAME => [
+                ISampleParameter::FIELD__NAME => JsonRpcOperation::PARAM__ITEM_NAME,
                 ISampleParameter::FIELD__VALUE => 'jsonrpc operation'
             ]
         ]
     ];
 
     protected array $opDataNew = [
-        Operation::FIELD__NAME => 'jsonrpc.operation.create.new',
-        Operation::FIELD__CLASS => '',
-        Operation::FIELD__SPECS => [],
-        Operation::FIELD__PARAMETERS => [
-            Operation::PARAM__METHOD => [
-                ISampleParameter::FIELD__NAME => Operation::PARAM__ITEM_NAME,
+        JsonRpcOperation::FIELD__NAME => 'jsonrpc.operation.create.new',
+        JsonRpcOperation::FIELD__CLASS => '',
+        JsonRpcOperation::FIELD__SPECS => [],
+        JsonRpcOperation::FIELD__PARAMETERS => [
+            JsonRpcOperation::PARAM__METHOD => [
+                ISampleParameter::FIELD__NAME => JsonRpcOperation::PARAM__ITEM_NAME,
                 ISampleParameter::FIELD__VALUE => 'create'
             ],
-            Operation::PARAM__ITEM_CLASS => [
-                ISampleParameter::FIELD__NAME => Operation::PARAM__ITEM_CLASS,
-                ISampleParameter::FIELD__VALUE => Operation::class
+            JsonRpcOperation::PARAM__ITEM_CLASS => [
+                ISampleParameter::FIELD__NAME => JsonRpcOperation::PARAM__ITEM_CLASS,
+                ISampleParameter::FIELD__VALUE => JsonRpcOperation::class
             ],
-            Operation::PARAM__ITEM_REPOSITORY => [
-                ISampleParameter::FIELD__NAME => Operation::PARAM__ITEM_NAME,
+            JsonRpcOperation::PARAM__ITEM_REPOSITORY => [
+                ISampleParameter::FIELD__NAME => JsonRpcOperation::PARAM__ITEM_NAME,
                 ISampleParameter::FIELD__VALUE => ''
             ],
-            Operation::PARAM__ITEM_NAME => [
-                ISampleParameter::FIELD__NAME => Operation::PARAM__ITEM_NAME,
+            JsonRpcOperation::PARAM__ITEM_NAME => [
+                ISampleParameter::FIELD__NAME => JsonRpcOperation::PARAM__ITEM_NAME,
                 ISampleParameter::FIELD__VALUE => ''
             ]
         ]
@@ -121,11 +121,11 @@ class CreateTest extends TestCase
     public function testMissedPkMethod()
     {
         /**
-         * @var IOperation $operation
+         * @var IJsonRpcOperation $operation
          */
         $operation = $this->createWithSnuffRepo(
             'jsonRpcOperationRepository',
-            new Operation($this->opDataMissedPk)
+            new JsonRpcOperation($this->opDataMissedPk)
         );
         $dispatcher = $this->getDispatcher($operation, '.create');
         $response = $dispatcher();
@@ -140,18 +140,19 @@ class CreateTest extends TestCase
                     IResponse::RESPONSE__ERROR_MESSAGE => 'Item has not method "getName"'
                 ]
             ],
-            $jsonRpcResponse
+            $jsonRpcResponse,
+            'Current response: ' . print_r($jsonRpcResponse, true)
         );
     }
 
     public function testItemAlreadyExists()
     {
         /**
-         * @var IOperation $operation
+         * @var IJsonRpcOperation $operation
          */
         $operation = $this->createWithSnuffRepo(
             'jsonRpcOperationRepository',
-            new Operation($this->opData)
+            new JsonRpcOperation($this->opData)
         );
         $dispatcher = $this->getDispatcher($operation, '.create.existed');
         $response = $dispatcher();
@@ -166,18 +167,19 @@ class CreateTest extends TestCase
                     IResponse::RESPONSE__ERROR_MESSAGE => 'Jsonrpc operation already exist'
                 ]
             ],
-            $jsonRpcResponse
+            $jsonRpcResponse,
+            'Current response: ' . print_r($jsonRpcResponse, true)
         );
     }
 
     public function testSuccess()
     {
         /**
-         * @var IOperation $operation
+         * @var IJsonRpcOperation $operation
          */
         $operation = $this->createWithSnuffRepo(
             'jsonRpcOperationRepository',
-            new Operation($this->opData)
+            new JsonRpcOperation($this->opData)
         );
         $dispatcher = $this->getDispatcher($operation, '.create');
         $response = $dispatcher();
@@ -188,16 +190,17 @@ class CreateTest extends TestCase
                 IResponse::RESPONSE__VERSION => IResponse::VERSION_CURRENT,
                 IResponse::RESPONSE__RESULT => $this->opDataNew
             ],
-            $jsonRpcResponse
+            $jsonRpcResponse,
+            'Current response: ' . print_r($jsonRpcResponse, true)
         );
     }
 
     /**
-     * @param IOperation $operation
+     * @param IJsonRpcOperation $operation
      * @param string $streamSuffix
      * @return IOperationDispatcher
      */
-    protected function getDispatcher(IOperation $operation, string $streamSuffix): IOperationDispatcher
+    protected function getDispatcher(IJsonRpcOperation $operation, string $streamSuffix): IOperationDispatcher
     {
         return new Create([
             Create::FIELD__PSR_REQUEST => $this->getPsrRequest($streamSuffix),
