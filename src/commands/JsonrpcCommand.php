@@ -5,7 +5,7 @@ use extas\components\options\TConfigure;
 use extas\interfaces\crawlers\ICrawler;
 use extas\interfaces\IDispatcherWrapper;
 use extas\interfaces\IItem;
-use extas\interfaces\jsonrpc\generators\IGenerator;
+use extas\interfaces\generators\IGenerator;
 use extas\interfaces\repositories\IRepository;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -130,9 +130,27 @@ class JsonrpcCommand extends DefaultCommand
         $generators = $this->generatorRepository()->all([IGenerator::FIELD__TAGS => 'jsonrpc']);
         foreach ($generators as $generator) {
             if ($this->isGeneratorAllowed($generator, $input)) {
-                $generator->dispatch($input, $output, $applicableClasses);
+                $result = $generator->run($applicableClasses, $input, $output);
+                $this->exportResult($result, $input);
             }
         }
+    }
+
+    /**
+     * @param array $result
+     * @param InputInterface $input
+     */
+    protected function exportResult(array $result, InputInterface $input): void
+    {
+        $path = getcwd() . $input->getOption('path');
+
+        if (is_file($path)) {
+            $already = json_decode(file_get_contents($path), true);
+            $already['jsonrpc_operations'] = array_merge($already['jsonrpc_operations'], $result['jsonrpc_operations']);
+            $result = $already;
+        }
+
+        file_put_contents($path, json_encode($result));
     }
 
     /**
