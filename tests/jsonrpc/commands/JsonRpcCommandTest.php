@@ -86,9 +86,9 @@ class JsonRpcCommandTest extends TestCase
     protected function getTestInput(): InputInterface
     {
         return $this->getInput([
-            'prefix-doc-comment' => 'DocComment',
+            'prefix-jsonrpc-doc-comment' => 'DocComment',
             'filter' => '',
-            'path' => getcwd() . '/tests',
+            'path-jsonrpc-doc-comment' => getcwd() . '/tests',
             'export-path' => '/tests/runtime.json',
             'crawler-by-doc-comment' => true,
             'generator-test-generator' => true
