@@ -75,7 +75,8 @@ class JsonRpcCommandTest extends TestCase
         $this->assertCount(
             2,
             $storage['jsonrpc_operations'],
-            'Incorrect operations count:' . print_r($storage['jsonrpc_operations'],true)
+            'Incorrect operations count:' . print_r($storage['jsonrpc_operations'],true) . PHP_EOL
+            . $outputText
         );
     }
 
