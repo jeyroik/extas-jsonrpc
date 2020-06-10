@@ -89,7 +89,7 @@ class JsonRpcCommandTest extends TestCase
             'prefix' => 'DocComment',
             'path' => getcwd() . '/tests',
             'export-path' => '/tests/runtime.json',
-            'crawler-test_crawler' => true,
+            'crawler-by-doc-comment' => true,
             'generator-test_generator' => true
         ]);
     }
@@ -114,7 +114,7 @@ class JsonRpcCommandTest extends TestCase
         ]));
 
         $this->createWithSnuffRepo('crawlerRepository', new Crawler([
-            Crawler::FIELD__NAME => 'test_crawler',
+            Crawler::FIELD__NAME => 'by.doc.comment',
             Crawler::FIELD__CLASS => ByDocComment::class,
             Crawler::FIELD__TAGS => ['jsonrpc']
         ]));
