@@ -65,7 +65,7 @@ class CrawlerTest extends TestCase
         $this->assertEmpty($operations, 'Found doc-comments operations in src');
 
         $crawler = new ByDocComment([
-            ByDocComment::FIELD__INPUT => $this->getTestInput('Operation', '/tests'),
+            ByDocComment::FIELD__INPUT => $this->getTestInput('DocComment', '/tests'),
             ByDocComment::FIELD__OUTPUT => $this->getOutput()
         ]);
 

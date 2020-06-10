@@ -87,6 +87,7 @@ class JsonRpcCommandTest extends TestCase
     {
         return $this->getInput([
             'prefix' => 'DocComment',
+            'filter' => '',
             'path' => getcwd() . '/tests',
             'export-path' => '/tests/runtime.json',
             'crawler-by-doc-comment' => true,
