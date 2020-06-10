@@ -1,0 +1,18 @@
+{
+  "generators": [
+    {
+      "name": "by.install.section",
+      "title": "By install section",
+      "description": "Парсит плагины на основе InstallSection",
+      "class": "extas\\components\\jsonrpc\\generators\\ByInstallSection",
+      "tags": ["jsonrpc"]
+    },
+    {
+      "name": "by.doc.comment",
+      "title": "By doc comment",
+      "description": "Парсит классы с описанием операции в doc-блоке",
+      "class": "extas\\components\\jsonrpc\\generators\\ByDocComment",
+      "tags": ["jsonrpc"]
+    }
+  ]
+}
