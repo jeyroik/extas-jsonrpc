@@ -6,13 +6,13 @@ use extas\components\jsonrpc\crawlers\ByDocComment;
 use extas\components\jsonrpc\crawlers\ByInstallSection;
 use extas\components\plugins\init\InitGenerators;
 use extas\components\plugins\install\InstallJsonRpcOperations;
-use extas\components\plugins\jsonrpc\PluginDefaultArguments;
+
+use tests\DocCommentNotADefaultPluginWith;
+use tests\DocCommentOperationWith;
 
 use Dotenv\Dotenv;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Input\InputInterface;
-use tests\DocCommentNotADefaultPluginWith;
-use tests\DocCommentOperationWith;
 
 /**
  * Class CrawlerTest
@@ -49,7 +49,12 @@ class CrawlerTest extends TestCase
         ));
 
         $crawler = new ByInstallSection([
-            ByInstallSection::FIELD__INPUT => $this->getTestInput('PluginInstallMy', '/tests'),
+            ByInstallSection::FIELD__INPUT => $this->getTestInput(
+                ByInstallSection::OPTION__PREFIX,
+                ByInstallSection::OPTION__PATH,
+                'PluginInstallMy',
+                '/tests'
+            ),
             ByInstallSection::FIELD__OUTPUT => $this->getOutput()
         ]);
         $plugins = $crawler();
@@ -59,14 +64,22 @@ class CrawlerTest extends TestCase
     public function testCrawlByDocComment()
     {
         $crawler = new ByDocComment([
-            ByDocComment::FIELD__INPUT => $this->getTestInput(),
+            ByDocComment::FIELD__INPUT => $this->getTestInput(
+                ByDocComment::OPTION__DOC_PREFIX,
+                ByDocComment::OPTION__DOC_PATH
+            ),
             ByDocComment::FIELD__OUTPUT => $this->getOutput()
         ]);
         $operations = $crawler();
         $this->assertEmpty($operations, 'Found doc-comments operations in src');
 
         $crawler = new ByDocComment([
-            ByDocComment::FIELD__INPUT => $this->getTestInput('DocComment', '/tests'),
+            ByDocComment::FIELD__INPUT => $this->getTestInput(
+                ByDocComment::OPTION__DOC_PREFIX,
+                ByDocComment::OPTION__DOC_PATH,
+                'DocComment',
+                '/tests'
+            ),
             ByDocComment::FIELD__OUTPUT => $this->getOutput()
         ]);
 
@@ -85,18 +98,23 @@ class CrawlerTest extends TestCase
     }
 
     /**
+     *
+     * @param string $prefixName
+     * @param string $pathName
      * @param string $prefix
      * @param string $path
      * @return InputInterface
      */
     protected function getTestInput(
+        string $prefixName = ByInstallSection::OPTION__PREFIX,
+        string $pathName = ByInstallSection::OPTION__PATH,
         string $prefix = 'InstallJson',
         string $path = '/src/components'
     ): InputInterface
     {
         return $this->getInput([
-            PluginDefaultArguments::OPTION__CRAWL_PATH => getcwd() . $path,
-            PluginDefaultArguments::OPTION__PREFIX => $prefix
+            $pathName => getcwd() . $path,
+            $prefixName => $prefix
         ]);
     }
 }

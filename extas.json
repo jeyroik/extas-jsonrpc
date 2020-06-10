@@ -49,15 +49,76 @@
       "tags": ["jsonrpc"]
     }
   ],
+  "commands_options": [
+    {
+      "name": "prefix-jsonrpc-install",
+      "shortcut": "",
+      "mode": 4,
+      "default": "Install",
+      "description": "Classes prefix for JSON RPC crawler by InstallSection",
+      "title": "Prefix Install",
+      "commands": ["extas-jsonrpc"]
+    },
+    {
+      "name": "prefix-jsonrpc-doc-comment",
+      "shortcut": "",
+      "mode": 4,
+      "default": "",
+      "description": "Classes prefix for JSON RPC crawler by doc comments",
+      "title": "Prefix Doc comment",
+      "commands": ["extas-jsonrpc"]
+    },
+    {
+      "name": "filter",
+      "shortcut": "",
+      "mode": 4,
+      "default": "",
+      "description": "Operations names filter",
+      "title": "Filter",
+      "commands": ["extas-jsonrpc"]
+    },
+    {
+      "name": "path-jsonrpc-install",
+      "shortcut": "",
+      "mode": 4,
+      "default": "",
+      "description": "Path for crawling JSON RPC operation",
+      "title": "JSOn RPC operation path",
+      "commands": ["extas-jsonrpc"]
+    },
+    {
+      "name": "path-jsonrpc-doc-comment",
+      "shortcut": "",
+      "mode": 4,
+      "default": "",
+      "description": "Path for crawling JSON RPC operation",
+      "title": "JSOn RPC operation path",
+      "commands": ["extas-jsonrpc"]
+    }
+  ],
   "jsonrpc_operations": [
     {
       "name": "operation.index",
       "title": "Operation list",
       "description": "Operation list",
-      "method": "index",
-      "item_name": "operation",
-      "item_class": "extas\\components\\jsonrpc\\operations\\Operation",
-      "item_repo": "jsonRpcOperationRepository",
+      "parameters": {
+        "method": {
+          "name": "method",
+          "value": "index"
+        },
+        "item_name": {
+          "name": "item_name",
+          "value": "operation"
+        },
+        "item_class": {
+          "name": "item_class",
+          "value": "extas\\components\\jsonrpc\\operations\\Operation"
+        },
+        "item_repository": {
+          "name": "item_repository",
+          "value": "jsonRpcOperationRepository"
+        }
+      },
       "class": "extas\\components\\jsonrpc\\operations\\Index",
       "spec": {
         "request": {

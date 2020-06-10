@@ -70,7 +70,7 @@ class JsonRpcCommandTest extends TestCase
         $command->run($this->getTestInput(), $output);
 
         $outputText = $output->fetch();
-        $this->assertStringContainsString('Exported result of generator "test_generator"', $outputText);
+        $this->assertStringContainsString('Exported result of generator "test.generator"', $outputText);
         $storage = json_decode(file_get_contents(getcwd() . '/tests/runtime.json'), true);
         $this->assertCount(
             3,
@@ -86,19 +86,19 @@ class JsonRpcCommandTest extends TestCase
     protected function getTestInput(): InputInterface
     {
         return $this->getInput([
-            'prefix' => 'DocComment',
+            'prefix-doc-comment' => 'DocComment',
             'filter' => '',
             'path' => getcwd() . '/tests',
             'export-path' => '/tests/runtime.json',
             'crawler-by-doc-comment' => true,
-            'generator-test_generator' => true
+            'generator-test-generator' => true
         ]);
     }
 
     protected function prepareCommand()
     {
         $this->createWithSnuffRepo('commandOptionRepository', new CommandOption([
-            'name' => 'path',
+            'name' => 'path-jsonrpc-doc-comment',
             'shortcut' => '',
             'mode' => 4,
             'default' => '',
@@ -106,7 +106,7 @@ class JsonRpcCommandTest extends TestCase
             'commands' => ['extas-jsonrpc']
         ]));
         $this->createWithSnuffRepo('commandOptionRepository', new CommandOption([
-            'name' => 'prefix',
+            'name' => 'prefix-jsonrpc-doc-comment',
             'shortcut' => '',
             'mode' => 4,
             'default' => '',
@@ -129,7 +129,7 @@ class JsonRpcCommandTest extends TestCase
         ]));
 
         $this->createWithSnuffRepo('generatorRepository', new Generator([
-            Generator::FIELD__NAME => 'test_generator',
+            Generator::FIELD__NAME => 'test.generator',
             Generator::FIELD__CLASS => \extas\components\generators\jsonrpc\ByDocComment::class,
             Generator::FIELD__TAGS => ['jsonrpc']
         ]));

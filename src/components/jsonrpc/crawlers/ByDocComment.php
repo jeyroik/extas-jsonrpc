@@ -10,6 +10,8 @@ namespace extas\components\jsonrpc\crawlers;
 class ByDocComment extends ByInstallSection
 {
     public const NAME = 'by.doc.comment';
+    public const OPTION__DOC_PATH = 'path-jsonrpc-doc-comment';
+    public const OPTION__DOC_PREFIX = 'prefix-jsonrpc-doc-comment';
 
     /**
      * @param $plugin
@@ -27,5 +29,21 @@ class ByDocComment extends ByInstallSection
                 $plugins[] = $plugin;
             }
         }
+    }
+
+    /**
+     * @return string
+     */
+    protected function getPathValue(): string
+    {
+        return $this->getInputOption(static::OPTION__DOC_PATH, getcwd());
+    }
+
+    /**
+     * @return string
+     */
+    protected function getPrefixValue(): string
+    {
+        return $this->getInputOption(static::OPTION__DOC_PREFIX, '');
     }
 }

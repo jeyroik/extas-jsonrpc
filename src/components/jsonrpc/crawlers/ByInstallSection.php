@@ -4,7 +4,6 @@ namespace extas\components\jsonrpc\crawlers;
 use extas\components\crawlers\CrawlerDispatcher;
 use extas\components\plugins\init\InitSection;
 use extas\components\plugins\install\InstallSection;
-use extas\components\plugins\jsonrpc\PluginDefaultArguments;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Finder\SplFileInfo;
 
@@ -17,14 +16,16 @@ use Symfony\Component\Finder\SplFileInfo;
 class ByInstallSection extends CrawlerDispatcher
 {
     public const NAME = 'by.install.section';
+    public const OPTION__PATH = 'path-jsonrpc-install';
+    public const OPTION__PREFIX = 'prefix-jsonrpc-install';
 
     /**
      * @return array
      */
     public function __invoke(): array
     {
-        $path = $this->getInput()->getOption(PluginDefaultArguments::OPTION__CRAWL_PATH);
-        $prefix = $this->getInput()->getOption(PluginDefaultArguments::OPTION__PREFIX);
+        $path = $this->getPathValue();
+        $prefix = $this->getPrefixValue();
 
         $finder = new Finder();
         $finder->name($prefix . '*.php');
@@ -42,6 +43,22 @@ class ByInstallSection extends CrawlerDispatcher
         }
 
         return $plugins;
+    }
+
+    /**
+     * @return string
+     */
+    protected function getPrefixValue(): string
+    {
+        return $this->getInputOption(static::OPTION__PREFIX, 'Install');
+    }
+
+    /**
+     * @return string
+     */
+    protected function getPathValue(): string
+    {
+        return $this->getInputOption(static::OPTION__PATH, getcwd());
     }
 
     /**
