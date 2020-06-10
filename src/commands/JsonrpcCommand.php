@@ -146,9 +146,14 @@ class JsonrpcCommand extends DefaultCommand
     /**
      * @param array $result
      * @param InputInterface $input
+     * @return bool
      */
-    protected function exportResult(array $result, InputInterface $input): void
+    protected function exportResult(array $result, InputInterface $input): bool
     {
+        if (!isset($result['jsonrpc_operations'])) {
+            return false;
+        }
+
         $path = getcwd() . $input->getOption('export-path');
 
         if (is_file($path)) {
@@ -158,6 +163,8 @@ class JsonrpcCommand extends DefaultCommand
         }
 
         file_put_contents($path, json_encode($result));
+
+        return true;
     }
 
     /**
