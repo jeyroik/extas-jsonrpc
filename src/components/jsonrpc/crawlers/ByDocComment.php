@@ -18,12 +18,14 @@ class ByDocComment extends ByInstallSection
      */
     protected function filterPlugin($plugin, array &$plugins): void
     {
-        $reflection = new \ReflectionClass($plugin);
-        $doc = $reflection->getDocComment();
-        preg_match_all('/@jsonrpc_operation/', $doc, $matches);
+        if ($plugin) {
+            $reflection = new \ReflectionClass($plugin);
+            $doc = $reflection->getDocComment();
+            preg_match_all('/@jsonrpc_operation/', $doc, $matches);
 
-        if (!empty($matches[0])) {
-            $plugins[] = $plugin;
+            if (!empty($matches[0])) {
+                $plugins[] = $plugin;
+            }
         }
     }
 }

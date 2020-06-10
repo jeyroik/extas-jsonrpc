@@ -52,6 +52,9 @@ class JsonRpcCommandTest extends TestCase
     protected function tearDown(): void
     {
         $this->unregisterSnuffRepos();
+        if (is_file(getcwd() . '/tests/runtime.json')) {
+            unlink(getcwd() . '/tests/runtime.json');
+        }
     }
 
     public function testRun()
@@ -78,6 +81,7 @@ class JsonRpcCommandTest extends TestCase
     protected function getTestInput(): InputInterface
     {
         return $this->getInput([
+            'prefix' => 'DocComment',
             'path' => getcwd() . '/tests',
             'export-path' => getcwd() . '/tests/runtime.json',
             'crawler-test_crawler' => true,
