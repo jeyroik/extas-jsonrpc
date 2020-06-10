@@ -11,7 +11,8 @@ use extas\components\plugins\jsonrpc\PluginDefaultArguments;
 use Dotenv\Dotenv;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Input\InputInterface;
-use tests\OperationWithDocComment;
+use tests\DocCommentNotADefaultPluginWith;
+use tests\DocCommentOperationWith;
 
 /**
  * Class CrawlerTest
@@ -71,13 +72,14 @@ class CrawlerTest extends TestCase
 
         $operations = $crawler();
         $this->assertCount(
-            1,
+            2,
             $operations,
             'Incorrect operations count found:' . print_r($operations, true)
         );
         $plugin = array_shift($operations);
+        $foundMap = [DocCommentOperationWith::class, DocCommentNotADefaultPluginWith::class];
         $this->assertTrue(
-            $plugin instanceof OperationWithDocComment,
+            in_array(get_class($plugin), $foundMap),
             'Incorrect operation instance: ' . get_class($plugin)
         );
     }
