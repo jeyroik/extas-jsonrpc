@@ -7,9 +7,11 @@ namespace extas\components\jsonrpc\crawlers;
  * @package extas\components\jsonrpc\crawlers
  * @author jeyroik@gmail.com
  */
-class ByDocComment extends ByPluginInstallDefault
+class ByDocComment extends ByInstallSection
 {
     public const NAME = 'by.doc.comment';
+    public const OPTION__DOC_PATH = 'path-jsonrpc-doc-comment';
+    public const OPTION__DOC_PREFIX = 'prefix-jsonrpc-doc-comment';
 
     /**
      * @param $plugin
@@ -18,12 +20,30 @@ class ByDocComment extends ByPluginInstallDefault
      */
     protected function filterPlugin($plugin, array &$plugins): void
     {
-        $reflection = new \ReflectionClass($plugin);
-        $doc = $reflection->getDocComment();
-        preg_match_all('/@jsonrpc_operation/', $doc, $matches);
+        if ($plugin) {
+            $reflection = new \ReflectionClass($plugin);
+            $doc = $reflection->getDocComment();
+            preg_match_all('/@jsonrpc_operation/', $doc, $matches);
 
-        if (!empty($matches[0])) {
-            $plugins[] = $plugin;
+            if (!empty($matches[0])) {
+                $plugins[] = $plugin;
+            }
         }
+    }
+
+    /**
+     * @return string
+     */
+    protected function getPathValue(): string
+    {
+        return $this->getInputOption(static::OPTION__DOC_PATH, getcwd());
+    }
+
+    /**
+     * @return string
+     */
+    protected function getPrefixValue(): string
+    {
+        return $this->getInputOption(static::OPTION__DOC_PREFIX, '');
     }
 }

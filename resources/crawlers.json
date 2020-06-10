@@ -1,0 +1,16 @@
+{
+  "crawlers": [
+    {
+      "name": "by.install.section",
+      "title": "PluginInstallDefault",
+      "description": "Собирает плагины на основе InstallSection",
+      "class": "extas\\components\\jsonrpc\\crawlers\\ByInstallSection"
+    },
+    {
+      "name": "by.doc.comment",
+      "title": "Doc comment",
+      "description": "Собирает классы с тегом @jsonrpc_operation в doc comment",
+      "class": "extas\\components\\jsonrpc\\crawlers\\ByDocComment"
+    }
+  ]
+}

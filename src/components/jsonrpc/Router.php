@@ -3,17 +3,16 @@ namespace extas\components\jsonrpc;
 
 use extas\components\Item;
 use extas\interfaces\jsonrpc\IRouter;
-use extas\interfaces\jsonrpc\operations\IOperation;
+use extas\interfaces\operations\IOperation;
 use extas\interfaces\jsonrpc\operations\IOperationDispatcher;
-use extas\interfaces\jsonrpc\operations\IOperationRepository;
-
+use extas\interfaces\repositories\IRepository;
 use extas\interfaces\stages\IStageRunJsonRpc;
 use Psr\Http\Message\ResponseInterface;
 
 /**
  * Class Router
  *
- * @method jsonRpcOperationRepository() IOperationRepository
+ * @method IRepository jsonRpcOperationRepository()
  *
  * @package extas\components\jsonrpc
  * @author jeyroik@gmail.com
@@ -71,7 +70,6 @@ class Router extends Item implements IRouter
         $routeName = $jRpcRequest->getMethod(static::ROUTE__DEFAULT);
 
         /**
-         * @var $repo IOperationRepository
          * @var $operation IOperation
          */
         $repo = $this->jsonRpcOperationRepository();
@@ -80,7 +78,7 @@ class Router extends Item implements IRouter
             ? $repo->all([])
             : $repo->all([IOperation::FIELD__NAME => $routeName]);
 
-        $specs = array_column($operations, IOperation::FIELD__SPEC, IOperation::FIELD__NAME);
+        $specs = array_column($operations, IOperation::FIELD__SPECS, IOperation::FIELD__NAME);
 
         return $this->successResponse($jRpcRequest->getId(), $specs);
     }

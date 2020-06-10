@@ -4,19 +4,24 @@
   "require": {
     "slim/slim": "^4.5",
     "slim/psr7": "^1.1",
-    "jeyroik/extas-installer": "2.*",
     "jeyroik/extas-expands": "2.*",
     "jeyroik/extas-protocols": "2.*",
     "jeyroik/extas-repositories-get": "0.*",
     "jeyroik/extas-conditions": "0.*",
+    "jeyroik/extas-crawlers": "0.*",
+    "jeyroik/extas-console": "0.*",
+    "jeyroik/extas-operations-jsonrpc": "0.*",
+    "jeyroik/extas-generators-jsonrpc": "0.*",
     "symfony/console": "5.*",
+    "symfony/finder": "5.*",
     "vlucas/phpdotenv": "^3.4"
   },
   "require-dev": {
     "phpunit/phpunit": "^9",
     "jeyroik/extas-repositories-mongo": "1.*",
     "jeyroik/extas-snuffbox": "0.*",
-    "phpstan/phpstan": "0.*"
+    "phpstan/phpstan": "0.*",
+    "jeyroik/extas-installer": "*"
   },
   "autoload": {
     "psr-4": {

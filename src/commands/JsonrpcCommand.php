@@ -1,15 +1,12 @@
 <?php
 namespace extas\commands;
 
-use extas\components\jsonrpc\crawlers\CrawlerRepository;
-use extas\components\jsonrpc\generators\GeneratorRepository;
-use extas\components\Plugins;
+use extas\components\options\TConfigure;
+use extas\interfaces\crawlers\ICrawler;
 use extas\interfaces\IDispatcherWrapper;
 use extas\interfaces\IItem;
-use extas\interfaces\jsonrpc\crawlers\ICrawler;
-use extas\interfaces\jsonrpc\generators\IGenerator;
+use extas\interfaces\generators\IGenerator;
 use extas\interfaces\repositories\IRepository;
-use extas\interfaces\stages\IStageJsonRpcCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -22,6 +19,10 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class JsonrpcCommand extends DefaultCommand
 {
+    use TConfigure;
+
+    public const OPTION__EXPORT_PATH = 'export-path';
+
     protected const VERSION = '0.1.0';
     protected string $commandVersion = '0.2.0';
     protected string $commandTitle = 'Extas JSON-RPC spec generator';
@@ -39,32 +40,29 @@ class JsonrpcCommand extends DefaultCommand
             ->setName('jsonrpc')
             ->setAliases([])
             ->setDescription('Create json rpc specs.')
-            ->setHelp('This command allows you to create json rpc specs.');
+            ->setHelp('This command allows you to create json rpc specs.')
+            ->addOption(
+                static::OPTION__EXPORT_PATH,
+                '',
+                4,
+                'Path to store result: resources/extas.json',
+                getcwd() . '/resources/extas.json'
+            );
 
-        $this->addOptionsByPlugins();
-        $this->addOptionsFroCrawlers();
+        $this->addOptionsForCrawlers();
         $this->addOptionsForGenerators();
-    }
-
-    /**
-     * Add options for crawling and generation.
-     */
-    protected function addOptionsByPlugins(): void
-    {
-        foreach (Plugins::byStage(IStageJsonRpcCommand::NAME) as $plugin) {
-            /**
-             * @var IStageJsonRpcCommand $plugin
-             */
-            $plugin($this);
-        }
+        $this->configureWithOptions('extas-jsonrpc', [static::OPTION__EXPORT_PATH => true]);
     }
 
     /**
      * Add options for crawlers
      */
-    protected function addOptionsFroCrawlers()
+    protected function addOptionsForCrawlers()
     {
-        $this->addOptionsFor($this->jsonRpcCrawlerRepository()->all([]), 'crawler');
+        $this->addOptionsFor(
+            $this->getRepo('crawlerRepository')->all([ICrawler::FIELD__TAGS => 'jsonrpc']),
+            'crawler'
+        );
     }
 
     /**
@@ -72,24 +70,10 @@ class JsonrpcCommand extends DefaultCommand
      */
     protected function addOptionsForGenerators()
     {
-
-        $this->addOptionsFor($this->jsonRpcGeneratorRepository()->all([]), 'generator');
-    }
-
-    /**
-     * @return IRepository
-     */
-    protected function jsonRpcCrawlerRepository(): IRepository
-    {
-        return new CrawlerRepository();
-    }
-
-    /**
-     * @return IRepository
-     */
-    protected function jsonRpcGeneratorRepository(): IRepository
-    {
-        return new GeneratorRepository();
+        $this->addOptionsFor(
+            $this->getRepo('generatorRepository')->all([IGenerator::FIELD__TAGS => 'jsonrpc']),
+            'generator'
+        );
     }
 
     /**
@@ -118,6 +102,16 @@ class JsonrpcCommand extends DefaultCommand
     }
 
     /**
+     * @param string $name
+     * @return IRepository
+     */
+    protected function getRepo(string $name): IRepository
+    {
+        $jsonRpc = new JsonRpc();
+        return $jsonRpc->$name();
+    }
+
+    /**
      * @param InputInterface $input
      * @param OutputInterface $output
      */
@@ -128,23 +122,49 @@ class JsonrpcCommand extends DefaultCommand
         /**
          * @var ICrawler[] $crawlers
          */
-        $crawlers = $this->jsonRpcCrawlerRepository()->all([]);
+        $crawlers = $this->getRepo('crawlerRepository')->all([ICrawler::FIELD__TAGS => 'jsonrpc']);
         $applicableClasses = [];
         foreach ($crawlers as $crawler) {
             if ($this->isCrawlerAllowed($crawler, $input)) {
-                $applicableClasses[$crawler->getName()] = $crawler->dispatch($input, $output);
+                $applicableClasses[$crawler->getName()] = $crawler->dispatch(getcwd(), $input, $output);
             }
         }
 
         /**
          * @var IGenerator[] $generators[]
          */
-        $generators = $this->jsonRpcGeneratorRepository()->all([]);
+        $generators = $this->getRepo('generatorRepository')->all([IGenerator::FIELD__TAGS => 'jsonrpc']);
         foreach ($generators as $generator) {
             if ($this->isGeneratorAllowed($generator, $input)) {
-                $generator->dispatch($input, $output, $applicableClasses);
+                $result = $generator->run($applicableClasses, $input, $output);
+                $this->exportResult($result, $input);
+                $output->writeln(['Exported result of generator "' . $generator->getName() . '"']);
             }
         }
+    }
+
+    /**
+     * @param array $result
+     * @param InputInterface $input
+     * @return bool
+     */
+    protected function exportResult(array $result, InputInterface $input): bool
+    {
+        if (!isset($result['jsonrpc_operations'])) {
+            return false;
+        }
+
+        $path = getcwd() . $input->getOption('export-path');
+
+        if (is_file($path)) {
+            $already = json_decode(file_get_contents($path), true);
+            $already['jsonrpc_operations'] = array_merge($already['jsonrpc_operations'], $result['jsonrpc_operations']);
+            $result = $already;
+        }
+
+        file_put_contents($path, json_encode($result));
+
+        return true;
     }
 
     /**

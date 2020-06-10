@@ -1,39 +1,14 @@
 {
   "name": "extas/jsonrpc",
-  "package_classes": [
-    {
-      "interface": "extas\\interfaces\\jsonrpc\\operations\\IOperationRepository",
-      "class": "extas\\components\\jsonrpc\\operations\\OperationRepository"
-    },
-    {
-      "interface": "jsonRpcOperationRepository",
-      "class": "extas\\components\\jsonrpc\\operations\\OperationRepository"
-    },
-    {
-      "interface": "extas\\interfaces\\jsonrpc\\crawlers\\ICrawlerRepository",
-      "class": "extas\\components\\jsonrpc\\crawlers\\CrawlerRepository"
-    },
-    {
-      "interface": "jsonRpcCrawlerRepository",
-      "class": "extas\\components\\jsonrpc\\crawlers\\CrawlerRepository"
-    },
-    {
-      "interface": "extas\\interfaces\\jsonrpc\\generators\\IGeneratorRepository",
-      "class": "extas\\components\\jsonrpc\\generators\\GeneratorRepository"
-    },
-    {
-      "interface": "jsonRpcGeneratorRepository",
-      "class": "extas\\components\\jsonrpc\\generators\\GeneratorRepository"
-    }
-  ],
+  "installer_version": 3,
   "plugins": [
     {
-      "class": [
-        "extas\\components\\plugins\\PluginInstallJsonRpcOperations",
-        "extas\\components\\plugins\\PluginInstallJsonRpcCrawlers",
-        "extas\\components\\plugins\\PluginInstallJsonRpcGenerators"
-      ],
-      "stage": "extas.install"
+      "class": "extas\\components\\plugins\\install\\InstallJsonRpcOperations",
+      "stage": "extas.install.section.jsonrpc_operations"
+    },
+    {
+      "class": "extas\\components\\plugins\\uninstall\\UninstallJsonRpcOperations",
+      "stage": "extas.uninstall.section.jsonrpc_operations"
     },
     {
       "class": "extas\\components\\plugins\\installers\\InstallerCommandPlugin",
@@ -44,44 +19,51 @@
       "stage": "extas.jsonrpc.command"
     }
   ],
-  "extensions": [
+  "commands_options": [
     {
-      "class": "extas\\components\\extensions\\ExtensionRepositoryGet",
-      "interface": "extas\\interfaces\\extensions\\IExtensionRepositoryGet",
-      "subject": "*",
-      "methods": [
-        "jsonRpcOperationRepository",
-        "jsonRpcCrawlerRepository",
-        "jsonRpcGeneratorRepository"
-      ]
-    }
-  ],
-  "jsonrpc_crawlers": [
-    {
-      "name": "by.plugin.install.default",
-      "title": "PluginInstallDefault",
-      "description": "Собирает плагины на основе PluginInstallDefault",
-      "class": "extas\\components\\jsonrpc\\crawlers\\ByPluginInstallDefault"
+      "name": "prefix-jsonrpc-install",
+      "shortcut": "",
+      "mode": 4,
+      "default": "Install",
+      "description": "Classes prefix for JSON RPC crawler by InstallSection",
+      "title": "Prefix Install",
+      "commands": ["extas-jsonrpc"]
     },
     {
-      "name": "by.doc.comment",
-      "title": "Doc comment",
-      "description": "Собирает классы с тегом @jsonrpc_operation в doc comment",
-      "class": "extas\\components\\jsonrpc\\crawlers\\ByDocComment"
-    }
-  ],
-  "jsonrpc_generators": [
-    {
-      "name": "by.plugin.install.default",
-      "title": "PluginInstallDefault",
-      "description": "Парсит плагины на основе PluginInstallDefault",
-      "class": "extas\\components\\jsonrpc\\generators\\ByPluginInstallDefault"
+      "name": "prefix-jsonrpc-doc-comment",
+      "shortcut": "",
+      "mode": 4,
+      "default": "",
+      "description": "Classes prefix for JSON RPC crawler by doc comments",
+      "title": "Prefix Doc comment",
+      "commands": ["extas-jsonrpc"]
     },
     {
-      "name": "by.doc.comment",
-      "title": "By doc comment",
-      "description": "Парсит классы с описанием операции в doc-блоке",
-      "class": "extas\\components\\jsonrpc\\generators\\ByDocComment"
+      "name": "filter",
+      "shortcut": "",
+      "mode": 4,
+      "default": "",
+      "description": "Operations names filter",
+      "title": "Filter",
+      "commands": ["extas-jsonrpc"]
+    },
+    {
+      "name": "path-jsonrpc-install",
+      "shortcut": "",
+      "mode": 4,
+      "default": "",
+      "description": "Path for crawling JSON RPC operation",
+      "title": "JSOn RPC operation path",
+      "commands": ["extas-jsonrpc"]
+    },
+    {
+      "name": "path-jsonrpc-doc-comment",
+      "shortcut": "",
+      "mode": 4,
+      "default": "",
+      "description": "Path for crawling JSON RPC operation",
+      "title": "JSOn RPC operation path",
+      "commands": ["extas-jsonrpc"]
     }
   ],
   "jsonrpc_operations": [
@@ -89,12 +71,26 @@
       "name": "operation.index",
       "title": "Operation list",
       "description": "Operation list",
-      "method": "index",
-      "item_name": "test",
-      "item_class": "extas\\components\\jsonrpc\\operations\\Operation",
-      "item_repo": "extas\\interfaces\\jsonrpc\\operations\\IOperationRepository",
+      "parameters": {
+        "method": {
+          "name": "method",
+          "value": "index"
+        },
+        "item_name": {
+          "name": "item_name",
+          "value": "operation"
+        },
+        "item_class": {
+          "name": "item_class",
+          "value": "extas\\components\\jsonrpc\\operations\\Operation"
+        },
+        "item_repository": {
+          "name": "item_repository",
+          "value": "jsonRpcOperationRepository"
+        }
+      },
       "class": "extas\\components\\jsonrpc\\operations\\Index",
-      "spec": {
+      "specs": {
         "request": {
           "type": "object",
           "limit": {
@@ -116,17 +112,8 @@
                 "description": {
                   "type": "string"
                 },
-                "method": {
-                  "type": "string"
-                },
-                "item_name": {
-                  "type": "string"
-                },
-                "item_class": {
-                  "type": "string"
-                },
-                "item_repo": {
-                  "type": "string"
+                "parameters": {
+                  "type": "object"
                 },
                 "class": {
                   "type": "string"
@@ -134,7 +121,7 @@
                 "filter": {
                   "type": "string"
                 },
-                "spec": {
+                "specs": {
                   "type": "array"
                 }
               }
