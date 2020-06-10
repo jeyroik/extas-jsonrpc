@@ -70,9 +70,13 @@ class JsonRpcCommandTest extends TestCase
         $command->run($this->getTestInput(), $output);
 
         $outputText = $output->fetch();
-        $this->assertStringContainsString('Exported result of generator "test-generator"', $outputText);
+        $this->assertStringContainsString('Exported result of generator "test_generator"', $outputText);
         $storage = json_decode(file_get_contents(getcwd() . '/tests/runtime.json'), true);
-        $this->assertCount(2, $storage['jsonrpc_operations']);
+        $this->assertCount(
+            2,
+            $storage['jsonrpc_operations'],
+            'Incorrect operations count:' . print_r($storage['jsonrpc_operations'],true)
+        );
     }
 
     /**
