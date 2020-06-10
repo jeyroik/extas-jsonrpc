@@ -19,36 +19,6 @@
       "stage": "extas.jsonrpc.command"
     }
   ],
-  "crawlers": [
-    {
-      "name": "by.install.section",
-      "title": "PluginInstallDefault",
-      "description": "Собирает плагины на основе InstallSection",
-      "class": "extas\\components\\jsonrpc\\crawlers\\ByInstallSection"
-    },
-    {
-      "name": "by.doc.comment",
-      "title": "Doc comment",
-      "description": "Собирает классы с тегом @jsonrpc_operation в doc comment",
-      "class": "extas\\components\\jsonrpc\\crawlers\\ByDocComment"
-    }
-  ],
-  "generators": [
-    {
-      "name": "by.install.section",
-      "title": "By install section",
-      "description": "Парсит плагины на основе InstallSection",
-      "class": "extas\\components\\jsonrpc\\generators\\ByInstallSection",
-      "tags": ["jsonrpc"]
-    },
-    {
-      "name": "by.doc.comment",
-      "title": "By doc comment",
-      "description": "Парсит классы с описанием операции в doc-блоке",
-      "class": "extas\\components\\jsonrpc\\generators\\ByDocComment",
-      "tags": ["jsonrpc"]
-    }
-  ],
   "commands_options": [
     {
       "name": "prefix-jsonrpc-install",
@@ -120,7 +90,7 @@
         }
       },
       "class": "extas\\components\\jsonrpc\\operations\\Index",
-      "spec": {
+      "specs": {
         "request": {
           "type": "object",
           "limit": {
@@ -142,17 +112,8 @@
                 "description": {
                   "type": "string"
                 },
-                "method": {
-                  "type": "string"
-                },
-                "item_name": {
-                  "type": "string"
-                },
-                "item_class": {
-                  "type": "string"
-                },
-                "item_repo": {
-                  "type": "string"
+                "parameters": {
+                  "type": "object"
                 },
                 "class": {
                   "type": "string"
@@ -160,7 +121,7 @@
                 "filter": {
                   "type": "string"
                 },
-                "spec": {
+                "specs": {
                   "type": "array"
                 }
               }
