@@ -19,7 +19,7 @@ namespace tests;
  * @package tests
  * @author jeyroik <jeyroik@gmail.com>
  */
-class OperationWithDocComment
+class DocCommentOperationWith
 {
 
 }

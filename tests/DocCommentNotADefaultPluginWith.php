@@ -15,4 +15,4 @@ namespace tests;
  * @package tests
  * @author jeyroik@gmail.com
  */
-class NotADefaultPluginWithDocComment {}
+class DocCommentNotADefaultPluginWith {}
