@@ -2,11 +2,11 @@
 namespace extas\commands;
 
 use extas\components\options\TConfigure;
+use extas\components\THasMagicClass;
 use extas\interfaces\crawlers\ICrawler;
 use extas\interfaces\IDispatcherWrapper;
 use extas\interfaces\IItem;
 use extas\interfaces\generators\IGenerator;
-use extas\interfaces\repositories\IRepository;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -20,22 +20,20 @@ use Symfony\Component\Console\Output\OutputInterface;
 class JsonrpcCommand extends DefaultCommand
 {
     use TConfigure;
+    use THasMagicClass;
 
     public const OPTION__EXPORT_PATH = 'export-path';
 
-    protected const VERSION = '0.1.0';
-    protected string $commandVersion = '0.2.0';
+    protected string $commandVersion = '2.0.0';
     protected string $commandTitle = 'Extas JSON-RPC spec generator';
     protected bool $allCrawlers;
     protected bool $allGenerators;
-    protected JsonRpc $rpc;
 
     /**
      * Configure the current command.
      */
     protected function configure()
     {
-        $this->rpc = new JsonRpc();
         $this
             ->setName('jsonrpc')
             ->setAliases([])
@@ -60,7 +58,7 @@ class JsonrpcCommand extends DefaultCommand
     protected function addOptionsForCrawlers()
     {
         $this->addOptionsFor(
-            $this->getRepo('crawlerRepository')->all([ICrawler::FIELD__TAGS => 'jsonrpc']),
+            $this->getMagicClass('crawlerRepository')->all([ICrawler::FIELD__TAGS => 'jsonrpc']),
             'crawler'
         );
     }
@@ -71,7 +69,7 @@ class JsonrpcCommand extends DefaultCommand
     protected function addOptionsForGenerators()
     {
         $this->addOptionsFor(
-            $this->getRepo('generatorRepository')->all([IGenerator::FIELD__TAGS => 'jsonrpc']),
+            $this->getMagicClass('generatorRepository')->all([IGenerator::FIELD__TAGS => 'jsonrpc']),
             'generator'
         );
     }
@@ -102,16 +100,6 @@ class JsonrpcCommand extends DefaultCommand
     }
 
     /**
-     * @param string $name
-     * @return IRepository
-     */
-    protected function getRepo(string $name): IRepository
-    {
-        $jsonRpc = new JsonRpc();
-        return $jsonRpc->$name();
-    }
-
-    /**
      * @param InputInterface $input
      * @param OutputInterface $output
      */
@@ -122,7 +110,7 @@ class JsonrpcCommand extends DefaultCommand
         /**
          * @var ICrawler[] $crawlers
          */
-        $crawlers = $this->getRepo('crawlerRepository')->all([ICrawler::FIELD__TAGS => 'jsonrpc']);
+        $crawlers = $this->getMagicClass('crawlerRepository')->all([ICrawler::FIELD__TAGS => 'jsonrpc']);
         $applicableClasses = [];
         foreach ($crawlers as $crawler) {
             if ($this->isCrawlerAllowed($crawler, $input)) {
@@ -133,7 +121,7 @@ class JsonrpcCommand extends DefaultCommand
         /**
          * @var IGenerator[] $generators[]
          */
-        $generators = $this->getRepo('generatorRepository')->all([IGenerator::FIELD__TAGS => 'jsonrpc']);
+        $generators = $this->getMagicClass('generatorRepository')->all([IGenerator::FIELD__TAGS => 'jsonrpc']);
         foreach ($generators as $generator) {
             if ($this->isGeneratorAllowed($generator, $input)) {
                 $result = $generator->run($applicableClasses, $input, $output);
