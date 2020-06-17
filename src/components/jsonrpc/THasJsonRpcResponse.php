@@ -1,20 +1,19 @@
 <?php
 namespace extas\components\jsonrpc;
 
-use extas\interfaces\jsonrpc\IHasPsrResponse;
 use extas\interfaces\jsonrpc\IResponse;
 use Psr\Http\Message\ResponseInterface;
 
 /**
- * Trait THasPsrResponse
- *
- * @property array $config
+ * Trait THasJsonRpcResponse
  *
  * @package extas\components\jsonrpc
- * @author jeyroik@gmail.com
+ * @author jeyroik <jeyroik@gmail.com>
  */
-trait THasPsrResponse
+trait THasJsonRpcResponse
 {
+    use \extas\components\http\THasPsrResponse;
+
     /**
      * @param string $id
      * @param $data
@@ -57,26 +56,5 @@ trait THasPsrResponse
         ));
 
         return $response;
-    }
-
-    /**
-     * @return ResponseInterface
-     */
-    public function getPsrResponse(): ResponseInterface
-    {
-        return $this->config[IHasPsrResponse::FIELD__PSR_RESPONSE]
-            ->withHeader('Content-type', 'application/json')
-            ->withStatus(200);
-    }
-
-    /**
-     * @param ResponseInterface $response
-     * @return $this
-     */
-    public function setPsrResponse(ResponseInterface $response)
-    {
-        $this->config[IHasPsrResponse::FIELD__PSR_RESPONSE] = $response;
-
-        return $this;
     }
 }

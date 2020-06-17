@@ -4,15 +4,13 @@ namespace extas\interfaces\jsonrpc;
 use Psr\Http\Message\ResponseInterface;
 
 /**
- * Interface IHasResponse
+ * Interface IHasJsonRpcResponse
  *
  * @package extas\interfaces\jsonrpc
- * @author jeyroik@gmail.com
+ * @author jeyroik <jeyroik@gmail.com>
  */
-interface IHasPsrResponse
+interface IHasJsonRpcResponse extends \extas\interfaces\http\IHasPsrResponse
 {
-    public const FIELD__PSR_RESPONSE = 'psr_response';
-
     /**
      * @param string $id
      * @param $data
@@ -28,15 +26,4 @@ interface IHasPsrResponse
      * @return ResponseInterface
      */
     public function errorResponse(string $id, string $message, int $code, $data = []): ResponseInterface;
-
-    /**
-     * @return ResponseInterface
-     */
-    public function getPsrResponse(): ResponseInterface;
-
-    /**
-     * @param ResponseInterface $response
-     * @return $this
-     */
-    public function setPsrResponse(ResponseInterface $response);
 }

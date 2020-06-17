@@ -10,7 +10,7 @@ use Psr\Http\Message\ResponseInterface;
  * @package extas\interfaces\jsonrpc
  * @author jeyroik@gmail.com
  */
-interface IRouter extends IItem, IHasPsrRequest, IHasPsrResponse
+interface IRouter extends IItem, IHasJsonRpcRequest, IHasJsonRpcResponse
 {
     const SUBJECT = 'extas.jsonrpc.router';
 

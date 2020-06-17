@@ -1,9 +1,9 @@
 <?php
 namespace extas\interfaces\jsonrpc\operations;
 
+use extas\interfaces\jsonrpc\IHasJsonRpcRequest;
+use extas\interfaces\jsonrpc\IHasJsonRpcResponse;
 use extas\interfaces\operations\IOperationDispatcher as BaseInterface;
-use extas\interfaces\jsonrpc\IHasPsrRequest;
-use extas\interfaces\jsonrpc\IHasPsrResponse;
 use Psr\Http\Message\ResponseInterface;
 
 /**
@@ -12,7 +12,7 @@ use Psr\Http\Message\ResponseInterface;
  * @package extas\interfaces\jsonrpc\operations
  * @author jeyroik@gmail.com
  */
-interface IOperationDispatcher extends BaseInterface, IHasPsrRequest, IHasPsrResponse
+interface IOperationDispatcher extends BaseInterface, IHasJsonRpcRequest, IHasJsonRpcResponse
 {
     /**
      * @return ResponseInterface

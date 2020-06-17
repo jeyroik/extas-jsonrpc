@@ -21,7 +21,7 @@ class Update extends OperationDispatcher implements IOperationUpdate
     public function __invoke(): ResponseInterface
     {
         $repo = $this->getItemRepo();
-        $request = $this->convertPsrToJsonRpcRequest();
+        $request = $this->getJsonRpcRequest();
         $item = $this->getItem($request);
         $pkMethod = 'get' . ucfirst($repo->getPk());
 

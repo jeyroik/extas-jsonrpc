@@ -1,11 +1,12 @@
 <?php
 namespace extas\components\jsonrpc\operations;
 
-use extas\components\jsonrpc\THasPsrRequest;
-use extas\components\jsonrpc\THasPsrResponse;
 use extas\interfaces\jsonrpc\operations\IOperationDispatcher;
 use extas\interfaces\operations\IJsonRpcOperation;
 use extas\interfaces\repositories\IRepository;
+
+use extas\components\jsonrpc\THasJsonRpcRequest;
+use extas\components\jsonrpc\THasJsonRpcResponse;
 use extas\components\operations\OperationDispatcher as BaseDispatcher;
 
 /**
@@ -16,8 +17,8 @@ use extas\components\operations\OperationDispatcher as BaseDispatcher;
  */
 abstract class OperationDispatcher extends BaseDispatcher implements IOperationDispatcher
 {
-    use THasPsrRequest;
-    use THasPsrResponse;
+    use THasJsonRpcRequest;
+    use THasJsonRpcResponse;
 
     /**
      * @return IRepository

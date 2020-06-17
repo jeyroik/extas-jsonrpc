@@ -1,6 +1,7 @@
 <?php
 namespace extas\components\jsonrpc;
 
+use extas\components\exceptions\MissedOrUnknown;
 use extas\components\Item;
 use extas\interfaces\jsonrpc\IRouter;
 use extas\interfaces\operations\IOperation;
@@ -19,8 +20,8 @@ use Psr\Http\Message\ResponseInterface;
  */
 class Router extends Item implements IRouter
 {
-    use THasPsrRequest;
-    use THasPsrResponse;
+    use THasJsonRpcRequest;
+    use THasJsonRpcResponse;
 
     /**
      * @param string $name
@@ -41,7 +42,7 @@ class Router extends Item implements IRouter
         /**
          * @var $operation IOperation
          */
-        $jsonRpcRequest = $this->convertPsrToJsonRpcRequest();
+        $jsonRpcRequest = $this->getJsonRpcRequest();
         $routeName = $jsonRpcRequest->getMethod(static::ROUTE__DEFAULT);
         $operation = $this->jsonRpcOperationRepository()->one([IOperation::FIELD__NAME => $routeName]);
         $this->applyProtocols();
@@ -52,7 +53,7 @@ class Router extends Item implements IRouter
                 $this->runOperationDispatcher($operation);
                 $this->runPluginsAfter($routeName);
             } else {
-                throw new \Exception('Unknown operation "' . $routeName . '"', 404);
+                throw new MissedOrUnknown('operation "' . $routeName . '"', 404);
             }
         } catch (\Exception $e) {
             return $this->errorResponse($jsonRpcRequest->getId(), $e->getMessage(), $e->getCode());
@@ -66,7 +67,7 @@ class Router extends Item implements IRouter
      */
     public function getSpecs(): ResponseInterface
     {
-        $jRpcRequest = $this->convertPsrToJsonRpcRequest();
+        $jRpcRequest = $this->getJsonRpcRequest();
         $routeName = $jRpcRequest->getMethod(static::ROUTE__DEFAULT);
 
         /**
