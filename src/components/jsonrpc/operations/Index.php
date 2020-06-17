@@ -21,7 +21,7 @@ class Index extends OperationDispatcher implements IOperationIndex
     public function __invoke(): ResponseInterface
     {
         $records = $this->getItemRepo()->all([]);
-        $request = $this->convertPsrToJsonRpcRequest();
+        $request = $this->getJsonRpcRequest();
         $items = $this->filter($request->getFilter(), $this->cutByLimit($records));
         $items = $this->expandItems($items);
 

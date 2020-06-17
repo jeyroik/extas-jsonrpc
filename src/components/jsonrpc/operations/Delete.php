@@ -23,7 +23,7 @@ class Delete extends OperationDispatcher implements IOperationDelete
          * @var $item IItem|IHasName
          */
         $repo = $this->getItemRepo();
-        $request = $this->convertPsrToJsonRpcRequest();
+        $request = $this->getJsonRpcRequest();
         $exist = $repo->all($request->getData());
 
         if (!$exist) {

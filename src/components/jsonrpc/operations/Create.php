@@ -25,7 +25,7 @@ class Create extends OperationDispatcher implements IOperationCreate
          * @var $item IItem|IHasName
          */
         $repo = $this->getItemRepo();
-        $request = $this->convertPsrToJsonRpcRequest();
+        $request = $this->getJsonRpcRequest();
         $item = $this->getItem($request);
         $pkMethod = $this->getPkMethod($repo);
 
