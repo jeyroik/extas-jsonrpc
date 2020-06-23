@@ -29,6 +29,7 @@
     }
   },
   "scripts": {
+    "up": "vendor/bin/extas init && vendor/bin/extas install",
     "test": "vendor/bin/phpunit --testdox --coverage-clover=coverage.xml --whitelist=src tests",
     "stan": "vendor/bin/phpstan analyse -l 5 src"
   }

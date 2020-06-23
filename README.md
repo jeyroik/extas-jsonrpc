@@ -7,9 +7,9 @@
 [![Total Downloads](https://poser.pugx.org/jeyroik/extas-jsonrpc/downloads)](//packagist.org/packages/jeyroik/extas-jsonrpc)
 [![Dependents](https://poser.pugx.org/jeyroik/extas-jsonrpc/dependents)](//packagist.org/packages/jeyroik/extas-jsonrpc)
 
-# Описание
+# Description
 
-Extas-совместимый JSON RPC сервер.
+Extas-compatible JSON RPC server.
 
 # install operations
 
